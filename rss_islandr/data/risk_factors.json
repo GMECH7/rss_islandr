@@ -1,0 +1,598 @@
+{
+    "IN": {
+        "alias": "Industry",
+        "mechanism": {
+            "01": {
+                "alias": "Toxicity",
+                "description": "Ability of the contaminant to cause issues to humans or the environment",
+                "severity": {
+                    "01": {
+                        "alias": "Bio-accumulative and toxic materials",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Toxic metals",
+                        "weight": 1.0
+                    },
+                    "03": {
+                        "alias": "Industrial waste",
+                        "weight": 1.0
+                    },
+                    "04": {
+                        "alias": "Institutional waste",
+                        "weight": 1.0
+                    },
+                    "05": {
+                        "alias": "Pathological waste and animal carcasses",
+                        "weight": 1.0
+                    },
+                    "06": {
+                        "alias": "Radioactive waste",
+                        "weight": 1.0
+                    },
+                    "07": {
+                        "alias": "Liquid waste not covered above",
+                        "weight": 0.6
+                    },
+                    "08": {
+                        "alias": "Food processing wastes",
+                        "weight": 0.6
+                    },
+                    "09": {
+                        "alias": "Non-hazardous incinerator residues",
+                        "weight": 0.6
+                    },
+                    "10": {
+                        "alias": "Municipal solid wastes",
+                        "weight": 0.6
+                    },
+                    "11": {
+                        "alias": "Organic and vegetable wastes",
+                        "weight": 0.6
+                    },
+                    "12": {
+                        "alias": "Mining residues",
+                        "weight": 0.6
+                    },
+                    "13": {
+                        "alias": "Other",
+                        "weight": 0.2
+                    }
+                }
+            },
+            "02": {
+                "alias": "Extent",
+                "description": "The amount of a hazardous material currently on the ground",
+                "severity": {
+                    "01": {
+                        "alias": "Large",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Small",
+                        "weight": 0.4
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "03": {
+                "alias": "Mobility",
+                "description": "The ability of a hazardous material to be transported along a pathway once released from containment",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            }
+        }
+    },
+    "SL": {
+        "alias": "Soil",
+        "mechanism": {
+            "01": {
+                "alias": "Mobility",
+                "description": "Description for mobility",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "02": {
+                "alias": "Containment",
+                "description": "Description for containment",
+                "severity": {
+                    "01": {
+                        "alias": "None",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Full",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "NA",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "03": {
+                "alias": "Surface cover",
+                "description": "Description for surface cover",
+                "severity": {
+                    "01": {
+                        "alias": "No limit to access",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Limited access",
+                        "weight": 0.8
+                    },
+                    "03": {
+                        "alias": "No access",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Paved",
+                        "weight": 0.3
+                    }
+                }
+            },
+            "04": {
+                "alias": "Soil permeability",
+                "description": "Description for soil permeability",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.8
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    }
+                }
+            },
+            "05": {
+                "alias": "Depth to hazard",
+                "description": "Description for depth to hazard",
+                "severity": {
+                    "01": {
+                        "alias": "<1m",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "2m",
+                        "weight": 0.8
+                    },
+                    "03": {
+                        "alias": ">=3m",
+                        "weight": 0.5
+                    }
+                }
+            }
+        }
+    },
+    "GW": {
+        "alias": "Groundwater",
+        "mechanism": {
+            "01": {
+                "alias": "Mobility",
+                "description": "Description for mobility",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "02": {
+                "alias": "Containment",
+                "description": "Description for containment",
+                "severity": {
+                    "01": {
+                        "alias": "None",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Full",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "03": {
+                "alias": "Permeability layer",
+                "description": "Description for permeability layer",
+                "severity": {
+                    "01": {
+                        "alias": "Unconfined",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "5m",
+                        "weight": 0.8
+                    },
+                    "03": {
+                        "alias": ">15m",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "04": {
+                "alias": "Distance to user",
+                "description": "Description for distance to user",
+                "severity": {
+                    "01": {
+                        "alias": "Silt/clay aquifer: 20m",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Silt/clay aquifer: 50m",
+                        "weight": 0.6
+                    },
+                    "03": {
+                        "alias": "Silt/clay aquifer: 100m",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Fine sand/silty gravel: <50m",
+                        "weight": 1.0
+                    },
+                    "05": {
+                        "alias": "Fine sand/silty gravel: 100m",
+                        "weight": 0.6
+                    },
+                    "06": {
+                        "alias": "Fine sand/silty gravel: 300m",
+                        "weight": 0.3
+                    },
+                    "07": {
+                        "alias": "Coarse sand/sandy gravel: <350m",
+                        "weight": 1.0
+                    },
+                    "08": {
+                        "alias": "Coarse sand/sandy gravel: 500m",
+                        "weight": 0.6
+                    },
+                    "09": {
+                        "alias": "Coarse sand/sandy gravel: 1,000m",
+                        "weight": 0.3
+                    },
+                    "10": {
+                        "alias": "Gravel aquifer: <800m",
+                        "weight": 1.0
+                    },
+                    "11": {
+                        "alias": "Gravel aquifer: 1,000m",
+                        "weight": 0.6
+                    },
+                    "12": {
+                        "alias": "Gravel aquifer: 2,000m",
+                        "weight": 0.3
+                    },
+                    "13": {
+                        "alias": "Fractured rock: <300m",
+                        "weight": 1.0
+                    },
+                    "14": {
+                        "alias": "Fractured rock: 800m",
+                        "weight": 0.6
+                    },
+                    "15": {
+                        "alias": "Fractured rock: 1,500m",
+                        "weight": 0.3
+                    }
+                }
+            }
+        }
+    },
+    "SW": {
+        "alias": "Surface water",
+        "mechanism": {
+            "01": {
+                "alias": "Mobility",
+                "description": "Description for mobility",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "02": {
+                "alias": "Containment",
+                "description": "Description for containment",
+                "severity": {
+                    "01": {
+                        "alias": "None",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Full",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "03": {
+                "alias": "Flood potential",
+                "description": "Description for flood potential",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.6
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            }
+        }
+    },
+    "AR": {
+        "alias": "Air",
+        "mechanism": {
+            "01": {
+                "alias": "Mobility",
+                "description": "Description for mobility",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "02": {
+                "alias": "Emission type",
+                "description": "Description for emission type",
+                "severity": {
+                    "01": {
+                        "alias": "Area source",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Point source",
+                        "weight": 0.6
+                    },
+                    "03": {
+                        "alias": "Mobile source",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "03": {
+                "alias": "Distance to population",
+                "description": "Description for distance to population",
+                "severity": {
+                    "01": {
+                        "alias": "<1km",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "1km-5km",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": ">5km",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "04": {
+                "alias": "Particle size",
+                "description": "Description for particle size",
+                "severity": {
+                    "01": {
+                        "alias": "PM10",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "PM2.5",
+                        "weight": 0.6
+                    },
+                    "03": {
+                        "alias": "NA",
+                        "weight": 0.0
+                    }
+                }
+            }
+        }
+    },
+    "SD": {
+        "alias": "Sediment",
+        "mechanism": {
+            "01": {
+                "alias": "Mobility",
+                "description": "Description for mobility",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    },
+                    "04": {
+                        "alias": "Value Not Known",
+                        "weight": 0.0
+                    }
+                }
+            },
+            "02": {
+                "alias": "Contamination level",
+                "description": "Description for contamination level",
+                "severity": {
+                    "01": {
+                        "alias": "High",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Medium",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Low",
+                        "weight": 0.3
+                    }
+                }
+            },
+            "03": {
+                "alias": "Water interaction",
+                "description": "Description for water interaction",
+                "severity": {
+                    "01": {
+                        "alias": "Frequent",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Occasional",
+                        "weight": 0.7
+                    },
+                    "03": {
+                        "alias": "Rare",
+                        "weight": 0.2
+                    }
+                }
+            },
+            "04": {
+                "alias": "Sediment type",
+                "description": "Description for sediment type",
+                "severity": {
+                    "01": {
+                        "alias": "Gravel",
+                        "weight": 1.0
+                    },
+                    "02": {
+                        "alias": "Sand",
+                        "weight": 0.6
+                    },
+                    "03": {
+                        "alias": "Silt",
+                        "weight": 0.2
+                    },
+                    "04": {
+                        "alias": "Clay",
+                        "weight": 0.2
+                    }
+                }
+            }
+        }
+    }
+}
