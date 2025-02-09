@@ -1,0 +1,53 @@
+{
+	"UI": {
+		"ui_bg_color_1": "#19232d",
+		"ui_bg_color_2": "#292d3e",
+		"ui_font_color_1": "white",
+		"ui_font_color_2": "red",
+		"ui_heights": [
+			100,
+			924
+		],
+		"ui_widths": [
+			1600,
+			1600
+		],
+		"uis_canvas_names": {
+			"0": [
+				"Site information",
+				"Site info frame"
+			]
+		},
+		"uis_frame_info": {
+			"0": {
+				"inputs_frame": [
+					0.02,
+					0.02,
+					0.50,
+					0.18,
+					3,
+					1,
+					8
+				],
+				"ere_frame": [
+					0.02,
+					0.60,
+					0.96,
+					0.18,
+					1,
+					3,
+					1
+				],
+				"message_frame": [
+					0.02,
+					0.80,
+					0.96,
+					0.18,
+					1,
+					1,
+					1
+				]
+			}
+		}
+	}
+}

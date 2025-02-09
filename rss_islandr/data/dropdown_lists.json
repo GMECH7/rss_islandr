@@ -1,4 +1,134 @@
 {
+  "soil_groups": [
+    {
+      "name": "Histosols",
+      "description": "Soils with thick organic layers"
+    },
+    {
+      "name": "Anthrosols",
+      "description": "Soils with strong human influence - With long and intensive agricultural use:"
+    },
+    {
+      "name": "Technosols",
+      "description": "Soils with strong human influence - AT Containing significant amounts of artefacts:"
+    },
+    {
+      "name": "Cryosols",
+      "description": "Soils with limitations to root growth - Permafrost affected"
+    },
+    {
+      "name": "Leptosols",
+      "description": "Soils with limitations to root growth - Thin or with many coarse fragments"
+    },
+    {
+      "name": "Solonetz",
+      "description": "Soils with limitations to root growth - With a high content of exchangeable Na"
+    },
+    {
+      "name": "Vertisols",
+      "description": "Soils with limitations to root growth - Alternating wet-dry conditions, shrink-swell clays"
+    },
+    {
+      "name": "Solonchaks",
+      "description": "Soils with limitations to root growth - High concentration of soluble salts"
+    },
+    {
+      "name": "Greysols",
+      "description": "Soils distinguished by Fe/Al chemistry - Groundwater-affected, underwater and in tidal areas"
+    },
+    {
+      "name": "Andosols",
+      "description": "Soils distinguished by Fe/Al chemistry - Allophanes or Al-humus complexes"
+    },
+    {
+      "name": "Podzols",
+      "description": "Soils distinguished by Fe/Al chemistry - Subsoil accumulation of humus and/or oxides"
+    },
+    {
+      "name": "Plinthosols",
+      "description": "Soils distinguished by Fe/Al chemistry - Accumulation and redistribution of Fe"
+    },
+    {
+      "name": "Nitisols",
+      "description": "Soils distinguished by Fe/Al chemistry - Low-activity clay, P fixation, many Fe oxides, strongly structured"
+    },
+    {
+      "name": "Ferralsols",
+      "description": "Soils distinguished by Fe/Al chemistry - Dominance of kaolinite and oxides"
+    },
+    {
+      "name": "Planasols",
+      "description": "Soils distinguished by Fe/Al chemistry - Stagnating water, abrupt textural difference"
+    },
+    {
+      "name": "Stagnosols",
+      "description": "Soils distinguished by Fe/Al chemistry - Stagnating water, structural difference and/or moderate textural difference"
+    },
+    {
+      "name": "Chernozems",
+      "description": "Pronounced accumulation of organic matter in the mineral topsoil - Very dark topsoil, secondary carbonates"
+    },
+    {
+      "name": "Kastanozems",
+      "description": "Pronounced accumulation of organic matter in the mineral topsoil - Dark topsoil, secondary carbonates"
+    },
+    {
+      "name": "Phaeozems",
+      "description": "Pronounced accumulation of organic matter in the mineral topsoil - Dark topsoil, no secondary carbonates (unless very deep), high base status"
+    },
+    {
+      "name": "Umbrisols",
+      "description": "Pronounced accumulation of organic matter in the mineral topsoil - Dark topsoil, low base status"
+    },
+    {
+      "name": "Durisols",
+      "description": "Accumulation of moderately soluble salts or non-saline substances - Accumulation of and cementation by secondary silica"
+    },
+    {
+      "name": "Gypsisols",
+      "description": "Accumulation of moderately soluble salts or non-saline substances - Accumulation of secondary gypsum"
+    },
+    {
+      "name": "Calcisols",
+      "description": "Accumulation of moderately soluble salts or non-saline substances - Accumulation of secondary carbonates"
+    },
+    {
+      "name": "Retisols",
+      "description": "Soils with clay-enriched subsoil - Interfingering of coarser-textured, lighter coloured material into a finer-textured, stronger coloured layer"
+    },
+    {
+      "name": "Acrisols",
+      "description": "Soils with clay-enriched subsoil - Low-activity clays, low base status"
+    },
+    {
+      "name": "Lixisols",
+      "description": "Soils with clay-enriched subsoil - Low-activity clays, high base status"
+    },
+    {
+      "name": "Alisols",
+      "description": "Soils with clay-enriched subsoil - High-activity clays, low base status"
+    },
+    {
+      "name": "Luvisols",
+      "description": "Soils with clay-enriched subsoil - High-activity clays, high base status"
+    },
+    {
+      "name": "Cambisols",
+      "description": "Soils with little or no profile differentiation - Moderately developed"
+    },
+    {
+      "name": "Arenosols",
+      "description": "Soils with little or no profile differentiation - Sandy"
+    },
+    {
+      "name": "Fluvisols",
+      "description": "Soils with little or no profile differentiation - Stratified fluviatile, marine and lacustrine sediments"
+    },
+    {
+      "name": "Regosols",
+      "description": "Soils with little or no profile differentiation - No significant profile development"
+    }
+  ],
   "activity_or_industry": [
     "Abrasive blasting (NACE Code C.28.49)",
     "Acid/alkali plant, formulation and bulk storage",
