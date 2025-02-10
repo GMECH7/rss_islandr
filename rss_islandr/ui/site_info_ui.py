@@ -1,5 +1,6 @@
 import json
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk
 
 from general_ui import GeneralUITemplate
@@ -9,15 +10,14 @@ class SiteInfoUI(GeneralUITemplate):
 
     def __init__(
         self,
-        PACKAGE_DIR,
+        package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
         frame_info: dict[str, list[float]],
     ):
-        print(PACKAGE_DIR)
-        full_filepath = r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\data\dropdown_lists.json"
-        with open(full_filepath, "r", encoding="utf-8") as file:
-            self.data = json.load(file)
+        full_filepath = package_dir / "data/dropdown_lists.json"
+        with open(full_filepath, "r", encoding="utf-8") as file_inp:
+            self.data = json.load(file_inp)
 
         self.root = root
         self.frame_info = frame_info

@@ -20,4 +20,15 @@ if __name__ == "__main__":
     hazard_mobility = hazard_fetcher.getter("IN", "01", "01")["weight"]
 
     hazard_risk = risk_calc([hazard_toxicity, hazard_extend, hazard_mobility])
-    print(hazard_risk)
+
+    mechanisms_dict = hazard_fetcher.getter("IN")["mechanism"]
+    for mechanism_key in mechanisms_dict:
+        mechanism_alias = hazard_fetcher.getter("IN", mechanism_key)["alias"]
+        severity_dict = hazard_fetcher.getter("IN", mechanism_key)["severity"]
+        dropdown_severity = []
+        alias_to_weight = {}
+        for severity_key in severity_dict:
+            severity_alias = severity_dict[severity_key]["alias"]
+            severity_weight = severity_dict[severity_key]["weight"]
+            dropdown_severity.append(severity_dict[severity_key]["alias"])
+            alias_to_weight[severity_alias] = severity_weight

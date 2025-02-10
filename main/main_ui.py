@@ -13,6 +13,7 @@ from rss_islandr.core.config_parser import (
     uis_canvas_names,
     uis_frame_info,
 )
+from rss_islandr.ui.assessment_ui import AssessmentUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -35,9 +36,7 @@ class RSSUI:
 
     def __window_creator_template(self, idx: int):
         """ """
-        ui_selector: dict[int, Type] = {
-            0: SiteInfoUI,
-        }
+        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
         canvas_specs = [
             self.ui_height,
             self.ui_width,
@@ -48,6 +47,7 @@ class RSSUI:
             "%dx%d+%d+%d" % (self.ui_width, self.ui_height, 10, 50 + self.main_view_height)
         )
         popup.resizable(width=False, height=False)
+
         application = ui_selector[idx](
             PACKAGE_DIR,
             popup,
@@ -97,6 +97,15 @@ class RSSUI:
             command=lambda: self.__window_creator_template(0),
         )
         button1.grid(row=0, column=0, sticky="NSEW")
+
+        button2 = tk.Button(
+            frame,
+            bg=self.button_color,
+            fg=self.button_font_color,
+            text=self.uis_canvas_names[str(1)][0],
+            command=lambda: self.__window_creator_template(1),
+        )
+        button2.grid(row=0, column=1, sticky="NSEW")
 
         return None
 

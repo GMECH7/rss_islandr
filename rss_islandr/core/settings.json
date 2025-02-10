@@ -1,9 +1,17 @@
 {
 	"UI": {
-		"ui_bg_color_1": "#19232d",
-		"ui_bg_color_2": "#292d3e",
-		"ui_font_color_1": "white",
-		"ui_font_color_2": "red",
+		"dark_skin": {
+			"ui_bg_color_1": "#19232d",
+			"ui_bg_color_2": "#292d3e",
+			"ui_font_color_1": "white",
+			"ui_font_color_2": "red"
+		},
+		"islandr_skin": {
+			"ui_bg_color_1": "#9cb146",
+			"ui_bg_color_2": "#1f3498",
+			"ui_font_color_1": "white",
+			"ui_font_color_2": "#800000"
+		},
 		"ui_heights": [
 			100,
 			924
@@ -16,6 +24,10 @@
 			"0": [
 				"Site information",
 				"Site info frame"
+			],
+			"1": [
+				"Site information",
+				"Site info frame"
 			]
 		},
 		"uis_frame_info": {
@@ -26,6 +38,35 @@
 					0.50,
 					0.18,
 					3,
+					1,
+					8
+				],
+				"ere_frame": [
+					0.02,
+					0.60,
+					0.96,
+					0.18,
+					1,
+					3,
+					1
+				],
+				"message_frame": [
+					0.02,
+					0.80,
+					0.96,
+					0.18,
+					1,
+					1,
+					1
+				]
+			},
+			"1": {
+				"IN_frame": [
+					0.02,
+					0.02,
+					0.50,
+					0.18,
+					10,
 					1,
 					8
 				],

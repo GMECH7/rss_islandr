@@ -476,23 +476,23 @@ class GeneralUITemplate:
 
         label.grid(row=row_, column=col1, sticky="NSEW")
         label.config(font=(self.font, self.fontsize))
-        # drop = tk.OptionMenu(frame, cell_value_tk, *cell_options)
-        drop = ttk.Combobox(
-            frame,
-            textvariable=cell_text,
-            values=cell_options,
-            height=10,
-            width=80,
-        )
-        drop.grid(row=row_, column=col2, sticky="NSEW")
-        # drop.config(
-        #     bg=self.dropdown_color,
-        #     fg=self.dropdown_font_color,
-        #     relief="raised",
-        #     highlightthickness=0,
-        #     font=(self.font, self.fontsize),
-        #     state=cell_state_tk,
+        drop = tk.OptionMenu(frame, cell_value_tk, *cell_options)
+        # drop = ttk.Combobox(
+        #     frame,
+        #     textvariable=cell_text,
+        #     values=cell_options,
+        #     height=10,
+        #     width=80,
         # )
+        drop.grid(row=row_, column=col2, sticky="NSEW")
+        drop.config(
+            bg=self.dropdown_color,
+            fg=self.dropdown_font_color,
+            relief="raised",
+            highlightthickness=0,
+            font=(self.font, self.fontsize),
+            state=cell_state_tk,
+        )
 
         dict_ = {param_dropdown: drop}
         self.param_to_obj_dict.update(dict_)
