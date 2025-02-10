@@ -375,6 +375,7 @@ class GeneralUITemplate:
 
     def __access_ui_inputs_merged(self, param, case) -> tuple:
         """ """
+        print(1111, param, case)
         cell_incr_pos = self.ui_inputs_merged[param][1]
         cell_value_tk = self.ui_inputs_merged[param][2]
         cell_options = self.ui_inputs_merged[param][3]

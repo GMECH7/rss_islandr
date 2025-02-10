@@ -27,7 +27,8 @@ class AssessmentUI(GeneralUITemplate):
         self.canvas_title = canvas_specs[2]
         self.dropdown_list_width = 30
 
-        self.selected_weights = {}
+        self.val_dropdown_dict = {}
+        self.selected_weights = {"IN_frame": {}, "SL_frame": {}}
 
         super().__init__(self.root, self.frame_info, self.canvas_height, self.canvas_width)
         self.__ui_inputs_entries()
@@ -56,43 +57,40 @@ class AssessmentUI(GeneralUITemplate):
         """
         Method used in __init__.
         """
-        key = "IN"
-        self.val_dropdown_dict = {}
-        mechanisms_dict = self.hazard_fetcher.getter(key)["mechanism"]
+        for key in ["IN", "SL"]:
+            mechanisms_dict = self.hazard_fetcher.getter(key)["mechanism"]
+            for i, mechanism_key in enumerate(mechanisms_dict):
+                mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
+                severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
 
-        for i, mechanism_key in enumerate(mechanisms_dict):
-            mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
-            severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
+                dropdown_severity = []
+                alias_to_weight = {}
 
-            dropdown_severity = []
-            alias_to_weight = {}
+                for severity_key in severity_dict:
+                    severity_alias = severity_dict[severity_key]["alias"]
+                    severity_weight = severity_dict[severity_key]["weight"]
+                    dropdown_severity.append(severity_dict[severity_key]["alias"])
+                    alias_to_weight[severity_alias] = severity_weight
 
-            for severity_key in severity_dict:
-                severity_alias = severity_dict[severity_key]["alias"]
-                severity_weight = severity_dict[severity_key]["weight"]
-                dropdown_severity.append(severity_dict[severity_key]["alias"])
-                alias_to_weight[severity_alias] = severity_weight
+                var = tk.StringVar()
+                var.set(dropdown_severity[0])
 
-            var = tk.StringVar()
-            var.set(dropdown_severity[0])
+                # Store weight mapping for later use
+                self.selected_weights[f"{key}_frame"].update(
+                    {mechanism_alias: {"var": var, "weights": alias_to_weight}}
+                )
 
-            # Store weight mapping for later use
-            self.selected_weights[mechanism_alias] = {
-                "var": var,
-                "weights": alias_to_weight,
-            }
+                self.val_dropdown_dict[f"drop_{key}_1_0{i}"] = [
+                    f"{key}_frame",
+                    i + 1,
+                    var,
+                    dropdown_severity,
+                    mechanism_alias,
+                    "dummy",
+                ]
 
-            self.val_dropdown_dict[f"drop_1_0{i}"] = [
-                f"{key}_frame",
-                i + 1,
-                var,
-                dropdown_severity,
-                mechanism_alias,
-                "dummy",
-            ]
-
-        self.ui_inputs_merged.update(self.val_dropdown_dict)
-
+            self.ui_inputs_merged.update(self.val_dropdown_dict)
+        # print(self.ui_inputs_merged)
         return None
 
     def _light_bulb(self, frame, color: str) -> None:
@@ -125,7 +123,9 @@ class AssessmentUI(GeneralUITemplate):
 
         # Add the "Print Weights" button
         print_button = ttk.Button(
-            frame, text="Print Weights", command=lambda: self.print_selected_weights(frame)
+            frame,
+            text="Print Weights",
+            command=lambda: self.print_selected_weights(frame, frame_tag),
         )
         print_button.grid(row=len(self.val_dropdown_dict) + 1, column=0, pady=10)
         self._light_bulb(frame, "white")
@@ -138,12 +138,21 @@ class AssessmentUI(GeneralUITemplate):
         frame_title = "main program"
         self._inputs_frame(frame_tag, frame_title)
 
-    def print_selected_weights(self, frame):
+    def _soil_frame(self) -> None:
+        """
+        Inputs frame for main-specific inputs.
+        """
+        frame_tag = "SL_frame"
+        frame_title = "Soil Risk"
+        self._inputs_frame(frame_tag, frame_title)
+
+    def print_selected_weights(self, frame, frame_tag):
         """
         Retrieves selected dropdown values and prints their corresponding weights.
         """
         weights = []
-        for data in self.selected_weights.values():
+        for data in self.selected_weights[frame_tag].values():
+            print(111111111111111, data)
             selected_alias = data["var"].get()
             selected_weight = data["weights"].get(selected_alias, 0.0)
             weights.append(selected_weight)
@@ -169,3 +178,4 @@ class AssessmentUI(GeneralUITemplate):
         )
         canvas.pack()
         self._industry_frame()
+        self._soil_frame()
