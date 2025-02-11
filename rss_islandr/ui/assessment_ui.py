@@ -5,7 +5,7 @@ from tkinter import ttk
 from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc
-from rss_islandr.data_readers import RisksDataFetcher
+from rss_islandr.data_readers import RisksDataFetcher, ReceptorFactorsFetcher
 
 
 class AssessmentUI(GeneralUITemplate):
@@ -18,7 +18,9 @@ class AssessmentUI(GeneralUITemplate):
         frame_info: dict[str, list[float]],
     ):
         full_filepath = package_dir / "data/risk_factors.json"
+        full_filepath_2 = package_dir / "data/receptor_factors.json"
         self.hazard_fetcher = RisksDataFetcher(full_filepath)
+        self.receptor_fetcher = ReceptorFactorsFetcher(full_filepath_2)
 
         self.root = root
         self.frame_info = frame_info
@@ -28,11 +30,31 @@ class AssessmentUI(GeneralUITemplate):
         self.dropdown_list_width = 30
 
         self.val_dropdown_dict = {}
-        self.selected_weights = {"IN_frame": {}, "SL_frame": {}}
+        self.risk_keys = ["IN", "SL", "GW", "SW", "AR", "SD"]
+        self.selected_weights = {
+            "IN_frame": {},
+            "SL_frame": {},
+            "GW_frame": {},
+            "SW_frame": {},
+            "AR_frame": {},
+            "SD_frame": {},
+            "SL_receptor_frame": {},
+        }
+
+        self.calculated_risks = {
+            "IN_frame": tk.StringVar(value="0.0"),
+            "SL_frame": tk.StringVar(value="0.0"),
+            "GW_frame": tk.StringVar(value="0.0"),
+            "SW_frame": tk.StringVar(value="0.0"),
+            "AR_frame": tk.StringVar(value="0.0"),
+            "SD_frame": tk.StringVar(value="0.0"),
+            "SL_receptor_frame": tk.StringVar(value="0.0"),
+        }
 
         super().__init__(self.root, self.frame_info, self.canvas_height, self.canvas_width)
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
+        self.__ui_inputs_dropdown_2()
 
     def __ui_inputs_entries(self) -> None:
         """
@@ -57,7 +79,7 @@ class AssessmentUI(GeneralUITemplate):
         """
         Method used in __init__.
         """
-        for key in ["IN", "SL"]:
+        for key in self.risk_keys:
             mechanisms_dict = self.hazard_fetcher.getter(key)["mechanism"]
             for i, mechanism_key in enumerate(mechanisms_dict):
                 mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
@@ -69,7 +91,7 @@ class AssessmentUI(GeneralUITemplate):
                 for severity_key in severity_dict:
                     severity_alias = severity_dict[severity_key]["alias"]
                     severity_weight = severity_dict[severity_key]["weight"]
-                    dropdown_severity.append(severity_dict[severity_key]["alias"])
+                    dropdown_severity.append(severity_alias)
                     alias_to_weight[severity_alias] = severity_weight
 
                 var = tk.StringVar()
@@ -90,29 +112,68 @@ class AssessmentUI(GeneralUITemplate):
                 ]
 
             self.ui_inputs_merged.update(self.val_dropdown_dict)
-        # print(self.ui_inputs_merged)
+
         return None
+
+    def __ui_inputs_dropdown_2(self) -> None:
+
+        for key in ["SL"]:
+
+            dropdown_available_pathways = self.receptor_fetcher.getter(key)["available_pathways"]
+            dropdown_parameters = []
+            param_alias_to_weight = {}
+            parameters_dict = self.receptor_fetcher.getter(key)["parameter"]
+            for parameter_key in parameters_dict:
+                parameter_alias = self.receptor_fetcher.getter(key, parameter_key)["alias"]
+                parameter_weight = self.receptor_fetcher.getter(key, parameter_key)["weight"]
+                param_alias_to_weight[parameter_alias] = parameter_weight
+                dropdown_parameters.append(parameter_alias)
+
+            pathway_var = tk.StringVar()
+            pathway_var.set(dropdown_available_pathways)
+
+            var = tk.StringVar()
+            var.set(dropdown_parameters[0])
+
+            # Store weight mapping for later use
+            self.selected_weights[f"{key}_receptor_frame"].update(
+                {
+                    f"{key}_receptor_frame": {
+                        "var": var,
+                        "pathway": pathway_var,
+                        "weights": param_alias_to_weight,
+                    }
+                }
+            )
+            self.val_dropdown_dict[f"drop_receptor_{key}_1_0"] = [
+                f"{key}_receptor_frame",
+                0,
+                pathway_var,
+                dropdown_available_pathways,
+                f"{key}_receptor",
+                "dummy",
+            ]
+
+            self.val_dropdown_dict[f"drop_receptor_{key}_1_1"] = [
+                f"{key}_receptor_frame",
+                1,
+                var,
+                dropdown_parameters,
+                f"{key}_receptor",
+                "dummy",
+            ]
+
+            self.ui_inputs_merged.update(self.val_dropdown_dict)
 
     def _light_bulb(self, frame, color: str) -> None:
         """ """
         light = tk.Label(frame, text=" ", bg=color, width=4, height=2)
         light.grid(row=len(self.val_dropdown_dict) + 1, column=1, pady=10)
 
-    def _inputs_frame(self, frame_tag, frame_title) -> None:
-        """
-        Inputs frame for main-specific inputs.
-        """
+    def __frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
+        """ """
         frame = self.general_template_frames(frame_tag, frame_title)
         new_col_criterion = self.frame_info[frame_tag][-1]
-
-        for param_entry in list(self.val_entries_dict.keys()):
-            if self.val_entries_dict[param_entry][0] == frame_tag:
-                self.general_template_entries(
-                    frame,
-                    param_entry,
-                    new_col_criterion,
-                )
-
         for param_dropdown in list(self.val_dropdown_dict.keys()):
             if self.val_dropdown_dict[param_dropdown][0] == frame_tag:
                 self.general_template_dropdown(
@@ -130,21 +191,80 @@ class AssessmentUI(GeneralUITemplate):
         print_button.grid(row=len(self.val_dropdown_dict) + 1, column=0, pady=10)
         self._light_bulb(frame, "white")
 
-    def _industry_frame(self) -> None:
+        return frame
+
+    def __receptor_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
+        """ """
+        frame = self.general_template_frames(frame_tag, frame_title)
+        new_col_criterion = self.frame_info[frame_tag][-1]
+
+        for param_dropdown in list(self.val_dropdown_dict.keys()):
+            if self.val_dropdown_dict[param_dropdown][0] == frame_tag:
+                self.general_template_dropdown(
+                    frame,
+                    param_dropdown,
+                    new_col_criterion,
+                )
+
+        # Add the "Print Weights" button
+        print_button = ttk.Button(
+            frame,
+            text="Print Weights",
+            command=lambda: self.__calculate_receptor_total_risk(frame, frame_tag),
+        )
+        print_button.grid(row=len(self.val_dropdown_dict) + 1, column=0, pady=10)
+        self._light_bulb(frame, "white")
+
+        return frame
+
+    def industry_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
         frame_tag = "IN_frame"
         frame_title = "main program"
-        self._inputs_frame(frame_tag, frame_title)
+        self.__frame_creator(frame_tag, frame_title)
 
-    def _soil_frame(self) -> None:
+    def pathway_frames(self) -> None:
+        """Method assembling the pathway frames."""
+
+        for risk_key in self.risk_keys[1:]:
+            frame_tag = f"{risk_key}_frame"
+            frame_title = risk_key
+            self.__frame_creator(frame_tag, frame_title)
+
+    def receptor_frames(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
-        frame_tag = "SL_frame"
-        frame_title = "Soil Risk"
-        self._inputs_frame(frame_tag, frame_title)
+        frame_tag = "SL_receptor_frame"
+        frame_title = "main program"
+        self.__receptor_frame_creator(frame_tag, frame_title)
+
+    def __calculate_receptor_total_risk(self, frame, frame_tag):
+
+        pathway_used = self.selected_weights[frame_tag][frame_tag]["pathway"].get()
+        data = self.selected_weights[frame_tag][frame_tag]
+        receptor_alias = data["var"].get()
+        receptor_weight = data["weights"].get(receptor_alias, 0.0)
+        source_risk = float(self.calculated_risks["IN_frame"].get())
+        pathway_risk = float(self.calculated_risks[f"{pathway_used}_frame"].get())
+
+        receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
+
+        if receptor_risk <= 0.1:
+            color = "green"
+        elif 0.1 < receptor_risk <= 0.3:
+            color = "yellow"
+        else:
+            color = "red"
+
+        self._light_bulb(frame, color)
+        self.calculated_risks[frame_tag].set(f"{receptor_risk}")
+
+        print(
+            f"{receptor_alias} -> Weights: {[source_risk, pathway_risk, receptor_weight]} -> risk calc: {receptor_risk}"
+        )
 
     def print_selected_weights(self, frame, frame_tag):
         """
@@ -152,13 +272,11 @@ class AssessmentUI(GeneralUITemplate):
         """
         weights = []
         for data in self.selected_weights[frame_tag].values():
-            print(111111111111111, data)
             selected_alias = data["var"].get()
             selected_weight = data["weights"].get(selected_alias, 0.0)
             weights.append(selected_weight)
 
         risk = risk_calc(weights)
-        print(f"{selected_alias} -> Weights: {weights} -> risk calc: {risk}")
 
         if risk <= 0.1:
             color = "green"
@@ -168,6 +286,9 @@ class AssessmentUI(GeneralUITemplate):
             color = "red"
 
         self._light_bulb(frame, color)
+        self.calculated_risks[frame_tag].set(f"{risk}")
+
+        print(f"{selected_alias} -> Weights: {weights} -> risk calc: {risk}")
 
     def ui(self):
         canvas = tk.Canvas(
@@ -177,5 +298,6 @@ class AssessmentUI(GeneralUITemplate):
             bg=self.background_color,
         )
         canvas.pack()
-        self._industry_frame()
-        self._soil_frame()
+        self.industry_frame()
+        self.pathway_frames()
+        self.receptor_frames()

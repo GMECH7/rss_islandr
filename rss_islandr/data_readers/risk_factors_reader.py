@@ -42,3 +42,25 @@ class RisksDataFetcher:
             return self.__get_mechanism(main_key, mechanism_key)
         else:
             return self.__get_hazard_pathway(main_key)
+
+
+class ReceptorFactorsFetcher:
+
+    def __init__(self, json_file):
+        with open(json_file, "r") as file:
+            self.__data = json.load(file)  # Load JSON into a Python dictionary
+
+    def __get_pathway(self, pathway_key: str):
+
+        return self.__data[pathway_key]
+
+    def __get_parameter(self, pathway_key: str, parameter_key: str):
+
+        return self.__data[pathway_key]["parameter"][parameter_key]
+
+    def getter(self, pathway_key: str, parameter_key: Optional[str] = None):
+
+        if parameter_key is not None:
+            return self.__get_parameter(pathway_key, parameter_key)
+        else:
+            return self.__get_pathway(pathway_key)

@@ -6,7 +6,7 @@ MODULE_PATH = os.path.dirname(__file__)
 SETTINGS_JSON_PATH = os.path.realpath(os.path.join(MODULE_PATH, "settings.json"))
 
 # hardcoded
-skin_color = "islandr_skin"
+skin_color = "dark_skin"
 ################################################################################
 ######### Values read from settings.json (Changes allowed if necessary) ########
 ################################################################################

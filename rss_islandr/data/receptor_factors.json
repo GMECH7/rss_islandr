@@ -1,0 +1,28 @@
+{
+    "SL": {
+        "available_pathways": [
+            "SL",
+            "GW",
+            "SW",
+            "AR"
+        ],
+        "parameter": {
+            "01": {
+                "alias": "Industrial",
+                "weight": 0.5
+            },
+            "02": {
+                "alias": "Commercial",
+                "weight": 0.5
+            },
+            "03": {
+                "alias": "Agricultural",
+                "weight": 0.5
+            },
+            "04": {
+                "alias": "Residential",
+                "weight": 0.5
+            }
+        }
+    }
+}

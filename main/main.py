@@ -5,10 +5,11 @@ from pathlib import Path
 from main_imports import rss_islandr
 
 from rss_islandr.assessment.risk_assessment import risk_calc
-from rss_islandr.data_readers import RisksDataFetcher
+from rss_islandr.data_readers import RisksDataFetcher, ReceptorFactorsFetcher
 
 filepath = r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\data"
 filename = "risk_factors.json"
+filename_2 = "receptor_factors.json"
 
 if __name__ == "__main__":
 
@@ -32,3 +33,17 @@ if __name__ == "__main__":
             severity_weight = severity_dict[severity_key]["weight"]
             dropdown_severity.append(severity_dict[severity_key]["alias"])
             alias_to_weight[severity_alias] = severity_weight
+
+    json_file_2 = os.path.join(filepath, filename_2)
+    receptor_fetcher = ReceptorFactorsFetcher(json_file_2)
+
+    w = receptor_fetcher.getter("SL", "01")["weight"]
+
+    param_alias_to_weight = {}
+    parameters_dict = receptor_fetcher.getter("SL")["parameter"]
+    for parameter_key in parameters_dict:
+        parameter_alias = receptor_fetcher.getter("SL", parameter_key)["alias"]
+        parameter_weight = receptor_fetcher.getter("SL", parameter_key)["weight"]
+        param_alias_to_weight[parameter_alias] = parameter_weight
+
+    print(param_alias_to_weight)
