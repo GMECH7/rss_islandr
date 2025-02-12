@@ -13,6 +13,7 @@ from typing import Callable
 from PIL import Image, ImageTk
 
 from rss_islandr.core.config_parser import (
+    font_type,
     ui_bg_color_1,
     ui_bg_color_2,
     ui_font_color_1,
@@ -41,11 +42,10 @@ class GeneralUITemplate:
         self.ui_inputs_merged = {}
         self.__define_colors_fonts()
         self.__define_colors_bg()
-        self.boolean_dropdown_options = ["True", "False"]
         self.message_variable = tk.StringVar()
         self.__ere_frame_tag = "ere_frame"
         self.__ere_frame_title = "Execute"
-        self.title_offset = 0.03
+        self.title_offset = 0.030
 
     def __str__(self):
         """ """
@@ -57,7 +57,7 @@ class GeneralUITemplate:
         """
         self.title_font = "calibri"
         self.title_font_size = 12
-        self.font = "calibri"
+        self.font = font_type
         self.fontsize = 12
         self.title_font_color = ui_font_color_1
         self.entry_font_color = ui_font_color_2
@@ -164,7 +164,7 @@ class GeneralUITemplate:
 
         return ints
 
-    def __frame_distances(self, frame, n_rows, n_cols) -> None:
+    def __frame_distances(self, frame: tk.Frame, n_rows: int, n_cols: int) -> None:
         """ """
         for i in range(n_rows):
             frame.grid_rowconfigure(i, weight=1)
@@ -375,7 +375,6 @@ class GeneralUITemplate:
 
     def __access_ui_inputs_merged(self, param, case) -> tuple:
         """ """
-        print(1111, param, case)
         cell_incr_pos = self.ui_inputs_merged[param][1]
         cell_value_tk = self.ui_inputs_merged[param][2]
         cell_options = self.ui_inputs_merged[param][3]
@@ -388,13 +387,8 @@ class GeneralUITemplate:
 
         return cell_incr_pos, cell_value_tk, cell_options, cell_text, cell_state_tk
 
-    def general_template_frames(self, frame_tag, frame_title) -> tk.Frame:
-        """
-        The template of the Frames.\n
-        Keyword arguments:\n
-            frame_tag : Frame name.\n
-            frame_title : str -> frame title.\n
-        """
+    def general_template_frames(self, frame_tag: str, frame_title: str) -> tk.Frame:
+        """ """
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.__frames_limits(frame_tag)
         self.__template_title(frame_title, rel_x, rel_y, rel_w, rel_h)
         title_offset = 0.0 if frame_title == "" else self.title_offset
@@ -454,12 +448,13 @@ class GeneralUITemplate:
 
     def general_template_dropdown(self, frame, param_dropdown, new_col_criterion) -> None:
         """
-        The template of the dropdown list.\n
-        Keyword arguments:\n
-            frame : frame instance (see: self.general_template_frames()).\n
-            param_dropdown : The Entry parameter name (dictionary key).\n
-            new_col_criterion : int -> Number of positions after which a new column\n
-                                will be created.\n
+        The template of the dropdown list using Combobox.
+
+        Keyword arguments:
+            frame : frame instance (see: self.general_template_frames()).
+            param_dropdown : The Entry parameter name (dictionary key).
+            new_col_criterion : int -> Number of positions after which a new column
+                                will be created.
         """
         cell_incr_pos, cell_value_tk, cell_options, cell_text, cell_state_tk = (
             self.__access_ui_inputs_merged(param_dropdown, "dropdown")
@@ -467,38 +462,71 @@ class GeneralUITemplate:
 
         row_, col1, col2 = self.__manage_new_columns(cell_incr_pos, new_col_criterion)
 
+        # Create label
         label = tk.Label(
             frame,
             text=cell_text,
             bg=self.label_color,
             fg=self.label_font_color,
             relief="raised",
-        )
-
-        label.grid(row=row_, column=col1, sticky="NSEW")
-        label.config(font=(self.font, self.fontsize))
-        drop = tk.OptionMenu(frame, cell_value_tk, *cell_options)
-        # drop = ttk.Combobox(
-        #     frame,
-        #     textvariable=cell_text,
-        #     values=cell_options,
-        #     height=10,
-        #     width=80,
-        # )
-        drop.grid(row=row_, column=col2, sticky="NSEW")
-        drop.config(
-            bg=self.dropdown_color,
-            fg=self.dropdown_font_color,
-            relief="raised",
-            highlightthickness=0,
             font=(self.font, self.fontsize),
-            state=cell_state_tk,
         )
+        label.grid(row=row_, column=col1, sticky="NSEW")
 
-        dict_ = {param_dropdown: drop}
-        self.param_to_obj_dict.update(dict_)
+        # Create Combobox
+        combobox = ttk.Combobox(
+            frame,
+            textvariable=cell_value_tk,
+            values=cell_options,
+            state="readonly" if cell_state_tk == "disabled" else "normal",
+            font=(self.font, self.fontsize),
+        )
+        combobox.grid(row=row_, column=col2, sticky="NSEW")
 
-        return None
+        # Store in dictionary
+        self.param_to_obj_dict[param_dropdown] = combobox
+
+    # def general_template_dropdown(self, frame: tk.Frame, param_dropdown, new_col_criterion) -> None:
+    #     """
+    #     The template of the dropdown list.\n
+    #     Keyword arguments:\n
+    #         frame : frame instance (see: self.general_template_frames()).\n
+    #         param_dropdown : The Entry parameter name (dictionary key).\n
+    #         new_col_criterion : int -> Number of positions after which a new column\n
+    #                             will be created.\n
+    #     """
+    #     cell_incr_pos, cell_value_tk, cell_options, cell_text, cell_state_tk = (
+    #         self.__access_ui_inputs_merged(param_dropdown, "dropdown")
+    #     )
+
+    #     row_, col1, col2 = self.__manage_new_columns(cell_incr_pos, new_col_criterion)
+
+    #     label = tk.Label(
+    #         frame,
+    #         text=cell_text,
+    #         bg=self.label_color,
+    #         fg=self.label_font_color,
+    #         relief="raised",
+    #     )
+
+    #     label.grid(row=row_, column=col1, sticky="NSEW")
+    #     label.config(font=(self.font, self.fontsize))
+    #     drop = tk.OptionMenu(frame, cell_value_tk, *cell_options)
+
+    #     drop.grid(row=row_, column=col2, sticky="NSEW")
+    #     drop.config(
+    #         bg=self.dropdown_color,
+    #         fg=self.dropdown_font_color,
+    #         relief="raised",
+    #         highlightthickness=0,
+    #         font=(self.font, self.fontsize),
+    #         state=cell_state_tk,
+    #     )
+
+    #     dict_ = {param_dropdown: drop}
+    #     self.param_to_obj_dict.update(dict_)
+
+    #     return None
 
     def general_retriever(self, case, *args) -> tuple:
         """

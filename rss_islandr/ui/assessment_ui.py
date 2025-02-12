@@ -21,7 +21,7 @@ class AssessmentUI(GeneralUITemplate):
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_info: dict[str, list[float]],
+        frame_info,
     ):
         filepath_risk_factors = package_dir / "data/risk_factors.json"
         filepath_receptor_factors = package_dir / "data/receptor_factors.json"
@@ -51,11 +51,33 @@ class AssessmentUI(GeneralUITemplate):
         self.__init__risk_selection_dict()
         self.__init__receptor_risk_selection_dict()
 
+        self.__horizontal_descriting_frames("source_frame", self.__source_keys)
+        self.__horizontal_descriting_frames("pathway_frames", self.__pathway_keys)
+        self.__horizontal_descriting_frames("receptor_frames", self.__receptor_keys)
+
         super().__init__(self.root, self.frame_info, self.canvas_height, self.canvas_width)
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
         self.__init__calculated_risks_dict()
+
+    def __horizontal_descriting_frames(
+        self, frame_family_key: str, frame_keys, frame_padding: float = 0.01
+    ):
+
+        frame_info = self.frame_info[frame_family_key]
+        n_frames = len(frame_keys)
+        x_r = frame_info["x_r"]
+        x_l = frame_info["x_l"]
+        y_u = frame_info["y_u"]
+        y_d = frame_info["y_d"]
+        width = (frame_info["x_r"] - frame_info["x_l"]) / n_frames - frame_padding
+        height = frame_info["y_d"] - frame_info["y_u"]
+
+        for frame_tag in frame_keys:
+            # The number of rows is updated dynamically in the methods that define the dropdown lists
+            self.frame_info[f"{frame_tag}_frame"] = [x_l, y_u, width, height, None, 1, 8]
+            x_l += width + frame_padding
 
     def __init__risk_selection_dict(self):
         """
@@ -116,13 +138,14 @@ class AssessmentUI(GeneralUITemplate):
 
                 self.val_dropdown_dict[f"drop_{key}_1_0{i}"] = [
                     f"{key}_frame",
-                    i + 1,
+                    i,
                     var,
                     dropdown_severity,
                     mechanism_alias,
                     "dummy",
                 ]
-
+            # Update the number of rows
+            self.frame_info[f"{key}_frame"][4] = i + 2
             self.ui_inputs_merged.update(self.val_dropdown_dict)
 
         return None
@@ -136,7 +159,6 @@ class AssessmentUI(GeneralUITemplate):
 
         for key in self.__receptor_keys:
 
-            dropdown_available_pathways = list(self.receptor_aliases.getter().values())
             dropdown_receptor_param = []
             param_alias_to_weight = {}
 
@@ -147,8 +169,14 @@ class AssessmentUI(GeneralUITemplate):
                 param_alias_to_weight[parameter_alias] = parameter_weight
                 dropdown_receptor_param.append(parameter_alias)
 
+            dropdown_available_pathways_keys = self.receptor_fetcher.getter(key)[
+                "available_pathways"
+            ]
+            dropdown_available_pathways_aliases = [
+                self.receptor_aliases.getter()[key] for key in dropdown_available_pathways_keys
+            ]
             pathway_var = tk.StringVar()
-            pathway_var.set(dropdown_available_pathways[0])
+            pathway_var.set(dropdown_available_pathways_aliases[0])
 
             receptor_param = tk.StringVar()
             receptor_param.set(dropdown_receptor_param[0])
@@ -167,8 +195,8 @@ class AssessmentUI(GeneralUITemplate):
                 f"{key}_frame",
                 0,
                 pathway_var,
-                dropdown_available_pathways,
-                f"{key}_receptor",
+                dropdown_available_pathways_aliases,
+                "Receptor",
                 "dummy",
             ]
 
@@ -177,16 +205,18 @@ class AssessmentUI(GeneralUITemplate):
                 1,
                 receptor_param,
                 dropdown_receptor_param,
-                f"{key}_receptor",
+                "Parameter",
                 "dummy",
             ]
-
+            # always two rows in receptor dropdown
+            self.frame_info[f"{key}_frame"][4] = 3
             self.ui_inputs_merged.update(self.val_dropdown_dict)
 
-    def _light_bulb(self, frame, color: str) -> None:
+    def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
         """ """
-        light = tk.Label(frame, text=" ", bg=color, width=4, height=2)
-        light.grid(row=len(self.val_dropdown_dict) + 1, column=1, pady=10)
+        print(frame_tag)
+        light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
+        light.grid(row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=1, sticky="NSEW")
 
     def __source_pathway_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
@@ -200,14 +230,16 @@ class AssessmentUI(GeneralUITemplate):
                     new_col_criterion,
                 )
 
-        # Add the "Print Weights" button
-        print_button = ttk.Button(
+        calculate_btn = ttk.Button(
             frame,
-            text="Print Weights",
+            text="Calculate risk",
             command=lambda: self.__calculate_source_pathway_risk(frame, frame_tag),
         )
-        print_button.grid(row=len(self.val_dropdown_dict) + 1, column=0, pady=10)
-        self._light_bulb(frame, "white")
+
+        calculate_btn.grid(
+            row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=0, sticky="NSEW"
+        )
+        self.__light_bulb(frame, frame_tag, "white")
 
         return frame
 
@@ -225,13 +257,15 @@ class AssessmentUI(GeneralUITemplate):
                 )
 
         # Add the "Print Weights" button
-        print_button = ttk.Button(
+        calculate_btn = ttk.Button(
             frame,
-            text="Print Weights",
+            text="Calculate risk",
             command=lambda: self.__calculate_receptor_total_risk(frame, frame_tag),
         )
-        print_button.grid(row=len(self.val_dropdown_dict) + 1, column=0, pady=10)
-        self._light_bulb(frame, "white")
+        calculate_btn.grid(
+            row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=0, sticky="NSEW"
+        )
+        self.__light_bulb(frame, frame_tag, "white")
 
         return frame
 
@@ -269,9 +303,8 @@ class AssessmentUI(GeneralUITemplate):
         risk = risk_calc(weights)
 
         color = risk_color_assignment(risk)
-
-        self._light_bulb(frame, color)
         self.__calculated_risks[frame_tag].set(f"{risk}")
+        self.__light_bulb(frame, frame_tag, color)
 
         print(f"{selected_alias} -> Weights: {weights} -> risk calc: {risk}")
 
@@ -292,8 +325,8 @@ class AssessmentUI(GeneralUITemplate):
 
         color = risk_color_assignment(receptor_risk)
 
-        self._light_bulb(frame, color)
         self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
+        self.__light_bulb(frame, frame_tag, color)
 
         print(
             f"{receptor_alias} -> Weights: {[source_risk, pathway_risk, receptor_weight]} -> risk calc: {receptor_risk}"

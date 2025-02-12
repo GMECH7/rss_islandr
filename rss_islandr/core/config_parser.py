@@ -6,7 +6,7 @@ MODULE_PATH = os.path.dirname(__file__)
 SETTINGS_JSON_PATH = os.path.realpath(os.path.join(MODULE_PATH, "settings.json"))
 
 # hardcoded
-skin_color = "dark_skin"
+skin_color = "islandr_skin"
 ################################################################################
 ######### Values read from settings.json (Changes allowed if necessary) ########
 ################################################################################
@@ -21,5 +21,6 @@ ui_heights: list[int] = settings["UI"]["ui_heights"]
 ui_widths: list[int] = settings["UI"]["ui_widths"]
 uis_canvas_names: dict[str, list["str"]] = settings["UI"]["uis_canvas_names"]
 uis_frame_info: dict[str, dict[str, list[float]]] = settings["UI"]["uis_frame_info"]
+font_type: str = settings["UI"]["font_type"]
 
 risk_limits_color: dict[str, list[float]] = settings["risk_limits_color"]

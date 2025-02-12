@@ -72,5 +72,5 @@ class ReceptorAliases:
         with open(json_file, "r") as file:
             self.__data = json.load(file)  # Load JSON into a Python dictionary
 
-    def getter(self):
+    def getter(self) -> dict:
         return self.__data["receptor_aliases"]
