@@ -1,5 +1,12 @@
 {
-    "SL": {
+    "receptor_aliases": {
+        "SL": "Soil",
+        "GW": "Ground water",
+        "SW": "Surface water",
+        "AR": "Air",
+        "SD": "Sediment"
+    },
+    "SL_receptor": {
         "available_pathways": [
             "SL",
             "GW",
@@ -22,6 +29,100 @@
             "04": {
                 "alias": "Residential",
                 "weight": 0.5
+            }
+        }
+    },
+    "GW_receptor": {
+        "available_pathways": [
+            "SL",
+            "GW",
+            "SW",
+            "SD"
+        ],
+        "parameter": {
+            "01": {
+                "alias": "Significant waterway",
+                "weight": 1.0
+            },
+            "02": {
+                "alias": "Domestic/potable",
+                "weight": 1.0
+            },
+            "03": {
+                "alias": "Irrigation",
+                "weight": 0.5
+            },
+            "04": {
+                "alias": "Stockwater",
+                "weight": 0.5
+            }
+        }
+    },
+    "SW_receptor": {
+        "available_pathways": [
+            "SL",
+            "GW",
+            "SW",
+            "AR",
+            "SD"
+        ],
+        "parameter": {
+            "01": {
+                "alias": "Significant waterway",
+                "weight": 1.0
+            },
+            "02": {
+                "alias": "Domestic/potable",
+                "weight": 1.0
+            },
+            "03": {
+                "alias": "Contact recreation",
+                "weight": 1.0
+            },
+            "04": {
+                "alias": "Irrigation",
+                "weight": 0.5
+            },
+            "05": {
+                "alias": "Stockwater",
+                "weight": 0.5
+            },
+            "06": {
+                "alias": "Industrial",
+                "weight": 0.5
+            }
+        }
+    },
+    "AR_receptor": {
+        "available_pathways": [
+            "SL",
+            "SW",
+            "AR"
+        ],
+        "parameter": {
+            "01": {
+                "alias": "Option 1",
+                "weight": 0.3
+            },
+            "02": {
+                "alias": "Option 2",
+                "weight": 0.3
+            }
+        }
+    },
+    "SD_receptor": {
+        "available_pathways": [
+            "SW",
+            "SD"
+        ],
+        "parameter": {
+            "01": {
+                "alias": "Option 1",
+                "weight": 0.3
+            },
+            "02": {
+                "alias": "Option 2",
+                "weight": 0.3
             }
         }
     }

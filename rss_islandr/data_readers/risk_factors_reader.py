@@ -64,3 +64,13 @@ class ReceptorFactorsFetcher:
             return self.__get_parameter(pathway_key, parameter_key)
         else:
             return self.__get_pathway(pathway_key)
+
+
+class ReceptorAliases:
+
+    def __init__(self, json_file):
+        with open(json_file, "r") as file:
+            self.__data = json.load(file)  # Load JSON into a Python dictionary
+
+    def getter(self):
+        return self.__data["receptor_aliases"]

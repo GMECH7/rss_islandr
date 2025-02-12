@@ -1,3 +1,3 @@
-from .risk_factors_reader import RisksDataFetcher, ReceptorFactorsFetcher
+from .risk_factors_reader import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
-__all__ = ["RisksDataFetcher", "ReceptorFactorsFetcher"]
+__all__ = ["RisksDataFetcher", "ReceptorFactorsFetcher", "ReceptorAliases"]

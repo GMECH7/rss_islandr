@@ -1,4 +1,3 @@
-import json
 import sys
 import tkinter as tk
 from typing import Type
