@@ -5,16 +5,21 @@ from tkinter import ttk
 
 from general_ui import GeneralUITemplate
 
+from rss_islandr.core.datatypes import UIVariable
+
 
 class SiteInfoUI(GeneralUITemplate):
 
     def __init__(
         self,
+        ui_inp_vars: dict[str, UIVariable],
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
         frame_info: dict[str, list[float]],
     ):
+        self.ui_inp_vars = ui_inp_vars
+
         full_filepath = package_dir / "data/dropdown_lists.json"
         with open(full_filepath, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)

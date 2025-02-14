@@ -12,6 +12,7 @@ from rss_islandr.core.config_parser import (
     uis_canvas_names,
     uis_frame_info,
 )
+from rss_islandr.core.datatypes import UIVariable
 from rss_islandr.ui.assessment_ui import AssessmentUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
@@ -33,6 +34,9 @@ class RSSUI:
         self.frame_n_cols = 2
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
+        self.ui_inp_vars = {str: UIVariable}  # this will be updated
+        self.ui_calc_vars = {}  # this will be updated
+
     def __window_creator_template(self, idx: int):
         """ """
         ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
@@ -48,6 +52,7 @@ class RSSUI:
         popup.resizable(width=False, height=False)
 
         application = ui_selector[idx](
+            self.ui_inp_vars,
             PACKAGE_DIR,
             popup,
             canvas_specs,
