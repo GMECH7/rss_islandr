@@ -27,6 +27,7 @@ class AssessmentUI(GeneralUITemplate):
         frame_info,
     ):
         self.ui_inp_vars = ui_inp_vars
+        self.ui_calc_vars = {}
 
         filepath_risk_factors = package_dir / "data/risk_factors.json"
         filepath_receptor_factors = package_dir / "data/receptor_factors.json"
@@ -40,9 +41,7 @@ class AssessmentUI(GeneralUITemplate):
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
-        self.dropdown_list_width = 30
 
-        self.val_dropdown_dict = {}
         self.__receptor_alias_to_key_dict = {
             k: v for (v, k) in self.receptor_aliases.getter().items()
         }
@@ -61,15 +60,20 @@ class AssessmentUI(GeneralUITemplate):
         self.__horizontal_descriting_frames("pathway_frames", self.__pathway_keys)
         self.__horizontal_descriting_frames("receptor_frames", self.__receptor_keys)
 
-        super().__init__(self.root, self.frame_info, self.canvas_height, self.canvas_width)
+        super().__init__(
+            ui_inp_vars, self.root, self.frame_info, self.canvas_height, self.canvas_width
+        )
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
         self.__init__calculated_risks_dict()
 
+    def btn_calculate_risk(self):
+        pass
+
     def __horizontal_descriting_frames(
         self, frame_family_key: str, frame_keys, frame_padding: float = 0.01
-    ):
+    ) -> None:
 
         frame_info = self.frame_info[frame_family_key]
         n_frames = len(frame_keys)
@@ -121,16 +125,20 @@ class AssessmentUI(GeneralUITemplate):
         """
         for key in self.__source_pathway_keys:
             mechanisms_dict = self.hazard_fetcher.getter(key)["mechanism"]
+
             try:
                 parent_excel_col = self.hazard_fetcher.getter(key)["excel_col"]
                 parent_excel_row = self.hazard_fetcher.getter(key)["excel_row"]
             except Exception:
                 parent_excel_col = None
+
             for i, mechanism_key in enumerate(mechanisms_dict):
                 mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
                 severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
+
                 if parent_excel_col is not None:
                     excel_cell = f"{parent_excel_col}{parent_excel_row+i+1}"
+                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row+i+2}"
                 else:
                     excel_cell = None
 
@@ -151,17 +159,8 @@ class AssessmentUI(GeneralUITemplate):
                     {mechanism_alias: {"var": var, "weights": alias_to_weight}}
                 )
 
-                self.val_dropdown_dict[f"drop_{key}_1_0{i}"] = [
-                    f"{key}_frame",
-                    i,
-                    var,
-                    dropdown_severity,
-                    mechanism_alias,
-                    "dummy",
-                ]
-
                 ui_var = UIVariable(
-                    frame_tag=f"drop_{key}_1_0{i}",
+                    frame_tag=f"{key}_frame",
                     tk_var=var,
                     rel_pos=i,
                     text_val=mechanism_alias,
@@ -171,8 +170,11 @@ class AssessmentUI(GeneralUITemplate):
                     state="enabled",
                 )
                 self.ui_inp_vars.update({f"drop_{key}_1_0{i}": ui_var})
+
+            self.ui_calc_vars.update(
+                {f"{key}_frame": {"calc_risk": "0", "excel_cell": excel_cell_risk}}
+            )
             self.frame_info[f"{key}_frame"][4] = i + 2
-            self.ui_inputs_merged.update(self.val_dropdown_dict)
 
         return None
 
@@ -184,6 +186,12 @@ class AssessmentUI(GeneralUITemplate):
         """
 
         for key in self.__receptor_keys:
+
+            try:
+                parent_excel_col = self.receptor_fetcher.getter(key)["excel_col"]
+                parent_excel_row = self.receptor_fetcher.getter(key)["excel_row"]
+            except Exception:
+                parent_excel_col = None
 
             dropdown_receptor_param = []
             param_alias_to_weight = {}
@@ -217,43 +225,54 @@ class AssessmentUI(GeneralUITemplate):
                     }
                 }
             )
-            self.val_dropdown_dict[f"drop_{key}_1_0"] = [
-                f"{key}_frame",
-                0,
-                pathway_var,
-                dropdown_available_pathways_aliases,
-                "Receptor",
-                "dummy",
-            ]
 
-            self.val_dropdown_dict[f"drop_{key}_1_1"] = [
-                f"{key}_frame",
-                1,
-                receptor_param,
-                dropdown_receptor_param,
-                "Parameter",
-                "dummy",
-            ]
+            ui_var_pathway = UIVariable(
+                frame_tag=f"{key}_frame",
+                tk_var=pathway_var,
+                rel_pos=0,
+                text_val="Parameter",
+                text_descr=None,
+                drop_options=dropdown_available_pathways_aliases,
+                excel_cell=f"{parent_excel_col}{parent_excel_row}",
+                state="enabled",
+            )
+
+            ui_var_receptor_param = UIVariable(
+                frame_tag=f"{key}_frame",
+                tk_var=receptor_param,
+                rel_pos=1,
+                text_val="Parameter",
+                text_descr=None,
+                drop_options=dropdown_receptor_param,
+                excel_cell=f"{parent_excel_col}{parent_excel_row+1}",
+                state="enabled",
+            )
+            self.ui_inp_vars.update({f"drop_{key}_1_0": ui_var_pathway})
+            self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
+
             # always two rows in receptor dropdown
+            self.ui_calc_vars.update(
+                {
+                    f"{key}_frame": {
+                        "calc_risk": "0",
+                        "excel_cell": f"{parent_excel_col}{parent_excel_row+2}",
+                    }
+                }
+            )
             self.frame_info[f"{key}_frame"][4] = 3
-            self.ui_inputs_merged.update(self.val_dropdown_dict)
 
     def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
         """ """
         light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
-        light.grid(row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=1, sticky="NSEW")
+        light.grid(row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=1, sticky="nsew")
 
     def __source_pathway_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
         frame = self.general_template_frames(frame_tag, frame_title)
-        new_col_criterion = self.frame_info[frame_tag][-1]
-        for param_dropdown in list(self.val_dropdown_dict.keys()):
-            if self.val_dropdown_dict[param_dropdown][0] == frame_tag:
-                self.general_template_dropdown(
-                    frame,
-                    param_dropdown,
-                    new_col_criterion,
-                )
+
+        for dropdown_key in self.ui_inp_vars:
+            if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
+                self.general_template_dropdown(frame, dropdown_key)
 
         calculate_btn = ttk.Button(
             frame,
@@ -262,7 +281,10 @@ class AssessmentUI(GeneralUITemplate):
         )
 
         calculate_btn.grid(
-            row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=0, sticky="NSEW"
+            row=self.frame_info[frame_tag][4] - 1,
+            rowspan=2,
+            column=0,
+            sticky="nsew",
         )
         self.__light_bulb(frame, frame_tag, "white")
 
@@ -271,17 +293,11 @@ class AssessmentUI(GeneralUITemplate):
     def __receptor_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
         frame = self.general_template_frames(frame_tag, frame_title)
-        new_col_criterion = self.frame_info[frame_tag][-1]
 
-        for param_dropdown in list(self.val_dropdown_dict.keys()):
-            if self.val_dropdown_dict[param_dropdown][0] == frame_tag:
-                self.general_template_dropdown(
-                    frame,
-                    param_dropdown,
-                    new_col_criterion,
-                )
+        for dropdown_key in self.ui_inp_vars:
+            if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
+                self.general_template_dropdown(frame, dropdown_key)
 
-        # Add the "Print Weights" button
         calculate_btn = ttk.Button(
             frame,
             text="Calculate risk",
@@ -289,7 +305,10 @@ class AssessmentUI(GeneralUITemplate):
         )
 
         calculate_btn.grid(
-            row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=0, sticky="NSEW"
+            row=self.frame_info[frame_tag][4] - 1,
+            rowspan=2,
+            column=0,
+            sticky="nsew",
         )
         self.__light_bulb(frame, frame_tag, "white")
 
@@ -372,6 +391,16 @@ class AssessmentUI(GeneralUITemplate):
                 value = self.ui_inp_vars[key].tk_var.get()
                 positions.append(position)
                 values.append(value)
+            except Exception:
+                pass
+
+        for key in self.ui_calc_vars:
+            try:
+                position = self.ui_calc_vars[key]["excel_cell"]
+                value = self.ui_calc_vars[key]["calc_risk"]
+                positions.append(position)
+                values.append(f"{value}")
+                print(key, self.ui_calc_vars)
             except Exception:
                 pass
 

@@ -7,6 +7,8 @@
         "SD": "Sediment"
     },
     "SL_receptor": {
+        "excel_col": "B",
+        "excel_row": 20,
         "available_pathways": [
             "SL",
             "GW",
@@ -33,6 +35,8 @@
         }
     },
     "GW_receptor": {
+        "excel_col": "C",
+        "excel_row": 20,
         "available_pathways": [
             "SL",
             "GW",
@@ -59,6 +63,8 @@
         }
     },
     "SW_receptor": {
+        "excel_col": "D",
+        "excel_row": 20,
         "available_pathways": [
             "SL",
             "GW",
@@ -94,6 +100,8 @@
         }
     },
     "AR_receptor": {
+        "excel_col": "E",
+        "excel_row": 20,
         "available_pathways": [
             "SL",
             "SW",
@@ -111,6 +119,8 @@
         }
     },
     "SD_receptor": {
+        "excel_col": "F",
+        "excel_row": 20,
         "available_pathways": [
             "SW",
             "SD"

@@ -34,7 +34,7 @@ class RSSUI:
         self.frame_n_cols = 2
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
-        self.ui_inp_vars = {str: UIVariable}  # this will be updated
+        self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
 
     def __window_creator_template(self, idx: int):
@@ -100,7 +100,7 @@ class RSSUI:
             text=self.uis_canvas_names[str(0)][0],
             command=lambda: self.__window_creator_template(0),
         )
-        button1.grid(row=0, column=0, sticky="NSEW")
+        button1.grid(row=0, column=0, sticky="nsew")
 
         button2 = tk.Button(
             frame,
@@ -109,7 +109,7 @@ class RSSUI:
             text=self.uis_canvas_names[str(1)][0],
             command=lambda: self.__window_creator_template(1),
         )
-        button2.grid(row=0, column=1, sticky="NSEW")
+        button2.grid(row=0, column=1, sticky="nsew")
 
         return None
 

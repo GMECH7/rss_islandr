@@ -1,6 +1,6 @@
 {
     "IN": {
-        "excel_col": "B",
+        "excel_col": "A",
         "excel_row": 1,
         "alias": "Industry",
         "mechanism": {

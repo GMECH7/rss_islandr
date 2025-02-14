@@ -8,6 +8,10 @@ from general_ui import GeneralUITemplate
 from rss_islandr.core.datatypes import UIVariable
 
 
+class AnotherException(Exception):
+    pass
+
+
 class SiteInfoUI(GeneralUITemplate):
 
     def __init__(
@@ -30,7 +34,9 @@ class SiteInfoUI(GeneralUITemplate):
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
         self.dropdown_list_width = 30
-        super().__init__(self.root, self.frame_info, self.canvas_height, self.canvas_width)
+        super().__init__(
+            ui_inp_vars, self.root, self.frame_info, self.canvas_height, self.canvas_width
+        )
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
 
@@ -39,9 +45,19 @@ class SiteInfoUI(GeneralUITemplate):
         Definition of inputs. Used in __init__.
         """
         self.site_name = tk.StringVar()
+        ui_var_site_name = UIVariable(
+            frame_tag="inputs_frame",
+            tk_var=self.site_name,
+            rel_pos=0,
+            text_val="Site name",
+            text_descr=None,
+            excel_cell="A1",
+        )
+
+        self.ui_inp_vars.update({"val_0_00": ui_var_site_name})
 
         self.val_entries_dict = {
-            "val_1_00": [
+            "val_0_00": [
                 "inputs_frame",
                 0,
                 self.site_name,
@@ -50,8 +66,6 @@ class SiteInfoUI(GeneralUITemplate):
                 "dummy",
             ],
         }
-
-        self.ui_inputs_merged.update(self.val_entries_dict)
 
     def __ui_inputs_dropdown(self) -> None:
         """
@@ -63,53 +77,46 @@ class SiteInfoUI(GeneralUITemplate):
         self.land_use_var = tk.StringVar()
         self.land_use_options = self.data["land_uses"]
 
-        self.val_dropdown_dict = {
-            "drop_1_00": [
-                "inputs_frame",
-                1,
-                self.activity_var,
-                self.activity_options,
-                "Select Activity/Industry:",
-                "dummy",
-            ],
-            "drop_1_01": [
-                "inputs_frame",
-                2,
-                self.land_use_var,
-                self.land_use_options,
-                "Select Land Use:",
-                "dummy",
-            ],
-        }
+        ui_var_activity = UIVariable(
+            frame_tag="inputs_frame",
+            tk_var=self.activity_var,
+            rel_pos=1,
+            text_val="Select Activity/Industry",
+            text_descr=None,
+            drop_options=self.activity_options,
+            excel_cell="A1",
+        )
 
-        self.ui_inputs_merged.update(self.val_dropdown_dict)
+        ui_var_land_use = UIVariable(
+            frame_tag="inputs_frame",
+            tk_var=self.land_use_var,
+            rel_pos=2,
+            text_val="Select Land Use",
+            text_descr=None,
+            drop_options=self.land_use_options,
+            excel_cell="A1",
+        )
+
+        self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
+        self.ui_inp_vars.update({"drop_0_01": ui_var_land_use})
 
         return None
 
-    def _inputs_frame(self) -> None:
+    def inputs_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
         frame_tag = "inputs_frame"
         frame_title = "main program"
         frame = self.general_template_frames(frame_tag, frame_title)
-        new_col_criterion = self.frame_info[frame_tag][-1]
 
-        for param_entry in list(self.val_entries_dict.keys()):
-            if self.val_entries_dict[param_entry][0] == frame_tag:
-                self.general_template_entries(
-                    frame,
-                    param_entry,
-                    new_col_criterion,
-                )
-
-        for param_dropdown in list(self.val_dropdown_dict.keys()):
-            if self.val_dropdown_dict[param_dropdown][0] == frame_tag:
-                self.general_template_dropdown(
-                    frame,
-                    param_dropdown,
-                    new_col_criterion,
-                )
+        for key in self.ui_inp_vars:
+            if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
+                self.general_template_entries(frame, key)
+            elif self.ui_inp_vars[key].frame_tag == frame_tag and "drop" in key:
+                self.general_template_dropdown(frame, key)
+            else:
+                pass
 
         return None
 
@@ -121,4 +128,4 @@ class SiteInfoUI(GeneralUITemplate):
             bg=self.background_color,
         )
         canvas.pack()
-        self._inputs_frame()
+        self.inputs_frame()
