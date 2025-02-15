@@ -58,21 +58,10 @@ class SiteInfoUI(GeneralUITemplate):
             rel_pos=0,
             text_val="Site name",
             text_descr=None,
-            excel_cell="A1",
+            excel_cell="C2",
         )
 
         self.ui_inp_vars.update({"val_0_00": ui_var_site_name})
-
-        self.val_entries_dict = {
-            "val_0_00": [
-                "inputs_frame",
-                0,
-                self.site_name,
-                "dummy",
-                "Site name",
-                "dummy",
-            ],
-        }
 
     def __ui_inputs_dropdown(self) -> None:
         """
@@ -91,7 +80,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select Activity/Industry",
             text_descr=None,
             drop_options=self.activity_options,
-            excel_cell="A1",
+            excel_cell="C4",
         )
 
         ui_var_land_use = UIVariable(
@@ -101,7 +90,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select Land Use",
             text_descr=None,
             drop_options=self.land_use_options,
-            excel_cell="A1",
+            excel_cell="J2",
         )
 
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})

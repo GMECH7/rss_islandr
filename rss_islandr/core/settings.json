@@ -19,16 +19,16 @@
 			"ui_bg_color_2": "#292d3e",
 			"ui_font_color_1": "white",
 			"ui_font_color_2": "red",
-			"ui_btn_bg_color_1": "blue",
+			"ui_btn_bg_color_1": "#19232d",
 			"ui_btn_bg_color_2": "orange",
 			"ui_btn_font_color_1": "white",
 			"ui_btn_font_color_2": "white"
 		},
 		"islandr_skin": {
-			"ui_bg_color_1": "#9cb146",
-			"ui_bg_color_2": "#1f3498",
-			"ui_font_color_1": "white",
-			"ui_font_color_2": "#800000",
+			"ui_bg_color_1": "#1f3498",
+			"ui_bg_color_2": "white",
+			"ui_font_color_1": "#800000",
+			"ui_font_color_2": "#9cb146",
 			"ui_btn_bg_color_1": "blue",
 			"ui_btn_bg_color_2": "orange",
 			"ui_btn_font_color_1": "white",
@@ -41,8 +41,8 @@
 		"ui_title_font_color": "white",
 		"ui_title_offset": 0.03,
 		"ui_heights": [
-			100,
-			800
+			900,
+			900
 		],
 		"ui_widths": [
 			1600,
@@ -54,8 +54,8 @@
 				"Site info frame"
 			],
 			"1": [
-				"Site information",
-				"Site info frame"
+				"Risk assesment",
+				"Risk assesment"
 			]
 		},
 		"uis_frame_info": {

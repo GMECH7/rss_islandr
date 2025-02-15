@@ -29,8 +29,8 @@ class RSSUI:
         self.ui_width = ui_widths[1]
         self.uis_canvas_names = uis_canvas_names
 
-        self.frame_n_rows = 1
-        self.frame_n_cols = 2
+        self.frame_n_rows = 5
+        self.frame_n_cols = 1
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
         self.ui_inp_vars = {}  # this will be updated
@@ -56,38 +56,38 @@ class RSSUI:
                 except Exception:
                     pass
 
-    def __window_creator_template(self, idx: int):
-        """ """
-        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
-        canvas_specs = [
-            self.ui_height,
-            self.ui_width,
-            self.uis_canvas_names[str(idx)][1],
-        ]
-        popup = tk.Toplevel()
-        popup.geometry(
-            "%dx%d+%d+%d" % (self.ui_width, self.ui_height, 10, 50 + self.main_view_height)
-        )
-        popup.resizable(width=False, height=False)
+    # def __window_creator_template(self, idx: int):
+    #     """ """
+    #     ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
+    #     canvas_specs = [
+    #         self.ui_height,
+    #         self.ui_width,
+    #         self.uis_canvas_names[str(idx)][1],
+    #     ]
+    #     popup = tk.Toplevel()
+    #     popup.geometry(
+    #         "%dx%d+%d+%d" % (self.ui_width, self.ui_height, 10, 50 + self.main_view_height)
+    #     )
+    #     popup.resizable(width=False, height=False)
 
-        application = ui_selector[idx](
-            self.ui_inp_vars,
-            self.ui_settings,
-            PACKAGE_DIR,
-            popup,
-            canvas_specs,
-            self.frame_infos_dict,
-        )
-        application.ui()
+    #     application = ui_selector[idx](
+    #         self.ui_inp_vars,
+    #         self.ui_settings,
+    #         PACKAGE_DIR,
+    #         popup,
+    #         canvas_specs,
+    #         self.frame_infos_dict,
+    #     )
+    #     application.ui()
 
-        return None
+    #     return None
 
-    def on_closing(self):
-        """
-        By pressing the main x button Tkinter window closes and exits the program
-        """
-        self.root.destroy()  # Close the Tkinter window
-        sys.exit()  # Exit the program completely
+    # def on_closing(self):
+    #     """
+    #     By pressing the main x button Tkinter window closes and exits the program
+    #     """
+    #     self.root.destroy()  # Close the Tkinter window
+    #     sys.exit()  # Exit the program completely
 
     def __frame_distances(self, frame) -> None:
         """ """
@@ -97,41 +97,122 @@ class RSSUI:
             frame.grid_columnconfigure(i, weight=1)
         return None
 
+    # def create_ui(self) -> None:
+    #     """
+    #     Main UI creator.
+    #     """
+    #     canvas = tk.Canvas(
+    #         self.root,
+    #         height=self.main_view_height,
+    #         width=self.main_view_width,
+    #         bg=self.ui_settings.ui_bg_color_1,
+    #     )
+    #     canvas.pack(side="top", fill="both", expand=True)
+
+    #     frame = tk.Frame(self.root)
+    #     frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+    #     self.__frame_distances(frame)
+
+    #     button1 = tk.Button(
+    #         frame,
+    #         bg=self.ui_settings.ui_btn_bg_color_1,
+    #         fg=self.ui_settings.ui_btn_font_color_1,
+    #         text=self.uis_canvas_names[str(0)][0],
+    #         command=lambda: self.__window_creator_template(0),
+    #     )
+    #     button1.grid(row=0, column=0, sticky="nsew")
+
+    #     button2 = tk.Button(
+    #         frame,
+    #         bg=self.ui_settings.ui_btn_bg_color_1,
+    #         fg=self.ui_settings.ui_btn_font_color_1,
+    #         text=self.uis_canvas_names[str(1)][0],
+    #         command=lambda: self.__window_creator_template(1),
+    #     )
+    #     button2.grid(row=0, column=1, sticky="nsew")
+
+    #     return None
+
     def create_ui(self) -> None:
         """
-        Main UI creator.
+        Creates a navigation ribbon and main content area with multiple pages.
         """
-        canvas = tk.Canvas(
-            self.root,
-            height=self.main_view_height,
-            width=self.main_view_width,
-            bg=self.ui_settings.ui_bg_color_1,
-        )
-        canvas.pack(side="top", fill="both", expand=True)
+        # Navigation Ribbon (Fixed for entire program lifetime)
+        nav_bar_frame = tk.Frame(self.root, bg="red")
+        nav_bar_frame.place(relx=0, rely=0, relwidth=0.10, relheight=1.0)
+        self.__frame_distances(nav_bar_frame)
 
-        frame = tk.Frame(self.root)
-        frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.__frame_distances(frame)
-
+        # # Buttons for navigation
         button1 = tk.Button(
-            frame,
+            nav_bar_frame,
+            text=self.uis_canvas_names[str(0)][0],
             bg=self.ui_settings.ui_btn_bg_color_1,
             fg=self.ui_settings.ui_btn_font_color_1,
-            text=self.uis_canvas_names[str(0)][0],
-            command=lambda: self.__window_creator_template(0),
+            command=lambda: self.show_page(self.page1),
         )
         button1.grid(row=0, column=0, sticky="nsew")
 
         button2 = tk.Button(
-            frame,
+            nav_bar_frame,
+            text=self.uis_canvas_names[str(1)][0],
             bg=self.ui_settings.ui_btn_bg_color_1,
             fg=self.ui_settings.ui_btn_font_color_1,
-            text=self.uis_canvas_names[str(1)][0],
-            command=lambda: self.__window_creator_template(1),
+            command=lambda: self.show_page(self.page2),
         )
-        button2.grid(row=0, column=1, sticky="nsew")
 
-        return None
+        button2.grid(row=1, column=0, sticky="nsew")
+
+        # # # Main Frame (Holds all pages)
+        # main_frame = tk.Frame(self.root, bg="green")
+        # main_frame.place(relx=0.10, rely=0, relwidth=0.9, relheight=1.0)
+        # main_frame.pack(fill="both", expand=True)
+
+        # # Create Pages
+        self.page1 = tk.Frame(self.root)
+        self.page2 = tk.Frame(self.root)
+
+        for page in (self.page1, self.page2):
+            page.place(relx=0.1, rely=0, relwidth=0.9, relheight=1.0)
+
+        # Initialize pages
+        self.__window_creator_template(0, self.page1)
+        self.__window_creator_template(1, self.page2)
+
+        # Show the first page by default
+        self.show_page(self.page1)
+
+    def __window_creator_template(self, idx: int, parent_frame):
+        """
+        Creates UI elements for each page.
+        """
+        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
+        canvas_specs = [
+            self.ui_height,
+            self.ui_width,
+            self.uis_canvas_names[str(idx)][1],
+        ]
+
+        application = ui_selector[idx](
+            self.ui_inp_vars,
+            self.ui_settings,
+            PACKAGE_DIR,
+            parent_frame,
+            canvas_specs,
+            self.frame_infos_dict,
+        )
+
+        application.ui()
+
+    def show_page(self, page):
+        """Brings the given page to the front."""
+        page.tkraise()
+
+    def on_closing(self):
+        """
+        By pressing the main x button Tkinter window closes and exits the program
+        """
+        self.root.destroy()
+        sys.exit()
 
 
 if __name__ == "__main__":

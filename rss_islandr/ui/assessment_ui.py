@@ -75,9 +75,6 @@ class AssessmentUI(GeneralUITemplate):
         self.__init__receptor_dropdown()
         self.__init__calculated_risks_dict()
 
-    def btn_calculate_risk(self):
-        pass
-
     def __place_widgets_vertically(
         self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
     ) -> None:
@@ -148,8 +145,8 @@ class AssessmentUI(GeneralUITemplate):
                 severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
 
                 if parent_excel_col is not None:
-                    excel_cell = f"{parent_excel_col}{parent_excel_row+i+1}"
-                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row+i+2}"
+                    excel_cell = f"{parent_excel_col}{parent_excel_row+i}"
+                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row+i+1}"
                 else:
                     excel_cell = None
 
@@ -274,8 +271,10 @@ class AssessmentUI(GeneralUITemplate):
 
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
 
-        calculate_btn = ttk.Button(
+        calculate_btn = tk.Button(
             frame,
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
             text="Calculate risk",
             command=lambda: btn_command(frame, frame_tag),
         )
@@ -358,6 +357,7 @@ class AssessmentUI(GeneralUITemplate):
 
         color = risk_color_assignment(risk)
         self.__calculated_risks[frame_tag].set(f"{risk}")
+        self.ui_calc_vars[frame_tag]["calc_risk"] = f"{risk}"
         self.__light_bulb(frame, frame_tag, color)
 
     def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str):
@@ -378,6 +378,7 @@ class AssessmentUI(GeneralUITemplate):
         color = risk_color_assignment(receptor_risk)
 
         self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
+        self.ui_calc_vars[frame_tag]["calc_risk"] = f"{receptor_risk}"
         self.__light_bulb(frame, frame_tag, color)
 
     def frame_write_to_excel(self):
@@ -411,6 +412,8 @@ class AssessmentUI(GeneralUITemplate):
                 values.append(f"{value}")
             except Exception:
                 pass
+        # print(positions, values)
+        # print(self.ui_calc_vars)
 
         self.write_to_excel(values, positions)
 

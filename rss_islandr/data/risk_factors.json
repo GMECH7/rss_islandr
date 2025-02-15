@@ -1,7 +1,7 @@
 {
     "IN": {
-        "excel_col": "A",
-        "excel_row": 1,
+        "excel_col": "C",
+        "excel_row": 6,
         "alias": "Industry",
         "mechanism": {
             "01": {
@@ -113,8 +113,8 @@
         }
     },
     "SL": {
-        "excel_col": "B",
-        "excel_row": 1,
+        "excel_col": "C",
+        "excel_row": 12,
         "alias": "Soil",
         "mechanism": {
             "01": {
@@ -234,8 +234,8 @@
         }
     },
     "GW": {
-        "excel_col": "C",
-        "excel_row": 1,
+        "excel_col": "F",
+        "excel_row": 12,
         "alias": "Groundwater",
         "mechanism": {
             "01": {
@@ -377,8 +377,8 @@
         }
     },
     "SW": {
-        "excel_col": "D",
-        "excel_row": 1,
+        "excel_col": "I",
+        "excel_row": 12,
         "alias": "Surface water",
         "mechanism": {
             "01": {
@@ -450,8 +450,8 @@
         }
     },
     "AR": {
-        "excel_col": "E",
-        "excel_row": 1,
+        "excel_col": "L",
+        "excel_row": 12,
         "alias": "Air",
         "mechanism": {
             "01": {
@@ -541,8 +541,8 @@
         }
     },
     "SD": {
-        "excel_col": "F",
-        "excel_row": 1,
+        "excel_col": "O",
+        "excel_row": 12,
         "alias": "Sediment",
         "mechanism": {
             "01": {
