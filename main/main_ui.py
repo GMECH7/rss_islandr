@@ -11,8 +11,9 @@ from rss_islandr.core.config_parser import (
     uis_canvas_names,
     uis_frame_info,
 )
-from rss_islandr.core.datatypes import FramePlacing, UIVariable
+from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_ui import AssessmentUI
+from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -36,8 +37,10 @@ class RSSUI:
         self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
 
-        self.frame_infos_dict = {"0": {}, "1": {}}
+        self.frame_info_dict = {"0": {}, "1": {}}
         self.__init__populate_frame_infos_dict()
+
+        self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
 
     def __init__populate_frame_infos_dict(self):
 
@@ -45,49 +48,16 @@ class RSSUI:
             for frame_key in uis_frame_info[btn_key]:
                 frame_info = uis_frame_info[btn_key][frame_key]
                 try:
-                    x_l = frame_info.get("x_l")
-                    x_r = frame_info.get("x_r")
-                    y_u = frame_info.get("y_u")
-                    y_d = frame_info.get("y_d")
-                    n_row = frame_info.get("n_row", None)
-                    n_col = frame_info.get("n_col", None)
+                    x_l: float = frame_info.get("x_l", 0.0)
+                    x_r: float = frame_info.get("x_r", 1.0)
+                    y_u: float = frame_info.get("y_u", 0.0)
+                    y_d: float = frame_info.get("y_d", 1.0)
+                    n_row: int = frame_info.get("n_row", None)
+                    n_col: int = frame_info.get("n_col", None)
                     frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
-                    self.frame_infos_dict[btn_key].update({frame_key: frame_place})
+                    self.frame_info_dict[btn_key].update({frame_key: frame_place})
                 except Exception:
                     pass
-
-    # def __window_creator_template(self, idx: int):
-    #     """ """
-    #     ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
-    #     canvas_specs = [
-    #         self.ui_height,
-    #         self.ui_width,
-    #         self.uis_canvas_names[str(idx)][1],
-    #     ]
-    #     popup = tk.Toplevel()
-    #     popup.geometry(
-    #         "%dx%d+%d+%d" % (self.ui_width, self.ui_height, 10, 50 + self.main_view_height)
-    #     )
-    #     popup.resizable(width=False, height=False)
-
-    #     application = ui_selector[idx](
-    #         self.ui_inp_vars,
-    #         self.ui_settings,
-    #         PACKAGE_DIR,
-    #         popup,
-    #         canvas_specs,
-    #         self.frame_infos_dict,
-    #     )
-    #     application.ui()
-
-    #     return None
-
-    # def on_closing(self):
-    #     """
-    #     By pressing the main x button Tkinter window closes and exits the program
-    #     """
-    #     self.root.destroy()  # Close the Tkinter window
-    #     sys.exit()  # Exit the program completely
 
     def __frame_distances(self, frame) -> None:
         """ """
@@ -97,48 +67,12 @@ class RSSUI:
             frame.grid_columnconfigure(i, weight=1)
         return None
 
-    # def create_ui(self) -> None:
-    #     """
-    #     Main UI creator.
-    #     """
-    #     canvas = tk.Canvas(
-    #         self.root,
-    #         height=self.main_view_height,
-    #         width=self.main_view_width,
-    #         bg=self.ui_settings.ui_bg_color_1,
-    #     )
-    #     canvas.pack(side="top", fill="both", expand=True)
-
-    #     frame = tk.Frame(self.root)
-    #     frame.place(relx=0, rely=0, relwidth=1, relheight=1)
-    #     self.__frame_distances(frame)
-
-    #     button1 = tk.Button(
-    #         frame,
-    #         bg=self.ui_settings.ui_btn_bg_color_1,
-    #         fg=self.ui_settings.ui_btn_font_color_1,
-    #         text=self.uis_canvas_names[str(0)][0],
-    #         command=lambda: self.__window_creator_template(0),
-    #     )
-    #     button1.grid(row=0, column=0, sticky="nsew")
-
-    #     button2 = tk.Button(
-    #         frame,
-    #         bg=self.ui_settings.ui_btn_bg_color_1,
-    #         fg=self.ui_settings.ui_btn_font_color_1,
-    #         text=self.uis_canvas_names[str(1)][0],
-    #         command=lambda: self.__window_creator_template(1),
-    #     )
-    #     button2.grid(row=0, column=1, sticky="nsew")
-
-    #     return None
-
     def create_ui(self) -> None:
         """
         Creates a navigation ribbon and main content area with multiple pages.
         """
         # Navigation Ribbon (Fixed for entire program lifetime)
-        nav_bar_frame = tk.Frame(self.root, bg="red")
+        nav_bar_frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_2)
         nav_bar_frame.place(relx=0, rely=0, relwidth=0.10, relheight=1.0)
         self.__frame_distances(nav_bar_frame)
 
@@ -162,10 +96,14 @@ class RSSUI:
 
         button2.grid(row=1, column=0, sticky="nsew")
 
-        # # # Main Frame (Holds all pages)
-        # main_frame = tk.Frame(self.root, bg="green")
-        # main_frame.place(relx=0.10, rely=0, relwidth=0.9, relheight=1.0)
-        # main_frame.pack(fill="both", expand=True)
+        excel_writer_btn = ExcelWriterBtnUI(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.excel_file_template,
+        )
+        button3 = excel_writer_btn.button(nav_bar_frame)
+        button3.grid(row=4, column=0, sticky="nsew")
 
         # # Create Pages
         self.page1 = tk.Frame(self.root)
@@ -193,12 +131,13 @@ class RSSUI:
         ]
 
         application = ui_selector[idx](
-            self.ui_inp_vars,
             self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
             PACKAGE_DIR,
             parent_frame,
             canvas_specs,
-            self.frame_infos_dict,
+            self.frame_info_dict,
         )
 
         application.ui()

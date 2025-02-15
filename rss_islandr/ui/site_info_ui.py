@@ -1,11 +1,10 @@
 import json
 import tkinter as tk
 from pathlib import Path
-from tkinter import ttk
 
 from general_ui import GeneralUITemplate
 
-from rss_islandr.core.datatypes import UISettings, UIVariable
+from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 
 
 class AnotherException(Exception):
@@ -16,31 +15,33 @@ class SiteInfoUI(GeneralUITemplate):
 
     def __init__(
         self,
-        ui_inp_vars: dict[str, UIVariable],
         ui_settings: UISettings,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_infos_dict,
+        frame_info_dict,
     ):
-        self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
+        self.ui_inp_vars = ui_inp_vars
+        self.ui_calc_vars = ui_calc_vars
 
         full_filepath = package_dir / "data/dropdown_lists.json"
         with open(full_filepath, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
 
         self.root = root
-        self.frame_infos_dict = frame_infos_dict
+        self.frame_info_dict = frame_info_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
 
         super().__init__(
-            ui_inp_vars,
             ui_settings,
+            ui_inp_vars,
             self.root,
-            self.frame_infos_dict["0"],
+            self.frame_info_dict["0"],
             self.canvas_height,
             self.canvas_width,
         )
@@ -52,7 +53,7 @@ class SiteInfoUI(GeneralUITemplate):
         Definition of inputs. Used in __init__.
         """
         self.site_name = tk.StringVar()
-        ui_var_site_name = UIVariable(
+        ui_var_site_name = UIInpVariable(
             frame_tag="inputs_frame",
             tk_var=self.site_name,
             rel_pos=0,
@@ -73,7 +74,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.land_use_var = tk.StringVar()
         self.land_use_options = self.data["land_uses"]
 
-        ui_var_activity = UIVariable(
+        ui_var_activity = UIInpVariable(
             frame_tag="inputs_frame",
             tk_var=self.activity_var,
             rel_pos=1,
@@ -83,7 +84,7 @@ class SiteInfoUI(GeneralUITemplate):
             excel_cell="C4",
         )
 
-        ui_var_land_use = UIVariable(
+        ui_var_land_use = UIInpVariable(
             frame_tag="inputs_frame",
             tk_var=self.land_use_var,
             rel_pos=2,
@@ -103,7 +104,7 @@ class SiteInfoUI(GeneralUITemplate):
         Inputs frame for main-specific inputs.
         """
         frame_tag = "inputs_frame"
-        frame_title = "main program"
+        frame_title = "Site inputs"
         frame = self.general_template_frames(frame_tag, frame_title)
 
         for key in self.ui_inp_vars:

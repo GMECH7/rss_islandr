@@ -2,15 +2,15 @@
 import tkinter as tk
 from tkinter import ttk
 
-from rss_islandr.core.datatypes import UISettings, UIVariable
+from rss_islandr.core.datatypes import UIInpVariable, UISettings
 
 
 class GeneralUITemplate:
 
     def __init__(
         self,
-        ui_inp_vars: dict[str, UIVariable],
         ui_settings: UISettings,
+        ui_inp_vars: dict[str, UIInpVariable],
         root: tk.Toplevel,
         frame_infos_dict2,
         canvas_height,

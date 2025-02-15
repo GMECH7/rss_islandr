@@ -27,7 +27,7 @@ class ReceptorParametersDict(TypedDict):
 
 
 @dataclass
-class UIVariable:
+class UIInpVariable:
     frame_tag: str
     tk_var: TkValues
     rel_pos: int
@@ -36,6 +36,12 @@ class UIVariable:
     drop_options: Optional[List[str]] = None
     excel_cell: Optional[str] = None
     state: str = field(default="enabled")
+
+
+@dataclass
+class UICalcVariable:
+    tk_var: tk.StringVar
+    excel_cell: Optional[str] = None
 
 
 @dataclass

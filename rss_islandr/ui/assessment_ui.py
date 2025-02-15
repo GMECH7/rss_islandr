@@ -1,13 +1,11 @@
 import tkinter as tk
 from pathlib import Path
-from tkinter import messagebox, ttk
 from typing import TypedDict
 
-import xlwings as xw
 from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
-from rss_islandr.core.datatypes import FramePlacing, UISettings, UIVariable
+from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
 
@@ -20,26 +18,27 @@ class AssessmentUI(GeneralUITemplate):
 
     def __init__(
         self,
-        ui_inp_vars: dict[str, UIVariable],
         ui_settings: UISettings,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_infos_dict,
+        frame_info_dict,
     ):
-        self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
-        self.ui_calc_vars = {}
+        self.ui_inp_vars = ui_inp_vars
+        self.ui_calc_vars = ui_calc_vars
 
         filepath_risk_factors = package_dir / "data/risk_factors.json"
         filepath_receptor_factors = package_dir / "data/receptor_factors.json"
-        self.excel_file_template = package_dir / "templates/results.xlsx"
+
         self.hazard_fetcher = RisksDataFetcher(filepath_risk_factors)
         self.receptor_fetcher = ReceptorFactorsFetcher(filepath_receptor_factors)
         self.receptor_aliases = ReceptorAliases(filepath_receptor_factors)
 
         self.root = root
-        self.frame_infos_dict = frame_infos_dict
+        self.frame_info_dict = frame_info_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
@@ -63,22 +62,22 @@ class AssessmentUI(GeneralUITemplate):
         self.__place_widgets_vertically("receptor_frames", self.__receptor_keys)
 
         super().__init__(
-            ui_inp_vars,
             ui_settings,
+            ui_inp_vars,
             self.root,
-            self.frame_infos_dict["1"],
+            self.frame_info_dict["1"],
             self.canvas_height,
             self.canvas_width,
         )
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
-        self.__init__calculated_risks_dict()
+        # self.__init__calculated_risks_dict()
 
     def __place_widgets_vertically(
         self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
     ) -> None:
-        frame_info = self.frame_infos_dict["1"][frame_family_key]
+        frame_info = self.frame_info_dict["1"][frame_family_key]
 
         n_frames = len(dict_keys)
         x_l = frame_info.x_l
@@ -92,9 +91,7 @@ class AssessmentUI(GeneralUITemplate):
             frame_tag = f"{dict_tag}_frame"
             x_r = x_l + width
             # The number of rows is updated dynamically in the methods that define the dropdown lists
-            self.frame_infos_dict["1"].update(
-                {frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)}
-            )
+            self.frame_info_dict["1"].update({frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)})
             x_l += width + frame_padding
 
     def __init__risk_selection_dict(self):
@@ -119,11 +116,11 @@ class AssessmentUI(GeneralUITemplate):
         for key in self.__receptor_keys:
             self.__receptor_risk_selection.update({f"{key}_frame": {}})
 
-    def __init__calculated_risks_dict(self):
-        """ """
-        self.__calculated_risks = {}
-        for key in self.__source_pathway_receptor_keys:
-            self.__calculated_risks.update({f"{key}_frame": tk.StringVar(value="0.0")})
+    # def __init__calculated_risks_dict(self):
+    #     """ """
+    #     self.__calculated_risks = {}
+    #     for key in self.__source_pathway_receptor_keys:
+    #         self.__calculated_risks.update({f"{key}_frame": tk.StringVar(value="0.0")})
 
     def __init__source_pathway_dropdown(self) -> None:
         """
@@ -167,7 +164,7 @@ class AssessmentUI(GeneralUITemplate):
                     {mechanism_alias: {"var": var, "weights": alias_to_weight}}
                 )
 
-                ui_var = UIVariable(
+                ui_var = UIInpVariable(
                     frame_tag=f"{key}_frame",
                     tk_var=var,
                     rel_pos=i,
@@ -179,10 +176,9 @@ class AssessmentUI(GeneralUITemplate):
                 )
                 self.ui_inp_vars.update({f"drop_{key}_1_0{i}": ui_var})
 
-            self.ui_calc_vars.update(
-                {f"{key}_frame": {"calc_risk": "0", "excel_cell": excel_cell_risk}}
-            )
-            self.frame_infos_dict["1"][f"{key}_frame"].n_row = i + 2
+            ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
+            self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
+            self.frame_info_dict["1"][f"{key}_frame"].n_row = i + 2
 
         return None
 
@@ -234,7 +230,7 @@ class AssessmentUI(GeneralUITemplate):
                 }
             )
 
-            ui_var_pathway = UIVariable(
+            ui_var_pathway = UIInpVariable(
                 frame_tag=f"{key}_frame",
                 tk_var=pathway_var,
                 rel_pos=0,
@@ -245,7 +241,7 @@ class AssessmentUI(GeneralUITemplate):
                 state="enabled",
             )
 
-            ui_var_receptor_param = UIVariable(
+            ui_var_receptor_param = UIInpVariable(
                 frame_tag=f"{key}_frame",
                 tk_var=receptor_param,
                 rel_pos=1,
@@ -259,15 +255,10 @@ class AssessmentUI(GeneralUITemplate):
             self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
 
             # always two rows in receptor dropdown
-            self.ui_calc_vars.update(
-                {
-                    f"{key}_frame": {
-                        "calc_risk": "0",
-                        "excel_cell": f"{parent_excel_col}{parent_excel_row+2}",
-                    }
-                }
-            )
-            self.frame_infos_dict["1"][f"{key}_frame"].n_row = 3
+            excel_cell_risk = f"{parent_excel_col}{parent_excel_row+2}"
+            ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
+            self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
+            self.frame_info_dict["1"][f"{key}_frame"].n_row = 3
 
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
 
@@ -280,7 +271,7 @@ class AssessmentUI(GeneralUITemplate):
         )
 
         calculate_btn.grid(
-            row=self.frame_infos_dict["1"][frame_tag].n_row - 1,
+            row=self.frame_info_dict["1"][frame_tag].n_row - 1,
             rowspan=2,
             column=0,
             sticky="nsew",
@@ -288,9 +279,10 @@ class AssessmentUI(GeneralUITemplate):
 
     def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
         """ """
-        light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
+        light = tk.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}", bg=color)
+        # light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
         light.grid(
-            row=self.frame_infos_dict["1"][frame_tag].n_row - 1,
+            row=self.frame_info_dict["1"][frame_tag].n_row - 1,
             rowspan=2,
             column=1,
             sticky="nsew",
@@ -356,8 +348,8 @@ class AssessmentUI(GeneralUITemplate):
         risk = risk_calc(weights)
 
         color = risk_color_assignment(risk)
-        self.__calculated_risks[frame_tag].set(f"{risk}")
-        self.ui_calc_vars[frame_tag]["calc_risk"] = f"{risk}"
+        # self.__calculated_risks[frame_tag].set(f"{risk}")
+        self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
         self.__light_bulb(frame, frame_tag, color)
 
     def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str):
@@ -370,72 +362,23 @@ class AssessmentUI(GeneralUITemplate):
         receptor_alias = data["var"].get()
         receptor_weight = data["weights"].get(receptor_alias, 0.0)
 
-        source_risk = float(self.__calculated_risks["IN_frame"].get())
-        pathway_risk = float(self.__calculated_risks[f"{pathway_key}_frame"].get())
+        # source_risk = float(self.__calculated_risks["IN_frame"].get())
+        # pathway_risk = float(self.__calculated_risks[f"{pathway_key}_frame"].get())
+
+        source_risk = float(self.ui_calc_vars["IN_frame"].tk_var.get())
+        pathway_risk = float(self.ui_calc_vars[f"{pathway_key}_frame"].tk_var.get())
 
         receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
 
         color = risk_color_assignment(receptor_risk)
 
-        self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
-        self.ui_calc_vars[frame_tag]["calc_risk"] = f"{receptor_risk}"
+        # self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
+        self.ui_calc_vars[frame_tag].tk_var.set(
+            f"{
+        receptor_risk}"
+        )
+        # self.ui_calc_vars[frame_tag]["calc_risk"].set(f"{receptor_risk}")
         self.__light_bulb(frame, frame_tag, color)
-
-    def frame_write_to_excel(self):
-
-        frame_tag = "write_to_excel"
-        frame_title = "write_to_excel"
-        frame = self.general_template_frames(frame_tag, frame_title)
-        ttk.Button(
-            frame,
-            text="Write to Excel",
-            command=self.on_button_click,
-        ).pack()
-
-    def on_button_click(self):
-
-        values, positions = [], []
-        for key in self.ui_inp_vars:
-            try:
-                position = self.ui_inp_vars[key].excel_cell
-                value = self.ui_inp_vars[key].tk_var.get()
-                positions.append(position)
-                values.append(value)
-            except Exception:
-                pass
-
-        for key in self.ui_calc_vars:
-            try:
-                position = self.ui_calc_vars[key]["excel_cell"]
-                value = self.ui_calc_vars[key]["calc_risk"]
-                positions.append(position)
-                values.append(f"{value}")
-            except Exception:
-                pass
-        # print(positions, values)
-        # print(self.ui_calc_vars)
-
-        self.write_to_excel(values, positions)
-
-    def write_to_excel(self, values, positions):
-        try:
-            app = xw.App(visible=False)
-            try:
-                workbook = xw.Book(self.excel_file_template)
-            except FileNotFoundError:
-                workbook = xw.Book()
-
-            sheet = workbook.sheets[0]
-            for value, position in zip(values, positions):
-                if position is not None:
-                    sheet.range(position).value = value
-
-            workbook.save(self.excel_file_template)
-            workbook.close()
-            app.quit()
-            messagebox.showinfo("Success", "Values written to Excel successfully!")
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
 
     def ui(self):
         canvas = tk.Canvas(
@@ -448,4 +391,3 @@ class AssessmentUI(GeneralUITemplate):
         self.source_frame()
         self.pathway_frames()
         self.receptor_frames()
-        self.frame_write_to_excel()
