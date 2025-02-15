@@ -5,7 +5,7 @@ from tkinter import ttk
 
 from general_ui import GeneralUITemplate
 
-from rss_islandr.core.datatypes import UIVariable
+from rss_islandr.core.datatypes import UISettings, UIVariable
 
 
 class AnotherException(Exception):
@@ -17,25 +17,32 @@ class SiteInfoUI(GeneralUITemplate):
     def __init__(
         self,
         ui_inp_vars: dict[str, UIVariable],
+        ui_settings: UISettings,
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_info: dict[str, list[float]],
+        frame_infos_dict,
     ):
         self.ui_inp_vars = ui_inp_vars
+        self.ui_settings = ui_settings
 
         full_filepath = package_dir / "data/dropdown_lists.json"
         with open(full_filepath, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
 
         self.root = root
-        self.frame_info = frame_info
+        self.frame_infos_dict = frame_infos_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
-        self.dropdown_list_width = 30
+
         super().__init__(
-            ui_inp_vars, self.root, self.frame_info, self.canvas_height, self.canvas_width
+            ui_inp_vars,
+            ui_settings,
+            self.root,
+            self.frame_infos_dict["0"],
+            self.canvas_height,
+            self.canvas_width,
         )
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
@@ -125,7 +132,7 @@ class SiteInfoUI(GeneralUITemplate):
             self.root,
             height=self.canvas_height,
             width=self.canvas_width,
-            bg=self.background_color,
+            bg=self.ui_settings.ui_bg_color_1,
         )
         canvas.pack()
         self.inputs_frame()

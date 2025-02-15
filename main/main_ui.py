@@ -5,14 +5,13 @@ from typing import Type
 from main_imports import PACKAGE_DIR
 
 from rss_islandr.core.config_parser import (
-    ui_bg_color_1,
-    ui_font_color_1,
     ui_heights,
+    ui_settings,
     ui_widths,
     uis_canvas_names,
     uis_frame_info,
 )
-from rss_islandr.core.datatypes import UIVariable
+from rss_islandr.core.datatypes import FramePlacing, UIVariable
 from rss_islandr.ui.assessment_ui import AssessmentUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
@@ -22,20 +21,40 @@ class RSSUI:
 
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.background_color = ui_bg_color_1
-        self.button_color = ui_bg_color_1
-        self.button_font_color = ui_font_color_1
+        self.ui_settings = ui_settings
+
         self.main_view_height = ui_heights[0]
         self.main_view_width = ui_widths[0]
         self.ui_height = ui_heights[1]
         self.ui_width = ui_widths[1]
         self.uis_canvas_names = uis_canvas_names
+
         self.frame_n_rows = 1
         self.frame_n_cols = 2
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
         self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
+
+        self.frame_infos_dict = {"0": {}, "1": {}}
+        self.__init__populate_frame_infos_dict()
+
+    def __init__populate_frame_infos_dict(self):
+
+        for btn_key in uis_frame_info:
+            for frame_key in uis_frame_info[btn_key]:
+                frame_info = uis_frame_info[btn_key][frame_key]
+                try:
+                    x_l = frame_info.get("x_l")
+                    x_r = frame_info.get("x_r")
+                    y_u = frame_info.get("y_u")
+                    y_d = frame_info.get("y_d")
+                    n_row = frame_info.get("n_row", None)
+                    n_col = frame_info.get("n_col", None)
+                    frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
+                    self.frame_infos_dict[btn_key].update({frame_key: frame_place})
+                except Exception:
+                    pass
 
     def __window_creator_template(self, idx: int):
         """ """
@@ -53,10 +72,11 @@ class RSSUI:
 
         application = ui_selector[idx](
             self.ui_inp_vars,
+            self.ui_settings,
             PACKAGE_DIR,
             popup,
             canvas_specs,
-            uis_frame_info[str(idx)],
+            self.frame_infos_dict,
         )
         application.ui()
 
@@ -85,7 +105,7 @@ class RSSUI:
             self.root,
             height=self.main_view_height,
             width=self.main_view_width,
-            bg=self.background_color,
+            bg=self.ui_settings.ui_bg_color_1,
         )
         canvas.pack(side="top", fill="both", expand=True)
 
@@ -95,8 +115,8 @@ class RSSUI:
 
         button1 = tk.Button(
             frame,
-            bg=self.button_color,
-            fg=self.button_font_color,
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
             text=self.uis_canvas_names[str(0)][0],
             command=lambda: self.__window_creator_template(0),
         )
@@ -104,8 +124,8 @@ class RSSUI:
 
         button2 = tk.Button(
             frame,
-            bg=self.button_color,
-            fg=self.button_font_color,
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
             text=self.uis_canvas_names[str(1)][0],
             command=lambda: self.__window_creator_template(1),
         )

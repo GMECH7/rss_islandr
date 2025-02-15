@@ -18,14 +18,28 @@
 			"ui_bg_color_1": "#19232d",
 			"ui_bg_color_2": "#292d3e",
 			"ui_font_color_1": "white",
-			"ui_font_color_2": "red"
+			"ui_font_color_2": "red",
+			"ui_btn_bg_color_1": "blue",
+			"ui_btn_bg_color_2": "orange",
+			"ui_btn_font_color_1": "white",
+			"ui_btn_font_color_2": "white"
 		},
 		"islandr_skin": {
 			"ui_bg_color_1": "#9cb146",
 			"ui_bg_color_2": "#1f3498",
 			"ui_font_color_1": "white",
-			"ui_font_color_2": "#800000"
+			"ui_font_color_2": "#800000",
+			"ui_btn_bg_color_1": "blue",
+			"ui_btn_bg_color_2": "orange",
+			"ui_btn_font_color_1": "white",
+			"ui_btn_font_color_2": "white"
 		},
+		"font_type": "calibri",
+		"font_size": 12,
+		"ui_title_font_type": "calibri",
+		"ui_title_font_size": 12,
+		"ui_title_font_color": "white",
+		"ui_title_offset": 0.03,
 		"ui_heights": [
 			100,
 			800
@@ -34,7 +48,6 @@
 			1600,
 			1600
 		],
-		"font_type": "calibri",
 		"uis_canvas_names": {
 			"0": [
 				"Site information",
@@ -47,33 +60,14 @@
 		},
 		"uis_frame_info": {
 			"0": {
-				"inputs_frame": [
-					0.02,
-					0.02,
-					0.50,
-					0.18,
-					3,
-					1,
-					8
-				],
-				"ere_frame": [
-					0.02,
-					0.60,
-					0.96,
-					0.18,
-					1,
-					3,
-					1
-				],
-				"message_frame": [
-					0.02,
-					0.80,
-					0.96,
-					0.18,
-					1,
-					1,
-					1
-				]
+				"inputs_frame": {
+					"x_l": 0.02,
+					"x_r": 0.48,
+					"y_u": 0.02,
+					"y_d": 0.50,
+					"n_row": 3,
+					"n_col": 2
+				}
 			},
 			"1": {
 				"source_frame": {
@@ -94,33 +88,14 @@
 					"y_u": 0.66,
 					"y_d": 0.99
 				},
-				"write_to_excel": [
-					0.02,
-					0.02,
-					0.15,
-					0.15,
-					1,
-					3,
-					1
-				],
-				"ere_frame": [
-					0.02,
-					0.60,
-					0.96,
-					0.18,
-					1,
-					3,
-					1
-				],
-				"message_frame": [
-					0.02,
-					0.80,
-					0.96,
-					0.18,
-					1,
-					1,
-					1
-				]
+				"write_to_excel": {
+					"x_l": 0.01,
+					"x_r": 0.30,
+					"y_u": 0.01,
+					"y_d": 0.30,
+					"n_row": 1,
+					"n_col": 1
+				}
 			}
 		}
 	}

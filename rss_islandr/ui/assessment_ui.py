@@ -7,7 +7,7 @@ import xlwings as xw
 from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
-from rss_islandr.core.datatypes import UIVariable
+from rss_islandr.core.datatypes import FramePlacing, UISettings, UIVariable
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
 
@@ -21,12 +21,14 @@ class AssessmentUI(GeneralUITemplate):
     def __init__(
         self,
         ui_inp_vars: dict[str, UIVariable],
+        ui_settings: UISettings,
         package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_info,
+        frame_infos_dict,
     ):
         self.ui_inp_vars = ui_inp_vars
+        self.ui_settings = ui_settings
         self.ui_calc_vars = {}
 
         filepath_risk_factors = package_dir / "data/risk_factors.json"
@@ -37,7 +39,7 @@ class AssessmentUI(GeneralUITemplate):
         self.receptor_aliases = ReceptorAliases(filepath_receptor_factors)
 
         self.root = root
-        self.frame_info = frame_info
+        self.frame_infos_dict = frame_infos_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
@@ -56,12 +58,17 @@ class AssessmentUI(GeneralUITemplate):
         self.__init__risk_selection_dict()
         self.__init__receptor_risk_selection_dict()
 
-        self.__horizontal_descriting_frames("source_frame", self.__source_keys)
-        self.__horizontal_descriting_frames("pathway_frames", self.__pathway_keys)
-        self.__horizontal_descriting_frames("receptor_frames", self.__receptor_keys)
+        self.__place_widgets_vertically("source_frame", self.__source_keys)
+        self.__place_widgets_vertically("pathway_frames", self.__pathway_keys)
+        self.__place_widgets_vertically("receptor_frames", self.__receptor_keys)
 
         super().__init__(
-            ui_inp_vars, self.root, self.frame_info, self.canvas_height, self.canvas_width
+            ui_inp_vars,
+            ui_settings,
+            self.root,
+            self.frame_infos_dict["1"],
+            self.canvas_height,
+            self.canvas_width,
         )
 
         self.__init__source_pathway_dropdown()
@@ -71,22 +78,26 @@ class AssessmentUI(GeneralUITemplate):
     def btn_calculate_risk(self):
         pass
 
-    def __horizontal_descriting_frames(
-        self, frame_family_key: str, frame_keys, frame_padding: float = 0.01
+    def __place_widgets_vertically(
+        self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
     ) -> None:
+        frame_info = self.frame_infos_dict["1"][frame_family_key]
 
-        frame_info = self.frame_info[frame_family_key]
-        n_frames = len(frame_keys)
-        x_r = frame_info["x_r"]
-        x_l = frame_info["x_l"]
-        y_u = frame_info["y_u"]
-        y_d = frame_info["y_d"]
-        width = (frame_info["x_r"] - frame_info["x_l"]) / n_frames - frame_padding
-        height = frame_info["y_d"] - frame_info["y_u"]
+        n_frames = len(dict_keys)
+        x_l = frame_info.x_l
+        x_r = frame_info.x_r
+        y_u = frame_info.y_u
+        y_d = frame_info.y_d
+        width = (x_r - x_l) / n_frames - frame_padding
+        height = y_d - y_u
 
-        for frame_tag in frame_keys:
+        for dict_tag in dict_keys:
+            frame_tag = f"{dict_tag}_frame"
+            x_r = x_l + width
             # The number of rows is updated dynamically in the methods that define the dropdown lists
-            self.frame_info[f"{frame_tag}_frame"] = [x_l, y_u, width, height, None, 1, 8]
+            self.frame_infos_dict["1"].update(
+                {frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)}
+            )
             x_l += width + frame_padding
 
     def __init__risk_selection_dict(self):
@@ -174,7 +185,7 @@ class AssessmentUI(GeneralUITemplate):
             self.ui_calc_vars.update(
                 {f"{key}_frame": {"calc_risk": "0", "excel_cell": excel_cell_risk}}
             )
-            self.frame_info[f"{key}_frame"][4] = i + 2
+            self.frame_infos_dict["1"][f"{key}_frame"].n_row = i + 2
 
         return None
 
@@ -259,12 +270,32 @@ class AssessmentUI(GeneralUITemplate):
                     }
                 }
             )
-            self.frame_info[f"{key}_frame"][4] = 3
+            self.frame_infos_dict["1"][f"{key}_frame"].n_row = 3
+
+    def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
+
+        calculate_btn = ttk.Button(
+            frame,
+            text="Calculate risk",
+            command=lambda: btn_command(frame, frame_tag),
+        )
+
+        calculate_btn.grid(
+            row=self.frame_infos_dict["1"][frame_tag].n_row - 1,
+            rowspan=2,
+            column=0,
+            sticky="nsew",
+        )
 
     def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
         """ """
         light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
-        light.grid(row=self.frame_info[frame_tag][4] - 1, rowspan=2, column=1, sticky="nsew")
+        light.grid(
+            row=self.frame_infos_dict["1"][frame_tag].n_row - 1,
+            rowspan=2,
+            column=1,
+            sticky="nsew",
+        )
 
     def __source_pathway_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
@@ -274,18 +305,7 @@ class AssessmentUI(GeneralUITemplate):
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
                 self.general_template_dropdown(frame, dropdown_key)
 
-        calculate_btn = ttk.Button(
-            frame,
-            text="Calculate risk",
-            command=lambda: self.__calculate_source_pathway_risk(frame, frame_tag),
-        )
-
-        calculate_btn.grid(
-            row=self.frame_info[frame_tag][4] - 1,
-            rowspan=2,
-            column=0,
-            sticky="nsew",
-        )
+        self.__btn_calculate_risk(frame, frame_tag, self.__calculate_source_pathway_risk)
         self.__light_bulb(frame, frame_tag, "white")
 
         return frame
@@ -298,18 +318,7 @@ class AssessmentUI(GeneralUITemplate):
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
                 self.general_template_dropdown(frame, dropdown_key)
 
-        calculate_btn = ttk.Button(
-            frame,
-            text="Calculate risk",
-            command=lambda: self.__calculate_receptor_total_risk(frame, frame_tag),
-        )
-
-        calculate_btn.grid(
-            row=self.frame_info[frame_tag][4] - 1,
-            rowspan=2,
-            column=0,
-            sticky="nsew",
-        )
+        self.__btn_calculate_risk(frame, frame_tag, self.__calculate_receptor_total_risk)
         self.__light_bulb(frame, frame_tag, "white")
 
         return frame
@@ -400,7 +409,6 @@ class AssessmentUI(GeneralUITemplate):
                 value = self.ui_calc_vars[key]["calc_risk"]
                 positions.append(position)
                 values.append(f"{value}")
-                print(key, self.ui_calc_vars)
             except Exception:
                 pass
 
@@ -431,7 +439,7 @@ class AssessmentUI(GeneralUITemplate):
             self.root,
             height=self.canvas_height,
             width=self.canvas_width,
-            bg=self.background_color,
+            bg=self.ui_settings.ui_bg_color_1,
         )
         canvas.pack()
         self.source_frame()
