@@ -5,7 +5,7 @@ __pycache__/
 *.vba
 # C extensions
 *.so
-
+islandr_env/
 # Distribution / packaging
 .Python
 build/
