@@ -234,7 +234,7 @@ class AssessmentUI(GeneralUITemplate):
                 frame_tag=f"{key}_frame",
                 tk_var=pathway_var,
                 rel_pos=0,
-                text_val="Parameter",
+                text_val="Pathway",
                 text_descr=None,
                 drop_options=dropdown_available_pathways_aliases,
                 excel_cell=f"{parent_excel_col}{parent_excel_row}",

@@ -159,13 +159,15 @@ class GeneralUITemplate:
             column=0,
             sticky="nsew",
         )
-
+        max_len = max(len(item) for item in self.ui_inp_vars[dropdown_key].drop_options)
+        max_len = 20
         combobox = ttk.Combobox(
             frame,
             textvariable=self.ui_inp_vars[dropdown_key].tk_var,
             values=self.ui_inp_vars[dropdown_key].drop_options or [],
             state="readonly" if self.ui_inp_vars[dropdown_key].state == "disabled" else "normal",
             font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
+            width=max_len,
         )
         combobox.grid(
             row=self.ui_inp_vars[dropdown_key].rel_pos,

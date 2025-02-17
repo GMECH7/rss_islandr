@@ -57,14 +57,14 @@ class FramePlacing:
 @dataclass
 class UISettings:
     ui_title_font_type: str
-    ui_title_font_size: float
+    ui_title_font_size: int
     ui_title_font_color: str
     ui_title_offset: float
     ui_title_offset: float
     ui_bg_color_1: str
     ui_bg_color_2: str
     ui_font_type: str
-    ui_font_size: float
+    ui_font_size: int
     ui_font_color_1: str
     ui_font_color_2: str
     ui_btn_bg_color_1: str
