@@ -14,6 +14,7 @@ from rss_islandr.core.config_parser import (
 from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_ui import AssessmentUI
 from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
+from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -41,6 +42,8 @@ class RSSUI:
         self.__init__populate_frame_infos_dict()
 
         self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
+
+        self.map_ui = MapUI()
 
     def __init__populate_frame_infos_dict(self):
 
@@ -102,6 +105,26 @@ class RSSUI:
             self.ui_calc_vars,
             self.excel_file_template,
         )
+        # Button to show the map
+        button_show_map = tk.Button(
+            nav_bar_frame,
+            text="Show Map",
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
+            command=self.map_ui.show_map,
+        )
+        button_show_map.grid(row=2, column=0, sticky="nsew")
+
+        # Button to close the map
+        button_close_map = tk.Button(
+            nav_bar_frame,
+            text="Close Map",
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
+            command=self.map_ui.close_map,
+        )
+        button_close_map.grid(row=3, column=0, sticky="nsew")
+
         button3 = excel_writer_btn.button(nav_bar_frame)
         button3.grid(row=4, column=0, sticky="nsew")
 

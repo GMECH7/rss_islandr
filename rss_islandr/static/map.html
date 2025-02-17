@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geology, Mines, and Hydrogeological Map Layers</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        #map { width: 100%; height: 800px; }
+        #info { padding: 5px; }
+        .legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: none; /* Initially hidden */
+            width: 300px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <input type="text" id="lat" placeholder="Latitude">
+    <input type="text" id="lng" placeholder="Longitude">
+    <button onclick="updateMarker()">Update Map</button>
+
+    <div>
+        <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)" checked>
+        <label for="toggleGeology">Surface Geology</label>
+    </div>
+    <div>
+        <input type="checkbox" id="toggleMines" onclick="toggleLayer(this, wmsMinesLayer)">
+        <label for="toggleMines">Mines</label>
+    </div>
+    <div>
+        <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
+        <label for="toggleHydroMap">Hydrogeological Map</label>
+    </div>
+    <div id="info">Click on a layer to get more information.</div>
+
+    <img id="geologyLegend" class="legend" src="static/geology_legend.png" alt="Geology Legend">
+    <img id="hydroLegend" class="legend" src="static/hydro_legend.png" alt="Hydrogeological Legend">
+
+    <script>
+        var map = L.map('map').setView([53.3439, 23.0622], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var wmsGeologyLayer = L.tileLayer.wms('https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms', {
+            layers: 'gsmlp:GeologicUnitView_Lithology',
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0'
+        }).addTo(map);
+
+        var wmsMinesLayer = L.tileLayer.wms('https://data.geus.dk/egdi/wms/', {
+            layers: 'egdi_mines',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1'
+        });
+
+        var wmsHydroLayer = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/ihme1500/', {
+            layers: '0,1,2',
+            format: 'image/png',
+            transparent: true,
+            version: '1.3.0'
+        });
+
+        var clickMarker = null; // Variable to hold the marker
+
+        function toggleLayer(checkbox, layer) {
+            if (checkbox.checked) {
+                layer.addTo(map);
+                if (layer === wmsGeologyLayer) {
+                    document.getElementById('geologyLegend').style.display = 'block';
+                } else if (layer === wmsHydroLayer) {
+                    document.getElementById('hydroLegend').style.display = 'block';
+                }
+            } else {
+                map.removeLayer(layer);
+                if (layer === wmsGeologyLayer) {
+                    document.getElementById('geologyLegend').style.display = 'none';
+                } else if (layer === wmsHydroLayer) {
+                    document.getElementById('hydroLegend').style.display = 'none';
+                }
+            }
+        }
+
+        function setMarker(lat, lng) {
+            if (clickMarker) {
+                clickMarker.setLatLng([lat, lng]);
+            } else {
+                clickMarker = L.marker([lat, lng]).addTo(map);
+            }
+
+            map.setView([lat, lng], map.getZoom());
+            document.getElementById('lat').value = lat.toFixed(5);
+            document.getElementById('lng').value = lng.toFixed(5);
+        }
+
+        map.on('click', function(e) {
+            setMarker(e.latlng.lat, e.latlng.lng);
+        });
+
+        function updateMarker() {
+            var lat = parseFloat(document.getElementById('lat').value);
+            var lng = parseFloat(document.getElementById('lng').value);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                setMarker(lat, lng);
+            } else {
+                alert('Please enter valid latitude and longitude.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -5,7 +5,7 @@ from pathlib import Path
 from main_imports import rss_islandr
 
 from rss_islandr.assessment.risk_assessment import risk_calc
-from rss_islandr.data_readers import RisksDataFetcher, ReceptorFactorsFetcher
+from rss_islandr.data_readers import ReceptorFactorsFetcher, RisksDataFetcher
 
 filepath = r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\data"
 filename = "risk_factors.json"
