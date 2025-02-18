@@ -387,7 +387,7 @@ class AssessmentUI(GeneralUITemplate):
             width=self.canvas_width,
             bg=self.ui_settings.ui_bg_color_1,
         )
-        canvas.pack()
+        canvas.pack(fill="both", expand=True)
         self.source_frame()
         self.pathway_frames()
         self.receptor_frames()

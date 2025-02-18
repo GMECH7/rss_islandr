@@ -124,5 +124,5 @@ class SiteInfoUI(GeneralUITemplate):
             width=self.canvas_width,
             bg=self.ui_settings.ui_bg_color_1,
         )
-        canvas.pack()
+        canvas.pack(fill="both", expand=True)
         self.inputs_frame()

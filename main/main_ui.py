@@ -42,8 +42,8 @@ class RSSUI:
         self.__init__populate_frame_infos_dict()
 
         self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
-
-        self.map_ui = MapUI()
+        map_html = PACKAGE_DIR / "static/map.html"
+        self.map_ui = MapUI(map_html)
 
     def __init__populate_frame_infos_dict(self):
 
@@ -133,7 +133,7 @@ class RSSUI:
         self.page2 = tk.Frame(self.root)
 
         for page in (self.page1, self.page2):
-            page.place(relx=0.1, rely=0, relwidth=0.9, relheight=1.0)
+            page.place(relx=0.105, rely=0, relwidth=0.895, relheight=1.0)
 
         # Initialize pages
         self.__window_creator_template(0, self.page1)
@@ -179,7 +179,7 @@ class RSSUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.resizable(width=False, height=False)
+    # root.resizable(width=False, height=False)
     root.title("RSS-ISLANDR")
     root.iconbitmap(str(PACKAGE_DIR / "static" / "trade.ico"))
     main = RSSUI(root)
