@@ -60,46 +60,46 @@
 			"2": [
 				"Lelos",
 				"Risk assesment"
+			],
+			"3": [
+				"Lelos",
+				"Risk assesment"
 			]
 		},
-		"uis_frame_info": {
-			"0": {
-				"inputs_frame": {
-					"x_l": 0.20,
-					"x_r": 0.80,
-					"y_u": 0.10,
-					"y_d": 0.90,
-					"n_row": 3,
-					"n_col": 2
-				}
+		"uis_frame_geometry": {
+			"site_info_frame": {
+				"x_l": 0.20,
+				"x_r": 0.80,
+				"y_u": 0.10,
+				"y_d": 0.90,
+				"n_row": 3,
+				"n_col": 2
 			},
-			"1": {
-				"source_frame": {
-					"x_l": 0.30,
-					"x_r": 0.70,
-					"y_u": 0.01,
-					"y_d": 0.31
-				},
-				"pathway_frames": {
-					"x_l": 0.01,
-					"x_r": 0.99,
-					"y_u": 0.32,
-					"y_d": 0.65
-				},
-				"receptor_frames": {
-					"x_l": 0.01,
-					"x_r": 0.99,
-					"y_u": 0.66,
-					"y_d": 0.99
-				},
-				"write_to_excel": {
-					"x_l": 0.01,
-					"x_r": 0.30,
-					"y_u": 0.01,
-					"y_d": 0.30,
-					"n_row": 1,
-					"n_col": 1
-				}
+			"source_frame": {
+				"x_l": 0.30,
+				"x_r": 0.70,
+				"y_u": 0.01,
+				"y_d": 0.31
+			},
+			"pathway_frames": {
+				"x_l": 0.01,
+				"x_r": 0.5,
+				"y_u": 0.32,
+				"y_d": 0.65
+			},
+			"receptor_frames": {
+				"x_l": 0.01,
+				"x_r": 0.99,
+				"y_u": 0.66,
+				"y_d": 0.99
+			},
+			"write_to_excel": {
+				"x_l": 0.01,
+				"x_r": 0.30,
+				"y_u": 0.01,
+				"y_d": 0.30,
+				"n_row": 1,
+				"n_col": 1
 			}
 		}
 	}

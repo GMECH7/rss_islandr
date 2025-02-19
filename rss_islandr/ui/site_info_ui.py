@@ -20,7 +20,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_calc_vars: dict[str, UICalcVariable],
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_info_dict,
+        frame_geometry_dict,
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -30,7 +30,7 @@ class SiteInfoUI(GeneralUITemplate):
             self.data = json.load(file_inp)
 
         self.root = root
-        self.frame_info_dict = frame_info_dict
+        self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
@@ -39,7 +39,7 @@ class SiteInfoUI(GeneralUITemplate):
             ui_settings,
             ui_inp_vars,
             self.root,
-            self.frame_info_dict["0"],
+            self.frame_geometry_dict,
             self.canvas_height,
             self.canvas_width,
         )
@@ -52,7 +52,7 @@ class SiteInfoUI(GeneralUITemplate):
         """
         self.site_name = tk.StringVar()
         ui_var_site_name = UIInpVariable(
-            frame_tag="inputs_frame",
+            frame_tag="site_info_frame",
             tk_var=self.site_name,
             rel_pos=0,
             text_val="Site name",
@@ -73,7 +73,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.land_use_options = self.data["land_uses"]
 
         ui_var_activity = UIInpVariable(
-            frame_tag="inputs_frame",
+            frame_tag="site_info_frame",
             tk_var=self.activity_var,
             rel_pos=1,
             text_val="Select Activity/Industry",
@@ -83,7 +83,7 @@ class SiteInfoUI(GeneralUITemplate):
         )
 
         ui_var_land_use = UIInpVariable(
-            frame_tag="inputs_frame",
+            frame_tag="site_info_frame",
             tk_var=self.land_use_var,
             rel_pos=2,
             text_val="Select Land Use",
@@ -97,11 +97,11 @@ class SiteInfoUI(GeneralUITemplate):
 
         return None
 
-    def inputs_frame(self) -> None:
+    def site_info_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
-        frame_tag = "inputs_frame"
+        frame_tag = "site_info_frame"
         frame_title = "Site inputs"
         frame = self.general_template_frames(frame_tag, frame_title)
 
@@ -123,4 +123,4 @@ class SiteInfoUI(GeneralUITemplate):
             bg=self.ui_settings.ui_bg_color_1,
         )
         canvas.pack(fill="both", expand=True)
-        self.inputs_frame()
+        self.site_info_frame()

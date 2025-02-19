@@ -12,13 +12,12 @@ from rss_islandr.core.config_parser import (
     ui_settings,
     ui_widths,
     uis_canvas_names,
-    uis_frame_info,
+    uis_frame_geometry,
 )
 from rss_islandr.core.datatypes import FramePlacing
-from rss_islandr.ui.assessment_ui import AssessmentUI
+from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
 from rss_islandr.ui.map_ui import MapUI
-from rss_islandr.ui.notebook import AssessmentNoteBookUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -42,8 +41,7 @@ class RSSUI:
         self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
 
-        self.frame_info_dict = {"0": {}, "1": {}, "2": {}}
-        self.__init__populate_frame_infos_dict()
+        self.frame_geometry_dict = {}
 
         self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
 
@@ -51,26 +49,37 @@ class RSSUI:
         self.__source_keys = ["IN"]
         self.__pathway_keys = ["SL", "GW", "SW", "AR", "SD"]
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
+        self.__frame_families = {
+            "source_frame": [f"{inp}_frame" for inp in self.__source_keys],
+            "pathway_frames": [f"{inp}_frame" for inp in self.__pathway_keys],
+            "receptor_frames": [f"{inp}_frame" for inp in self.__receptor_keys],
+        }
+        self.__init__populate_frame_infos_dict()
         self.map_open = False
 
     def __init__populate_frame_infos_dict(self):
 
-        for btn_key in uis_frame_info:
-            for frame_key in uis_frame_info[btn_key]:
-                frame_info = uis_frame_info[btn_key][frame_key]
-                try:
-                    x_l: float = frame_info.get("x_l", 0.0)
-                    x_r: float = frame_info.get("x_r", 1.0)
-                    y_u: float = frame_info.get("y_u", 0.0)
-                    y_d: float = frame_info.get("y_d", 1.0)
-                    n_row: int = frame_info.get("n_row", None)
-                    n_col: int = frame_info.get("n_col", None)
-                    frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
-                    self.frame_info_dict[btn_key].update({frame_key: frame_place})
-                except Exception:
-                    pass
+        for frame_key in uis_frame_geometry:
+            frame_info = uis_frame_geometry[frame_key]
+            try:
+                x_l: float = frame_info.get("x_l", 0.0)
+                x_r: float = frame_info.get("x_r", 1.0)
+                y_u: float = frame_info.get("y_u", 0.0)
+                y_d: float = frame_info.get("y_d", 1.0)
+                n_row: int = frame_info.get("n_row", 1)
+                n_col: int = frame_info.get("n_col", 1)
 
-    def __frame_distances(self, frame) -> None:
+                if frame_key in self.__frame_families:
+                    for frame_key_specific in self.__frame_families[frame_key]:
+                        frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
+                        self.frame_geometry_dict.update({frame_key_specific: frame_place})
+                else:
+                    frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
+                    self.frame_geometry_dict.update({frame_key: frame_place})
+            except Exception:
+                pass
+
+    def frame_distances(self, frame) -> None:
         """ """
         for i in range(self.frame_n_rows):
             frame.grid_rowconfigure(i, weight=1)
@@ -85,7 +94,7 @@ class RSSUI:
         # Navigation Ribbon (Fixed for entire program lifetime)
         nav_bar_frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_2)
         nav_bar_frame.place(relx=0, rely=0, relwidth=0.10, relheight=1.0)
-        self.__frame_distances(nav_bar_frame)
+        self.frame_distances(nav_bar_frame)
 
         # # Buttons for navigation
         btn_site_info = tk.Button(
@@ -171,36 +180,75 @@ class RSSUI:
             self.page.place(relx=0.105, rely=0, relwidth=0.895, relheight=1.0)
 
         # Initialize pages
-        self.__window_creator_template(0, self.site_info_page)
-        self.__window_creator_template(1, self.map_page)
-        self.__window_creator_template(2, self.source_page, "source", self.__source_keys)
-        self.__window_creator_template(2, self.pathways_page, "pathways", self.__pathway_keys)
-        self.__window_creator_template(2, self.receptors_page, "receptors", self.__receptor_keys)
+        canvas_specs = [
+            self.ui_height,
+            self.ui_width,
+            self.uis_canvas_names[str(0)][1],
+        ]
+
+        application = SiteInfoUI(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.site_info_page,
+            canvas_specs,
+            self.frame_geometry_dict,
+        )
+        self.__window_creator_template(0, application)
+
+        canvas_specs = [
+            self.ui_height,
+            self.ui_width,
+            self.uis_canvas_names[str(1)][1],
+        ]
+
+        application2 = AssessmentNoteBookUI(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.source_page,
+            canvas_specs,
+            self.frame_geometry_dict,
+        )
+        self.__window_creator_template(1, application2)
+        self.__window_creator_template(2, application2)
+        self.__window_creator_template(3, application2)
 
         # Show the first page by default
         self.show_page(self.site_info_page)
 
-    def __window_creator_template(self, idx: int, parent_frame, *args):
+    def __window_creator_template(self, idx: int, application):
         """
         Creates UI elements for each page.
         """
-        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI, 2: AssessmentNoteBookUI}
-        canvas_specs = [
-            self.ui_height,
-            self.ui_width,
-            self.uis_canvas_names[str(idx)][1],
-        ]
+        # ui_selector: dict[int, Type] = {
+        #     0: SiteInfoUI,
+        #     1: AssessmentNoteBookUI,
+        #     2: AssessmentNoteBookUI,
+        #     3: AssessmentNoteBookUI,
+        # }
+        # canvas_specs = [
+        #     self.ui_height,
+        #     self.ui_width,
+        #     self.uis_canvas_names[str(idx)][1],
+        # ]
 
-        application = ui_selector[idx](
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            parent_frame,
-            canvas_specs,
-            self.frame_info_dict,
-        )
-
-        application.ui(*args)
+        # application = ui_selector[idx](
+        #     self.ui_settings,
+        #     self.ui_inp_vars,
+        #     self.ui_calc_vars,
+        #     parent_frame,
+        #     canvas_specs,
+        #     self.frame_geometry_dict,
+        # )
+        if idx == 1:
+            application.ui("source", self.__source_keys)
+        elif idx == 2:
+            application.ui("pathways", self.__pathway_keys)
+        elif idx == 3:
+            application.ui("receptors", self.__receptor_keys)
+        else:
+            application.ui()
 
     def show_page(self, page):
         """Brings the given page to the front."""

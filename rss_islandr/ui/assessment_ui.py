@@ -23,7 +23,7 @@ class AssessmentUI(GeneralUITemplate):
         ui_calc_vars: dict[str, UICalcVariable],
         root: tk.Toplevel,
         canvas_specs: list,
-        frame_info_dict,
+        frame_geometry_dict,
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -34,7 +34,7 @@ class AssessmentUI(GeneralUITemplate):
         self.receptor_aliases = ReceptorAliases(RECEPTOR_FACTORS_JSON_DIR)
 
         self.root = root
-        self.frame_info_dict = frame_info_dict
+        self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
@@ -61,7 +61,7 @@ class AssessmentUI(GeneralUITemplate):
             ui_settings,
             ui_inp_vars,
             self.root,
-            self.frame_info_dict["1"],
+            self.frame_geometry_dict,
             self.canvas_height,
             self.canvas_width,
         )
@@ -73,7 +73,7 @@ class AssessmentUI(GeneralUITemplate):
     def __place_widgets_vertically(
         self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
     ) -> None:
-        frame_info = self.frame_info_dict["1"][frame_family_key]
+        frame_info = self.frame_geometry_dict[frame_family_key]
 
         n_frames = len(dict_keys)
         x_l = frame_info.x_l
@@ -87,7 +87,7 @@ class AssessmentUI(GeneralUITemplate):
             frame_tag = f"{dict_tag}_frame"
             x_r = x_l + width
             # The number of rows is updated dynamically in the methods that define the dropdown lists
-            self.frame_info_dict["1"].update({frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)})
+            self.frame_geometry_dict.update({frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)})
             x_l += width + frame_padding
 
     def __init__risk_selection_dict(self):
@@ -168,7 +168,7 @@ class AssessmentUI(GeneralUITemplate):
 
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
-            self.frame_info_dict["1"][f"{key}_frame"].n_row = i + 2
+            self.frame_geometry_dict[f"{key}_frame"].n_row = i + 2
 
         return None
 
@@ -248,7 +248,7 @@ class AssessmentUI(GeneralUITemplate):
             excel_cell_risk = f"{parent_excel_col}{parent_excel_row+2}"
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
-            self.frame_info_dict["1"][f"{key}_frame"].n_row = 3
+            self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
 
@@ -261,7 +261,7 @@ class AssessmentUI(GeneralUITemplate):
         )
 
         calculate_btn.grid(
-            row=self.frame_info_dict["1"][frame_tag].n_row - 1,
+            row=self.frame_geometry_dict["1"][frame_tag].n_row - 1,
             rowspan=2,
             column=0,
             sticky="nsew",
@@ -272,7 +272,7 @@ class AssessmentUI(GeneralUITemplate):
         light = tk.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}", bg=color)
         # light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
         light.grid(
-            row=self.frame_info_dict["1"][frame_tag].n_row - 1,
+            row=self.frame_geometry_dict["1"][frame_tag].n_row - 1,
             rowspan=2,
             column=1,
             sticky="nsew",

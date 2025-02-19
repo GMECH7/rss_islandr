@@ -12,7 +12,7 @@ class GeneralUITemplate:
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         root: tk.Toplevel,
-        frame_infos_dict2,
+        frame_geometry_dict,
         canvas_height,
         canvas_width,
     ):
@@ -20,7 +20,7 @@ class GeneralUITemplate:
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
         self.root = root
-        self.frame_infos_dict2 = frame_infos_dict2
+        self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_height
         self.canvas_width = canvas_width
 
@@ -30,7 +30,7 @@ class GeneralUITemplate:
         """ """
         return str(__class__.__name__)
 
-    def __frame_distances(self, frame: tk.Frame, n_rows: int, n_cols: int) -> None:
+    def frame_distances(self, frame: tk.Frame, n_rows: int, n_cols: int) -> None:
         """ """
         for i in range(n_rows):
             frame.grid_rowconfigure(i, weight=1)
@@ -39,11 +39,11 @@ class GeneralUITemplate:
 
         return None
 
-    def __template_title(self, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
+    def template_title(self, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
         """ """
         title_frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_1)
         title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
-        self.__frame_distances(title_frame, 0, 1)
+        self.frame_distances(title_frame, 0, 1)
         title_label = tk.Label(
             title_frame,
             text=frame_title,
@@ -59,26 +59,61 @@ class GeneralUITemplate:
 
         return None
 
-    def __frames_limits(self, frame_tag: str) -> tuple:
+    def frame_limits(self, frame_tag: str) -> tuple:
         """ """
-        rel_x = self.frame_infos_dict2[frame_tag].x_l
-        x_r = self.frame_infos_dict2[frame_tag].x_r
+        rel_x = self.frame_geometry_dict[frame_tag].x_l
+        x_r = self.frame_geometry_dict[frame_tag].x_r
 
-        rel_y = self.frame_infos_dict2[frame_tag].y_u
-        y_d = self.frame_infos_dict2[frame_tag].y_d
+        rel_y = self.frame_geometry_dict[frame_tag].y_u
+        y_d = self.frame_geometry_dict[frame_tag].y_d
 
         rel_w = x_r - rel_x
         rel_h = y_d - rel_y
 
-        n_rows = self.frame_infos_dict2[frame_tag].n_row
-        n_cols = self.frame_infos_dict2[frame_tag].n_col
-
+        n_rows = self.frame_geometry_dict[frame_tag].n_row
+        n_cols = self.frame_geometry_dict[frame_tag].n_col
+        print(frame_tag, self.frame_geometry_dict[frame_tag])
         return rel_x, rel_y, rel_w, rel_h, n_rows, n_cols
+
+    def bb(self, frame, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
+        """ """
+        title_frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
+        title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
+        self.frame_distances(title_frame, 0, 1)
+        title_label = tk.Label(
+            title_frame,
+            text=frame_title,
+            bg=self.ui_settings.ui_bg_color_2,
+            fg=self.ui_settings.ui_title_font_color,
+            relief="raised",
+            justify="center",
+        )
+        title_label.grid(row=0, column=0, sticky="nsew")
+        title_label.config(
+            font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size)
+        )
+
+        return None
+
+    def aa(self, frame, frame_tag: str, frame_title: str):
+        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
+        self.bb(frame, frame_title, rel_x, rel_y, rel_w, rel_h)
+        title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
+        frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
+        frame.place(
+            relx=rel_x,
+            rely=rel_y + title_offset,
+            relwidth=rel_w,
+            relheight=rel_h - title_offset,
+        )
+        self.frame_distances(frame, n_rows, n_cols)
+
+        return frame
 
     def general_template_frames(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
-        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.__frames_limits(frame_tag)
-        self.__template_title(frame_title, rel_x, rel_y, rel_w, rel_h)
+        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
+        self.template_title(frame_title, rel_x, rel_y, rel_w, rel_h)
         title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
 
         frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_1)
@@ -88,7 +123,7 @@ class GeneralUITemplate:
             relwidth=rel_w,
             relheight=rel_h - title_offset,
         )
-        self.__frame_distances(frame, n_rows, n_cols)
+        self.frame_distances(frame, n_rows, n_cols)
 
         return frame
 

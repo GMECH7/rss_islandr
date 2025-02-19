@@ -57,7 +57,7 @@ ui_heights: list[int] = settings["UI"]["ui_heights"]
 ui_widths: list[int] = settings["UI"]["ui_widths"]
 
 uis_canvas_names: dict[str, list["str"]] = settings["UI"]["uis_canvas_names"]
-uis_frame_info: dict[str, dict[str, dict]] = settings["UI"]["uis_frame_info"]
+uis_frame_geometry: dict[str, dict] = settings["UI"]["uis_frame_geometry"]
 
 
 risk_limits_color: dict[str, list[float]] = settings["risk_limits_color"]
