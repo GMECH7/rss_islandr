@@ -1,20 +1,15 @@
 import tkinter as tk
-from typing import TypedDict
+from tkinter import ttk
 
 from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
 from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTORS_JSON_DIR
-from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
+from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
 
-class RiskSelectionDict(TypedDict):
-    var: tk.StringVar
-    weights: dict[str, float]
-
-
-class AssessmentUI(GeneralUITemplate):
+class AssessmentNoteBookUI(GeneralUITemplate):
 
     def __init__(
         self,
@@ -28,16 +23,24 @@ class AssessmentUI(GeneralUITemplate):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
-
-        self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
-        self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
-        self.receptor_aliases = ReceptorAliases(RECEPTOR_FACTORS_JSON_DIR)
-
         self.root = root
         self.frame_info_dict = frame_info_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
-        self.canvas_title = canvas_specs[2]
+        self.notebook = ttk.Notebook(root)
+        self.notebook.pack(fill="both", expand=True)
+
+        super().__init__(
+            ui_settings,
+            ui_inp_vars,
+            self.root,
+            self.frame_info_dict["2"],
+            self.canvas_height,
+            self.canvas_width,
+        )
+        self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
+        self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
+        self.receptor_aliases = ReceptorAliases(RECEPTOR_FACTORS_JSON_DIR)
 
         self.__receptor_alias_to_key_dict = {
             k: v for (v, k) in self.receptor_aliases.getter().items()
@@ -45,17 +48,13 @@ class AssessmentUI(GeneralUITemplate):
         self.__receptor_key_to_alias = self.receptor_aliases.getter()
 
         self.__source_keys = ["IN"]
-        self.__pathway_keys = ["SL", "GW", "SW", "AR", "SD"]
+        self.__pathway_keys = []  # ["SL", "GW", "SW", "AR", "SD"]
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
         self.__source_pathway_keys = self.__source_keys + self.__pathway_keys
         self.__source_pathway_receptor_keys = self.__source_pathway_keys + self.__receptor_keys
 
         self.__init__risk_selection_dict()
         self.__init__receptor_risk_selection_dict()
-
-        self.__place_widgets_vertically("source_frame", self.__source_keys)
-        self.__place_widgets_vertically("pathway_frames", self.__pathway_keys)
-        self.__place_widgets_vertically("receptor_frames", self.__receptor_keys)
 
         super().__init__(
             ui_settings,
@@ -67,50 +66,6 @@ class AssessmentUI(GeneralUITemplate):
         )
 
         self.__init__source_pathway_dropdown()
-        self.__init__receptor_dropdown()
-        # self.__init__calculated_risks_dict()
-
-    def __place_widgets_vertically(
-        self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
-    ) -> None:
-        frame_info = self.frame_info_dict["1"][frame_family_key]
-
-        n_frames = len(dict_keys)
-        x_l = frame_info.x_l
-        x_r = frame_info.x_r
-        y_u = frame_info.y_u
-        y_d = frame_info.y_d
-        width = (x_r - x_l) / n_frames - frame_padding
-        height = y_d - y_u
-
-        for dict_tag in dict_keys:
-            frame_tag = f"{dict_tag}_frame"
-            x_r = x_l + width
-            # The number of rows is updated dynamically in the methods that define the dropdown lists
-            self.frame_info_dict["1"].update({frame_tag: FramePlacing(x_l, x_r, y_u, y_d, None, 1)})
-            x_l += width + frame_padding
-
-    def __init__risk_selection_dict(self):
-        """
-        This is a method used in the __init__.
-
-        It initializes the risk_selection_dict with the following format:
-        key: f'{<source or pathway_key>}'
-        Value: empty dictionary which when populated is of type {<mechanism_alias>:RiskSelectionDict}.
-
-        This dictionary is used to map severity aliases used in the dropdown lists to their weight value.
-        """
-        self.__risk_selection = {}
-        for key in self.__source_pathway_keys:
-            self.__risk_selection.update({f"{key}_frame": {}})
-
-    def __init__receptor_risk_selection_dict(self):
-        """
-        This is a method used in the __init__.
-        """
-        self.__receptor_risk_selection = {}
-        for key in self.__receptor_keys:
-            self.__receptor_risk_selection.update({f"{key}_frame": {}})
 
     def __init__source_pathway_dropdown(self) -> None:
         """
@@ -171,6 +126,28 @@ class AssessmentUI(GeneralUITemplate):
             self.frame_info_dict["1"][f"{key}_frame"].n_row = i + 2
 
         return None
+
+    def __init__risk_selection_dict(self):
+        """
+        This is a method used in the __init__.
+
+        It initializes the risk_selection_dict with the following format:
+        key: f'{<source or pathway_key>}'
+        Value: empty dictionary which when populated is of type {<mechanism_alias>:RiskSelectionDict}.
+
+        This dictionary is used to map severity aliases used in the dropdown lists to their weight value.
+        """
+        self.__risk_selection = {}
+        for key in self.__source_pathway_keys:
+            self.__risk_selection.update({f"{key}_frame": {}})
+
+    def __init__receptor_risk_selection_dict(self):
+        """
+        This is a method used in the __init__.
+        """
+        self.__receptor_risk_selection = {}
+        for key in self.__receptor_keys:
+            self.__receptor_risk_selection.update({f"{key}_frame": {}})
 
     def __init__receptor_dropdown(self) -> None:
         """
@@ -250,6 +227,40 @@ class AssessmentUI(GeneralUITemplate):
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_info_dict["1"][f"{key}_frame"].n_row = 3
 
+    def __create_new_tab(self, frame_tag, frame_title):
+
+        tab = tk.Frame(self.notebook)
+        self.notebook.add(tab, text=frame_title)
+        self.__source_pathway_frame_creator(tab, frame_tag, frame_title)
+
+    def __calculate_source_pathway_risk(self, frame: tk.Frame, frame_tag: str):
+        """
+        Retrieves selected dropdown values and prints their corresponding weights.
+        """
+        weights = []
+        for data in self.__risk_selection[frame_tag].values():
+            selected_alias = data["var"].get()
+            selected_weight = data["weights"].get(selected_alias, 0.0)
+            weights.append(selected_weight)
+
+        risk = risk_calc(weights)
+
+        color = risk_color_assignment(risk)
+
+        self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
+        self.__light_bulb(frame, frame_tag, color)
+
+    def __source_pathway_frame_creator(self, frame, frame_tag: str, frame_title: str) -> tk.Frame:
+        """ """
+        for dropdown_key in self.ui_inp_vars:
+            if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
+                self.general_template_dropdown(frame, dropdown_key)
+
+        self.__btn_calculate_risk(frame, frame_tag, self.__calculate_source_pathway_risk)
+        self.__light_bulb(frame, frame_tag, "white")
+
+        return frame
+
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
 
         calculate_btn = tk.Button(
@@ -270,7 +281,6 @@ class AssessmentUI(GeneralUITemplate):
     def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
         """ """
         light = tk.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}", bg=color)
-        # light = tk.Label(frame, text=f"{self.__calculated_risks[frame_tag].get()}", bg=color)
         light.grid(
             row=self.frame_info_dict["1"][frame_tag].n_row - 1,
             rowspan=2,
@@ -278,106 +288,23 @@ class AssessmentUI(GeneralUITemplate):
             sticky="nsew",
         )
 
-    def __source_pathway_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
-        """ """
-        frame = self.general_template_frames(frame_tag, frame_title)
+    def __create_frame_tags_titles(self, case: str, keys: list[str]):
 
-        for dropdown_key in self.ui_inp_vars:
-            if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.general_template_dropdown(frame, dropdown_key)
+        frame_tags_titles = []
+        if case == "source" or case == "pathway":
+            for risk_key in keys:
+                frame_tag = f"{risk_key}_frame"
+                frame_title = f"{self.hazard_fetcher.getter(risk_key)["alias"]}"
+                frame_tags_titles.append((frame_tag, frame_title))
+        else:
+            for risk_key in keys:
+                frame_tag = f"{risk_key}_frame"
+                frame_title = f"{self.__receptor_key_to_alias[risk_key[:2]]}"
+                frame_tags_titles.append((frame_tag, frame_title))
+        return frame_tags_titles
 
-        self.__btn_calculate_risk(frame, frame_tag, self.__calculate_source_pathway_risk)
-        self.__light_bulb(frame, frame_tag, "white")
+    def ui(self, case: str, keys: list[str]):
 
-        return frame
-
-    def __receptor_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
-        """ """
-        frame = self.general_template_frames(frame_tag, frame_title)
-
-        for dropdown_key in self.ui_inp_vars:
-            if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.general_template_dropdown(frame, dropdown_key)
-
-        self.__btn_calculate_risk(frame, frame_tag, self.__calculate_receptor_total_risk)
-        self.__light_bulb(frame, frame_tag, "white")
-
-        return frame
-
-    def source_frame(self) -> None:
-        """ """
-        frame_tag = "IN_frame"
-        frame_title = self.hazard_fetcher.getter("IN")["alias"]
-        self.__source_pathway_frame_creator(frame_tag, frame_title)
-
-    def pathway_frames(self) -> None:
-        """Method assembling the pathway frames."""
-
-        for risk_key in self.__source_pathway_keys[1:]:
-            frame_tag = f"{risk_key}_frame"
-            frame_title = f"{self.hazard_fetcher.getter(risk_key)["alias"]} pathway"
-            self.__source_pathway_frame_creator(frame_tag, frame_title)
-
-    def receptor_frames(self) -> None:
-        """ """
-        for risk_receptor_key in self.__receptor_keys:
-            frame_tag = f"{risk_receptor_key}_frame"
-            frame_title = f"{self.__receptor_key_to_alias[risk_receptor_key[:2]]} Receptor"
-            self.__receptor_frame_creator(frame_tag, frame_title)
-
-    def __calculate_source_pathway_risk(self, frame: tk.Frame, frame_tag: str):
-        """
-        Retrieves selected dropdown values and prints their corresponding weights.
-        """
-        weights = []
-        for data in self.__risk_selection[frame_tag].values():
-            selected_alias = data["var"].get()
-            selected_weight = data["weights"].get(selected_alias, 0.0)
-            weights.append(selected_weight)
-
-        risk = risk_calc(weights)
-
-        color = risk_color_assignment(risk)
-        # self.__calculated_risks[frame_tag].set(f"{risk}")
-        self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
-        self.__light_bulb(frame, frame_tag, color)
-
-    def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str):
-
-        data = self.__receptor_risk_selection[frame_tag][frame_tag]
-
-        pathway_alias = data["pathway"].get()
-        pathway_key = self.__receptor_alias_to_key_dict[pathway_alias]
-
-        receptor_alias = data["var"].get()
-        receptor_weight = data["weights"].get(receptor_alias, 0.0)
-
-        # source_risk = float(self.__calculated_risks["IN_frame"].get())
-        # pathway_risk = float(self.__calculated_risks[f"{pathway_key}_frame"].get())
-
-        source_risk = float(self.ui_calc_vars["IN_frame"].tk_var.get())
-        pathway_risk = float(self.ui_calc_vars[f"{pathway_key}_frame"].tk_var.get())
-
-        receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
-
-        color = risk_color_assignment(receptor_risk)
-
-        # self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
-        self.ui_calc_vars[frame_tag].tk_var.set(
-            f"{
-        receptor_risk}"
-        )
-        # self.ui_calc_vars[frame_tag]["calc_risk"].set(f"{receptor_risk}")
-        self.__light_bulb(frame, frame_tag, color)
-
-    def ui(self):
-        canvas = tk.Canvas(
-            self.root,
-            height=self.canvas_height,
-            width=self.canvas_width,
-            bg=self.ui_settings.ui_bg_color_1,
-        )
-        canvas.pack(fill="both", expand=True)
-        self.source_frame()
-        self.pathway_frames()
-        self.receptor_frames()
+        frame_tags_titles = self.__create_frame_tags_titles(case, keys)
+        for frame_tag, frame_title in frame_tags_titles:
+            self.__create_new_tab(frame_tag, frame_title)

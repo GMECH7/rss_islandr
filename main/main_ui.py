@@ -1,10 +1,13 @@
 import sys
 import tkinter as tk
+from tkinter import ttk
 from typing import Type
 
 from main_imports import PACKAGE_DIR
 
 from rss_islandr.core.config_parser import (
+    ICO_DIR,
+    MAP_DIR,
     ui_heights,
     ui_settings,
     ui_widths,
@@ -15,6 +18,7 @@ from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_ui import AssessmentUI
 from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
 from rss_islandr.ui.map_ui import MapUI
+from rss_islandr.ui.notebook import AssessmentNoteBookUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -31,19 +35,23 @@ class RSSUI:
         self.ui_width = ui_widths[1]
         self.uis_canvas_names = uis_canvas_names
 
-        self.frame_n_rows = 5
+        self.frame_n_rows = 7
         self.frame_n_cols = 1
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
         self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
 
-        self.frame_info_dict = {"0": {}, "1": {}}
+        self.frame_info_dict = {"0": {}, "1": {}, "2": {}}
         self.__init__populate_frame_infos_dict()
 
         self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
-        map_html = PACKAGE_DIR / "static/map.html"
-        self.map_ui = MapUI(map_html)
+
+        self.map_ui = MapUI(MAP_DIR)
+        self.__source_keys = ["IN"]
+        self.__pathway_keys = ["SL", "GW", "SW", "AR", "SD"]
+        self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
+        self.map_open = False
 
     def __init__populate_frame_infos_dict(self):
 
@@ -80,73 +88,103 @@ class RSSUI:
         self.__frame_distances(nav_bar_frame)
 
         # # Buttons for navigation
-        button1 = tk.Button(
+        btn_site_info = tk.Button(
             nav_bar_frame,
             text=self.uis_canvas_names[str(0)][0],
             bg=self.ui_settings.ui_btn_bg_color_1,
             fg=self.ui_settings.ui_btn_font_color_1,
-            command=lambda: self.show_page(self.page1),
+            command=lambda: self.show_page(self.site_info_page),
         )
-        button1.grid(row=0, column=0, sticky="nsew")
+        btn_site_info.grid(row=0, column=0, sticky="nsew")
 
-        button2 = tk.Button(
-            nav_bar_frame,
-            text=self.uis_canvas_names[str(1)][0],
-            bg=self.ui_settings.ui_btn_bg_color_1,
-            fg=self.ui_settings.ui_btn_font_color_1,
-            command=lambda: self.show_page(self.page2),
-        )
+        # button2 = tk.Button(
+        #     nav_bar_frame,
+        #     text=self.uis_canvas_names[str(1)][0],
+        #     bg=self.ui_settings.ui_btn_bg_color_1,
+        #     fg=self.ui_settings.ui_btn_font_color_1,
+        #     command=lambda: self.show_page(self.map_page),
+        # )
 
-        button2.grid(row=1, column=0, sticky="nsew")
+        # button2.grid(row=1, column=0, sticky="nsew")
 
-        excel_writer_btn = ExcelWriterBtnUI(
+        excel_writer = ExcelWriterBtnUI(
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.excel_file_template,
         )
-        # Button to show the map
-        button_show_map = tk.Button(
+
+        # Button to toggle the map
+        self.btn_map = tk.Button(
             nav_bar_frame,
             text="Show Map",
             bg=self.ui_settings.ui_btn_bg_color_1,
             fg=self.ui_settings.ui_btn_font_color_1,
-            command=self.map_ui.show_map,
+            command=self.toggle_map,
         )
-        button_show_map.grid(row=2, column=0, sticky="nsew")
+        self.btn_map.grid(row=1, column=0, sticky="nsew")
 
-        # Button to close the map
-        button_close_map = tk.Button(
+        btn_source = tk.Button(
             nav_bar_frame,
-            text="Close Map",
+            text="Source",
             bg=self.ui_settings.ui_btn_bg_color_1,
             fg=self.ui_settings.ui_btn_font_color_1,
-            command=self.map_ui.close_map,
+            command=lambda: self.show_page(self.source_page),
         )
-        button_close_map.grid(row=3, column=0, sticky="nsew")
+        btn_source.grid(row=2, column=0, sticky="nsew")
 
-        button3 = excel_writer_btn.button(nav_bar_frame)
-        button3.grid(row=4, column=0, sticky="nsew")
+        btn_pathways = tk.Button(
+            nav_bar_frame,
+            text="Pathways",
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
+            command=lambda: self.show_page(self.pathways_page),
+        )
+        btn_pathways.grid(row=3, column=0, sticky="nsew")
 
-        # # Create Pages
-        self.page1 = tk.Frame(self.root)
-        self.page2 = tk.Frame(self.root)
+        btn_receptors = tk.Button(
+            nav_bar_frame,
+            text="Receptors",
+            bg=self.ui_settings.ui_btn_bg_color_1,
+            fg=self.ui_settings.ui_btn_font_color_1,
+            command=lambda: self.show_page(self.receptors_page),
+        )
+        btn_receptors.grid(row=4, column=0, sticky="nsew")
 
-        for page in (self.page1, self.page2):
-            page.place(relx=0.105, rely=0, relwidth=0.895, relheight=1.0)
+        btn_xlsx_writer = excel_writer.button(nav_bar_frame)
+        btn_xlsx_writer.grid(row=6, column=0, sticky="nsew")
+
+        # Create Pages
+        self.site_info_page = tk.Frame(self.root)
+        self.map_page = tk.Frame(self.root)
+        self.source_page = tk.Frame(self.root)
+        self.pathways_page = tk.Frame(self.root)
+        self.receptors_page = tk.Frame(self.root)
+
+        for self.page in [
+            self.site_info_page,
+            self.map_page,
+            self.source_page,
+            self.pathways_page,
+            self.receptors_page,
+        ]:
+            self.page.place(relx=0.105, rely=0, relwidth=0.895, relheight=1.0)
 
         # Initialize pages
-        self.__window_creator_template(0, self.page1)
-        self.__window_creator_template(1, self.page2)
+        self.__window_creator_template(0, self.site_info_page)
+        self.__window_creator_template(1, self.map_page)
+        self.__window_creator_template(2, self.source_page, "source", self.__source_keys)
+        self.__window_creator_template(2, self.pathways_page, "pathways", self.__pathway_keys)
+        self.__window_creator_template(2, self.receptors_page, "receptors", self.__receptor_keys)
 
         # Show the first page by default
-        self.show_page(self.page1)
+        self.show_page(self.site_info_page)
 
-    def __window_creator_template(self, idx: int, parent_frame):
+    def __window_creator_template(self, idx: int, parent_frame, *args):
         """
         Creates UI elements for each page.
         """
-        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI}
+        ui_selector: dict[int, Type] = {0: SiteInfoUI, 1: AssessmentUI, 2: AssessmentNoteBookUI}
         canvas_specs = [
             self.ui_height,
             self.ui_width,
@@ -157,17 +195,28 @@ class RSSUI:
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
-            PACKAGE_DIR,
             parent_frame,
             canvas_specs,
             self.frame_info_dict,
         )
 
-        application.ui()
+        application.ui(*args)
 
     def show_page(self, page):
         """Brings the given page to the front."""
         page.tkraise()
+
+    def toggle_map(self):
+        if self.map_open:
+            # If the map is open, close it
+            self.map_ui.close_map()
+            self.map_open = False
+            self.btn_map.config(text="Show Map")
+        else:
+            # If the map is closed, show it
+            self.map_ui.show_map()
+            self.map_open = True
+            self.btn_map.config(text="Close Map")
 
     def on_closing(self):
         """
@@ -179,9 +228,8 @@ class RSSUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # root.resizable(width=False, height=False)
     root.title("RSS-ISLANDR")
-    root.iconbitmap(str(PACKAGE_DIR / "static" / "trade.ico"))
+    root.iconbitmap(ICO_DIR)
     main = RSSUI(root)
     main.create_ui()
     #: Set the protocol to handle the window close button

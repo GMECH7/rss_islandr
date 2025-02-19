@@ -30,15 +30,6 @@ class GeneralUITemplate:
         """ """
         return str(__class__.__name__)
 
-        """
-        Retrieve a dynamic number of integer variables.
-        """
-        ints = ()
-        for int_var in args:
-            ints += (int(int_var.get()),)
-
-        return ints
-
     def __frame_distances(self, frame: tk.Frame, n_rows: int, n_cols: int) -> None:
         """ """
         for i in range(n_rows):

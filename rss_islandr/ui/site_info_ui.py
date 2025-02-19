@@ -1,9 +1,9 @@
 import json
 import tkinter as tk
-from pathlib import Path
 
 from general_ui import GeneralUITemplate
 
+from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 
 
@@ -18,7 +18,6 @@ class SiteInfoUI(GeneralUITemplate):
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        package_dir: Path,
         root: tk.Toplevel,
         canvas_specs: list,
         frame_info_dict,
@@ -27,8 +26,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
 
-        full_filepath = package_dir / "data/dropdown_lists.json"
-        with open(full_filepath, "r", encoding="utf-8") as file_inp:
+        with open(DROPDOWN_LISTS_JSON_DIR, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
 
         self.root = root
