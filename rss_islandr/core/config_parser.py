@@ -22,12 +22,13 @@ GEOLOGY_LEGEND_DIR = STATIC_DIR / "geology_legend.png"
 HYDRO_LEGEND_DIR = STATIC_DIR / "hydro_legend.png"
 
 DATA_DIR = PROJECT_DIR / "data"
+TEMPLATES_DIR = PROJECT_DIR / "templates"
 
 SETTINGS_JSON_DIR = PROJECT_DIR / "core" / "settings.json"
 RECEPTOR_FACTORS_JSON_DIR = DATA_DIR / "receptor_factors.json"
 RISK_FACTORS_JSON_DIR = DATA_DIR / "risk_factors.json"
 DROPDOWN_LISTS_JSON_DIR = DATA_DIR / "dropdown_lists.json"
-
+XLSX_FILE_DIR = TEMPLATES_DIR / "results.xlsx"
 with open(SETTINGS_JSON_DIR, "r", encoding="utf-8") as file_settings:
     settings = json.load(file_settings)
 

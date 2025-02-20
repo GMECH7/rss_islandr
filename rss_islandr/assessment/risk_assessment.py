@@ -1,22 +1,22 @@
 from core.config_parser import risk_limits_color
 
 
-def risk_calc(weight_values: list) -> float:
+def risk_calc(weight_values: list, roundoff=3) -> float:
     """
-    TODO: I should know that happens if for example one value is passed when there are three risk factors contributing.
     _summary_
 
     Parameters
     ----------
     weight_values : list
         _description_
+    roundoff : int, optional
+        _description_, by default 3
 
     Returns
     -------
     float
         _description_
     """
-
     if len(weight_values) == 0:
         return 0.0
 
@@ -24,7 +24,7 @@ def risk_calc(weight_values: list) -> float:
     for val in weight_values:
         risk_value *= val
 
-    return risk_value
+    return round(risk_value, roundoff)
 
 
 def risk_color_assignment(value: float) -> str:

@@ -3,11 +3,14 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Type
 
+# import ttkbootstrap as ttk
 from main_imports import PACKAGE_DIR
 
+# from ttkbootstrap.constants import *
 from rss_islandr.core.config_parser import (
     ICO_DIR,
     MAP_DIR,
+    XLSX_FILE_DIR,
     ui_heights,
     ui_settings,
     ui_widths,
@@ -42,7 +45,7 @@ class RSSUI:
         self.ui_calc_vars = {}  # this will be updated
         self.frame_geometry_dict = {}
 
-        self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
+        self.excel_file_template = XLSX_FILE_DIR
 
         self.map_ui = MapUI(MAP_DIR)
         self.__source_keys = ["IN"]
@@ -57,7 +60,6 @@ class RSSUI:
         self.map_open = False
 
     def __init__populate_frame_infos_dict(self):
-
         for frame_key in uis_frame_geometry:
             frame_info = uis_frame_geometry[frame_key]
             try:
@@ -167,7 +169,7 @@ class RSSUI:
         self.map_page = tk.Frame(self.root)
         self.source_page = tk.Frame(self.root)
         self.pathways_page = tk.Frame(self.root)
-        self.receptors_page = tk.Frame(self.root)
+        self.receptors_page = ttk.Frame(self.root)
 
         for self.page in [
             self.site_info_page,
@@ -176,7 +178,7 @@ class RSSUI:
             self.pathways_page,
             self.receptors_page,
         ]:
-            self.page.place(relx=0.105, rely=0, relwidth=0.895, relheight=1.0)
+            self.page.place(relx=0.105, rely=0, relwidth=0.695, relheight=1.0)
 
         # Initialize pages
         canvas_specs = [
@@ -281,6 +283,20 @@ class RSSUI:
 
 
 if __name__ == "__main__":
+    # Initialize the ttkbootstrap window
+    # root = ttk.Window(themename="minty")  # You can change the theme
+    # root.title("RSS-ISLANDR")
+    # root.iconbitmap(ICO_DIR)
+
+    # # Initialize your UI class
+    # main = RSSUI(root)
+    # main.create_ui()
+
+    # # Handle window close event
+    # root.protocol("WM_DELETE_WINDOW", main.on_closing)
+
+    # # Start the main loop
+    # root.mainloop()
     root = tk.Tk()
     root.title("RSS-ISLANDR")
     root.iconbitmap(ICO_DIR)

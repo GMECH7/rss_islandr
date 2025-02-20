@@ -34,7 +34,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
 
-        super().__init__(ui_settings, ui_inp_vars, self.parent_frame, self.frame_geometry_dict)
+        super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
 

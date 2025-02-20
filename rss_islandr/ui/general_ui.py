@@ -10,13 +10,11 @@ class GeneralUITemplate:
         self,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
-        parent_frame: tk.Frame,
         frame_geometry_dict,
     ):
         """ """
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
-        self.parent_frame = parent_frame
         self.frame_geometry_dict = frame_geometry_dict
 
     def __str__(self):
@@ -47,40 +45,6 @@ class GeneralUITemplate:
         n_cols = self.frame_geometry_dict[frame_tag].n_col
 
         return rel_x, rel_y, rel_w, rel_h, n_rows, n_cols
-
-    # def bb(self, frame, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
-    #     """ """
-    #     title_frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
-    #     title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
-    #     self.frame_distances(title_frame, 0, 1)
-    #     title_label = tk.Label(
-    #         title_frame,
-    #         text=frame_title,
-    #         bg=self.ui_settings.ui_bg_color_2,
-    #         fg=self.ui_settings.ui_title_font_color,
-    #         relief="raised",
-    #         justify="center",
-    #     )
-    #     title_label.grid(row=0, column=0, sticky="nsew")
-    #     title_label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
-
-    #     return None
-
-    # def aa(self, frame, frame_tag: str, frame_title: str):
-    #     """ """
-    #     rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-    #     self.bb(frame, frame_title, rel_x, rel_y, rel_w, rel_h)
-    #     title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
-    #     frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
-    #     frame.place(
-    #         relx=rel_x,
-    #         rely=rel_y + title_offset,
-    #         relwidth=rel_w,
-    #         relheight=rel_h - title_offset,
-    #     )
-    #     self.frame_distances(frame, n_rows, n_cols)
-
-    #     return frame
 
     def template_title(
         self,

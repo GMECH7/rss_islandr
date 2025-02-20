@@ -1,0 +1,2 @@
+class ExcelRowColNotFoundError(Exception):
+    pass
