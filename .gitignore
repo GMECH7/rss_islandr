@@ -8,6 +8,7 @@ __pycache__/
 islandr_env/
 islandr_env39/
 _try_maps
+commands.txt
 # Distribution / packaging
 .Python
 build/

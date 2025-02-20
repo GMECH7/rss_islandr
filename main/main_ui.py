@@ -1,4 +1,5 @@
 import sys
+import threading
 import tkinter as tk
 from tkinter import ttk
 from typing import Type
@@ -282,21 +283,7 @@ class RSSUI:
         sys.exit()
 
 
-if __name__ == "__main__":
-    # Initialize the ttkbootstrap window
-    # root = ttk.Window(themename="minty")  # You can change the theme
-    # root.title("RSS-ISLANDR")
-    # root.iconbitmap(ICO_DIR)
-
-    # # Initialize your UI class
-    # main = RSSUI(root)
-    # main.create_ui()
-
-    # # Handle window close event
-    # root.protocol("WM_DELETE_WINDOW", main.on_closing)
-
-    # # Start the main loop
-    # root.mainloop()
+def main():
     root = tk.Tk()
     root.title("RSS-ISLANDR")
     root.iconbitmap(ICO_DIR)
@@ -305,3 +292,7 @@ if __name__ == "__main__":
     #: Set the protocol to handle the window close button
     root.protocol("WM_DELETE_WINDOW", main.on_closing)
     root.mainloop()
+
+
+if __name__ == "__main__":
+    main()

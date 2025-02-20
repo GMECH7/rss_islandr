@@ -8,7 +8,6 @@ STATIC_DIR = CRNT_DIR.resolve().parent / "static"
 
 
 class MapUI:
-
     def __init__(self, map_html: Path):
         self.map_html = map_html
         self.webview_process = None
@@ -16,6 +15,7 @@ class MapUI:
     def show_map(self):
         """Launch the webview window in a separate process."""
         script_path = os.path.abspath(__file__)  # Path to the current script
+        print(script_path)
         self.webview_process = subprocess.Popen([sys.executable, script_path, "--webview"])
 
     def close_map(self):
@@ -42,6 +42,7 @@ class MapUI:
 if __name__ == "__main__":
     import argparse
 
+    print(__name__)
     # Parse command-line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--webview", action="store_true", help="Run webview in a separate process")
@@ -49,6 +50,6 @@ if __name__ == "__main__":
 
     if args.webview:
         # If --webview flag is passed, run the webview window
-        script_path = os.path.abspath(__file__)
+        # script_path = os.path.abspath(__file__)
         map_ui = MapUI(STATIC_DIR / "map.html")
         map_ui.run_webview()

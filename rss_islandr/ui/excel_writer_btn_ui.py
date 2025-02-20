@@ -7,7 +7,6 @@ from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 
 
 class ExcelWriterBtnUI:
-
     def __init__(
         self,
         ui_settings: UISettings,
@@ -15,14 +14,12 @@ class ExcelWriterBtnUI:
         ui_calc_vars: dict[str, UICalcVariable],
         excel_file_template,
     ):
-
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
         self.excel_file_template = excel_file_template
 
     def __on_button_click(self):
-
         values, positions = [], []
         for key in self.ui_inp_vars:
             try:
@@ -41,8 +38,6 @@ class ExcelWriterBtnUI:
                 values.append(f"{value}")
             except Exception:
                 pass
-        # print(positions, values)
-        print(self.ui_calc_vars)
 
         self.__write_to_excel(values, positions)
 
@@ -59,7 +54,7 @@ class ExcelWriterBtnUI:
                 if position is not None:
                     sheet.range(position).value = value
 
-            workbook.save(self.excel_file_template)
+            workbook.save("lelos.xlsx")
             workbook.close()
             app.quit()
             messagebox.showinfo("Success", "Values written to Excel successfully!")
@@ -67,7 +62,6 @@ class ExcelWriterBtnUI:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
     def button(self, frame: tk.Frame):
-
         btn = tk.Button(
             frame,
             bg=self.ui_settings.ui_btn_bg_color_1,
