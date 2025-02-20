@@ -12,37 +12,29 @@ class AnotherException(Exception):
 
 
 class SiteInfoUI(GeneralUITemplate):
-
     def __init__(
         self,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        root: tk.Toplevel,
+        parent_frame: tk.Frame,
         canvas_specs: list,
         frame_geometry_dict,
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
+        self.parent_frame = parent_frame
 
         with open(DROPDOWN_LISTS_JSON_DIR, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
 
-        self.root = root
         self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
 
-        super().__init__(
-            ui_settings,
-            ui_inp_vars,
-            self.root,
-            self.frame_geometry_dict,
-            self.canvas_height,
-            self.canvas_width,
-        )
+        super().__init__(ui_settings, ui_inp_vars, self.parent_frame, self.frame_geometry_dict)
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
 
@@ -103,13 +95,13 @@ class SiteInfoUI(GeneralUITemplate):
         """
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
-        frame = self.general_template_frames(frame_tag, frame_title)
+        frame = self.gt_new_frame(self.parent_frame, frame_tag, frame_title)
 
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
-                self.general_template_entries(frame, key)
+                self.gt_entry_widget(frame, key)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "drop" in key:
-                self.general_template_dropdown(frame, key)
+                self.gt_combobox_widget(frame, key)
             else:
                 pass
 
@@ -117,7 +109,7 @@ class SiteInfoUI(GeneralUITemplate):
 
     def ui(self):
         canvas = tk.Canvas(
-            self.root,
+            self.parent_frame,
             height=self.canvas_height,
             width=self.canvas_width,
             bg=self.ui_settings.ui_bg_color_1,

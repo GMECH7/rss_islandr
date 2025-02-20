@@ -9,14 +9,17 @@ from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
 
-class AssessmentNoteBookUI(GeneralUITemplate):
+class ExcelRowColNotFoundError(Exception):
+    pass
 
+
+class AssessmentNoteBookUI(GeneralUITemplate):
     def __init__(
         self,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        root: tk.Toplevel,
+        parent_frame: tk.Frame,
         canvas_specs: list,
         frame_geometry_dict,
         source_keys: list[str],
@@ -26,20 +29,15 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
-        self.root = root
-        self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
-        # self.notebook = ttk.Notebook(root)
-        # self.notebook.pack(fill="both", expand=True)
+        self.frame_geometry_dict = frame_geometry_dict
 
         self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
         self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
         self.receptor_aliases = ReceptorAliases(RECEPTOR_FACTORS_JSON_DIR)
 
-        self.__receptor_alias_to_key_dict = {
-            k: v for (v, k) in self.receptor_aliases.getter().items()
-        }
+        self.__receptor_alias_to_key_dict = {k: v for (v, k) in self.receptor_aliases.getter().items()}
         self.__receptor_key_to_alias = self.receptor_aliases.getter()
 
         self.__source_keys = source_keys
@@ -52,15 +50,36 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
-        # print("aaaaaaaaaaaaa", self.frame_geometry_dict)
-        super().__init__(
-            ui_settings,
-            ui_inp_vars,
-            self.root,
-            self.frame_geometry_dict,
-            self.canvas_height,
-            self.canvas_width,
-        )
+
+        super().__init__(ui_settings, ui_inp_vars, parent_frame, self.frame_geometry_dict)
+
+    def __get_xlsx_row_col(self, risk_factor_key: str) -> tuple[str, int]:
+        """
+        Get excel column and row for the source and pathways.
+
+        Parameters
+        ----------
+        risk_factor_key : str
+            Risk factor key. eg. 'IN', 'SW', etc.
+
+        Returns
+        -------
+        tuple[str, float]
+            _description_
+        """
+        try:
+            parent_excel_col = self.hazard_fetcher.getter(risk_factor_key)["excel_col"]
+            parent_excel_row = self.hazard_fetcher.getter(risk_factor_key)["excel_row"]
+        except Exception:
+            raise ExcelRowColNotFoundError
+
+        return parent_excel_col, parent_excel_row
+
+    def __assemble_xlsx_row(self, i: int, parent_excel_col: str, parent_excel_row: int) -> tuple[str, str]:
+        excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
+        excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
+
+        return excel_cell, excel_cell_risk
 
     def __init__source_pathway_dropdown(self) -> None:
         """
@@ -68,24 +87,15 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         This method defines the dropdown variables used in source and pathway calculations dropdown lists.
         """
-        for key in self.__source_pathway_keys:
-            mechanisms_dict = self.hazard_fetcher.getter(key)["mechanism"]
-            try:
-                parent_excel_col = self.hazard_fetcher.getter(key)["excel_col"]
-                parent_excel_row = self.hazard_fetcher.getter(key)["excel_row"]
-            except Exception:
-                parent_excel_col = None
+        for risk_factor_key in self.__source_pathway_keys:
+            mechanisms_dict = self.hazard_fetcher.getter(risk_factor_key)["mechanism"]
+            parent_excel_col, parent_excel_row = self.__get_xlsx_row_col(risk_factor_key)
 
             for i, mechanism_key in enumerate(mechanisms_dict):
-                # print(key, i, mechanism_key)
-                mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
-                severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
+                mechanism_alias = self.hazard_fetcher.getter(risk_factor_key, mechanism_key)["alias"]
+                severity_dict = self.hazard_fetcher.getter(risk_factor_key, mechanism_key)["severity"]
 
-                if parent_excel_col is not None:
-                    excel_cell = f"{parent_excel_col}{parent_excel_row+i}"
-                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row+i+1}"
-                else:
-                    excel_cell = None
+                excel_cell, excel_cell_risk = self.__assemble_xlsx_row(i, parent_excel_col, parent_excel_row)
 
                 dropdown_severity = []
                 alias_to_weight = {}
@@ -100,12 +110,12 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 var.set(dropdown_severity[0])
 
                 # Store weight mapping for later use
-                self.__risk_selection[f"{key}_frame"].update(
+                self.__risk_selection[f"{risk_factor_key}_frame"].update(
                     {mechanism_alias: {"var": var, "weights": alias_to_weight}}
                 )
 
                 ui_var = UIInpVariable(
-                    frame_tag=f"{key}_frame",
+                    frame_tag=f"{risk_factor_key}_frame",
                     tk_var=var,
                     rel_pos=i,
                     text_val=mechanism_alias,
@@ -114,15 +124,12 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     excel_cell=excel_cell,
                     state="enabled",
                 )
-                self.ui_inp_vars.update({f"drop_{key}_1_0{i}": ui_var})
+                self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
 
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
-            self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
-            self.frame_geometry_dict[f"{key}_frame"].n_row = i + 2
-            # print("aaaaaaaaaaaaa", self.frame_geometry_dict)
-            # print(111111, i, self.ui_calc_vars[key])
-            # print(222222, i, self.frame_geometry_dict[key])
-            # print(333333, key, self.frame_geometry_dict[f"{key}_frame"].n_row)
+            self.ui_calc_vars.update({f"{risk_factor_key}_frame": ui_calc_var})
+            self.frame_geometry_dict[f"{risk_factor_key}_frame"].n_row = i + 2
+
         return None
 
     def __init__risk_selection_dict(self):
@@ -170,9 +177,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 param_alias_to_weight[parameter_alias] = parameter_weight
                 dropdown_receptor_param.append(parameter_alias)
 
-            dropdown_available_pathways_keys = self.receptor_fetcher.getter(key)[
-                "available_pathways"
-            ]
+            dropdown_available_pathways_keys = self.receptor_fetcher.getter(key)["available_pathways"]
             dropdown_available_pathways_aliases = [
                 self.receptor_aliases.getter()[key] for key in dropdown_available_pathways_keys
             ]
@@ -211,20 +216,19 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 text_val="Parameter",
                 text_descr=None,
                 drop_options=dropdown_receptor_param,
-                excel_cell=f"{parent_excel_col}{parent_excel_row+1}",
+                excel_cell=f"{parent_excel_col}{parent_excel_row + 1}",
                 state="enabled",
             )
             self.ui_inp_vars.update({f"drop_{key}_1_0": ui_var_pathway})
             self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
 
             # always two rows in receptor dropdown
-            excel_cell_risk = f"{parent_excel_col}{parent_excel_row+2}"
+            excel_cell_risk = f"{parent_excel_col}{parent_excel_row + 2}"
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
     def __create_new_tab(self, notebook, frame_tag, frame_title, func):
-
         tab = tk.Frame(notebook)
         notebook.add(tab, text=frame_title)
 
@@ -248,7 +252,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__light_bulb(frame, frame_tag, color)
 
     def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str):
-
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
         pathway_alias = data["pathway"].get()
@@ -264,24 +267,17 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         color = risk_color_assignment(receptor_risk)
 
-        self.ui_calc_vars[frame_tag].tk_var.set(
-            f"{
-        receptor_risk}"
-        )
+        self.ui_calc_vars[frame_tag].tk_var.set(f"{receptor_risk}")
 
         self.__light_bulb(frame, frame_tag, color)
 
-    def __source_pathway_frame_creator(
-        self, frame, frame_tag: str, frame_title: str, func
-    ) -> tk.Frame:
+    def __source_pathway_frame_creator(self, frame, frame_tag: str, frame_title: str, func) -> tk.Frame:
         """ """
-        title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
-        # Configure the frame to expand
-        frame2 = self.aa(frame, frame_tag, frame_title)
+        frame2 = self.gt_new_frame(frame, frame_tag, frame_title)
 
         for dropdown_key in self.ui_inp_vars:
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.general_template_dropdown(frame2, dropdown_key)
+                self.gt_combobox_widget(frame2, dropdown_key)
 
         self.__btn_calculate_risk(frame2, frame_tag, func)
         self.__light_bulb(frame2, frame_tag, "white")
@@ -289,7 +285,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         return frame
 
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
-
         calculate_btn = tk.Button(
             frame,
             bg=self.ui_settings.ui_btn_bg_color_1,
@@ -316,22 +311,20 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         )
 
     def __create_frame_tags_titles(self, case: str, keys: list[str]):
-
         frame_tags_titles = []
         if case == "source" or case == "pathway":
-            for risk_key in keys:
-                frame_tag = f"{risk_key}_frame"
-                frame_title = f"{self.hazard_fetcher.getter(risk_key)["alias"]}"
+            for risk_factor_key in keys:
+                frame_tag = f"{risk_factor_key}_frame"
+                frame_title = f"{self.hazard_fetcher.getter(risk_factor_key)['alias']}"
                 frame_tags_titles.append((frame_tag, frame_title))
         else:
-            for risk_key in keys:
-                frame_tag = f"{risk_key}_frame"
-                frame_title = f"{self.__receptor_key_to_alias[risk_key[:2]]}"
+            for risk_factor_key in keys:
+                frame_tag = f"{risk_factor_key}_frame"
+                frame_title = f"{self.__receptor_key_to_alias[risk_factor_key[:2]]}"
                 frame_tags_titles.append((frame_tag, frame_title))
         return frame_tags_titles
 
     def ui(self, parent_frame: tk.Frame, case: str):
-
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             func = self.__calculate_source_pathway_risk

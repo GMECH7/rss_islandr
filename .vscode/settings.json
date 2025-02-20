@@ -3,5 +3,10 @@
     "python.defaultInterpreterPath": "${workspaceFolder}\\islandr_env\\Scripts\\python.exe", // Windows
     "workbench.colorCustomizations": {
         "titleBar.activeBackground": "#3f60a8"
-    }
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "ruff.format.enabled": true,
+    "ruff.lineLength": 120,
 }

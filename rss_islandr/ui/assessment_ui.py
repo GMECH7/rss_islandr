@@ -15,7 +15,6 @@ class RiskSelectionDict(TypedDict):
 
 
 class AssessmentUI(GeneralUITemplate):
-
     def __init__(
         self,
         ui_settings: UISettings,
@@ -39,9 +38,7 @@ class AssessmentUI(GeneralUITemplate):
         self.canvas_width = canvas_specs[1]
         self.canvas_title = canvas_specs[2]
 
-        self.__receptor_alias_to_key_dict = {
-            k: v for (v, k) in self.receptor_aliases.getter().items()
-        }
+        self.__receptor_alias_to_key_dict = {k: v for (v, k) in self.receptor_aliases.getter().items()}
         self.__receptor_key_to_alias = self.receptor_aliases.getter()
 
         self.__source_keys = ["IN"]
@@ -70,9 +67,7 @@ class AssessmentUI(GeneralUITemplate):
         self.__init__receptor_dropdown()
         # self.__init__calculated_risks_dict()
 
-    def __place_widgets_vertically(
-        self, frame_family_key: str, dict_keys, frame_padding: float = 0.01
-    ) -> None:
+    def __place_widgets_vertically(self, frame_family_key: str, dict_keys, frame_padding: float = 0.01) -> None:
         frame_info = self.frame_geometry_dict[frame_family_key]
 
         n_frames = len(dict_keys)
@@ -132,8 +127,8 @@ class AssessmentUI(GeneralUITemplate):
                 severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
 
                 if parent_excel_col is not None:
-                    excel_cell = f"{parent_excel_col}{parent_excel_row+i}"
-                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row+i+1}"
+                    excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
+                    excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
                 else:
                     excel_cell = None
 
@@ -180,7 +175,6 @@ class AssessmentUI(GeneralUITemplate):
         """
 
         for key in self.__receptor_keys:
-
             try:
                 parent_excel_col = self.receptor_fetcher.getter(key)["excel_col"]
                 parent_excel_row = self.receptor_fetcher.getter(key)["excel_row"]
@@ -197,9 +191,7 @@ class AssessmentUI(GeneralUITemplate):
                 param_alias_to_weight[parameter_alias] = parameter_weight
                 dropdown_receptor_param.append(parameter_alias)
 
-            dropdown_available_pathways_keys = self.receptor_fetcher.getter(key)[
-                "available_pathways"
-            ]
+            dropdown_available_pathways_keys = self.receptor_fetcher.getter(key)["available_pathways"]
             dropdown_available_pathways_aliases = [
                 self.receptor_aliases.getter()[key] for key in dropdown_available_pathways_keys
             ]
@@ -238,20 +230,19 @@ class AssessmentUI(GeneralUITemplate):
                 text_val="Parameter",
                 text_descr=None,
                 drop_options=dropdown_receptor_param,
-                excel_cell=f"{parent_excel_col}{parent_excel_row+1}",
+                excel_cell=f"{parent_excel_col}{parent_excel_row + 1}",
                 state="enabled",
             )
             self.ui_inp_vars.update({f"drop_{key}_1_0": ui_var_pathway})
             self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
 
             # always two rows in receptor dropdown
-            excel_cell_risk = f"{parent_excel_col}{parent_excel_row+2}"
+            excel_cell_risk = f"{parent_excel_col}{parent_excel_row + 2}"
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
     def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, btn_command):
-
         calculate_btn = tk.Button(
             frame,
             bg=self.ui_settings.ui_btn_bg_color_1,
@@ -280,11 +271,11 @@ class AssessmentUI(GeneralUITemplate):
 
     def __source_pathway_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
-        frame = self.general_template_frames(frame_tag, frame_title)
+        frame = self.gt_new_frame(frame_tag, frame_title)
 
         for dropdown_key in self.ui_inp_vars:
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.general_template_dropdown(frame, dropdown_key)
+                self.gt_combobox_widget(frame, dropdown_key)
 
         self.__btn_calculate_risk(frame, frame_tag, self.__calculate_source_pathway_risk)
         self.__light_bulb(frame, frame_tag, "white")
@@ -293,11 +284,11 @@ class AssessmentUI(GeneralUITemplate):
 
     def __receptor_frame_creator(self, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
-        frame = self.general_template_frames(frame_tag, frame_title)
+        frame = self.gt_new_frame(frame_tag, frame_title)
 
         for dropdown_key in self.ui_inp_vars:
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.general_template_dropdown(frame, dropdown_key)
+                self.gt_combobox_widget(frame, dropdown_key)
 
         self.__btn_calculate_risk(frame, frame_tag, self.__calculate_receptor_total_risk)
         self.__light_bulb(frame, frame_tag, "white")
@@ -315,7 +306,7 @@ class AssessmentUI(GeneralUITemplate):
 
         for risk_key in self.__source_pathway_keys[1:]:
             frame_tag = f"{risk_key}_frame"
-            frame_title = f"{self.hazard_fetcher.getter(risk_key)["alias"]} pathway"
+            frame_title = f"{self.hazard_fetcher.getter(risk_key)['alias']} pathway"
             self.__source_pathway_frame_creator(frame_tag, frame_title)
 
     def receptor_frames(self) -> None:
@@ -343,7 +334,6 @@ class AssessmentUI(GeneralUITemplate):
         self.__light_bulb(frame, frame_tag, color)
 
     def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str):
-
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
         pathway_alias = data["pathway"].get()
@@ -363,10 +353,7 @@ class AssessmentUI(GeneralUITemplate):
         color = risk_color_assignment(receptor_risk)
 
         # self.__calculated_risks[frame_tag].set(f"{receptor_risk}")
-        self.ui_calc_vars[frame_tag].tk_var.set(
-            f"{
-        receptor_risk}"
-        )
+        self.ui_calc_vars[frame_tag].tk_var.set(f"{receptor_risk}")
         # self.ui_calc_vars[frame_tag]["calc_risk"].set(f"{receptor_risk}")
         self.__light_bulb(frame, frame_tag, color)
 

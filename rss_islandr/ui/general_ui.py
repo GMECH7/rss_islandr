@@ -6,25 +6,18 @@ from rss_islandr.core.datatypes import UIInpVariable, UISettings
 
 
 class GeneralUITemplate:
-
     def __init__(
         self,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
-        root: tk.Toplevel,
+        parent_frame: tk.Frame,
         frame_geometry_dict,
-        canvas_height,
-        canvas_width,
     ):
         """ """
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
-        self.root = root
+        self.parent_frame = parent_frame
         self.frame_geometry_dict = frame_geometry_dict
-        self.canvas_height = canvas_height
-        self.canvas_width = canvas_width
-
-        self.message_variable = tk.StringVar()
 
     def __str__(self):
         """ """
@@ -36,26 +29,6 @@ class GeneralUITemplate:
             frame.grid_rowconfigure(i, weight=1)
         for i in range(n_cols):
             frame.grid_columnconfigure(i, weight=1)
-
-        return None
-
-    def template_title(self, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
-        """ """
-        title_frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_1)
-        title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
-        self.frame_distances(title_frame, 0, 1)
-        title_label = tk.Label(
-            title_frame,
-            text=frame_title,
-            bg=self.ui_settings.ui_bg_color_2,
-            fg=self.ui_settings.ui_title_font_color,
-            relief="raised",
-            justify="center",
-        )
-        title_label.grid(row=0, column=0, sticky="nsew")
-        title_label.config(
-            font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size)
-        )
 
         return None
 
@@ -72,12 +45,54 @@ class GeneralUITemplate:
 
         n_rows = self.frame_geometry_dict[frame_tag].n_row
         n_cols = self.frame_geometry_dict[frame_tag].n_col
-        print(frame_tag, self.frame_geometry_dict[frame_tag])
+
         return rel_x, rel_y, rel_w, rel_h, n_rows, n_cols
 
-    def bb(self, frame, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
+    # def bb(self, frame, frame_title, rel_x, rel_y, rel_w, rel_h) -> None:
+    #     """ """
+    #     title_frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
+    #     title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
+    #     self.frame_distances(title_frame, 0, 1)
+    #     title_label = tk.Label(
+    #         title_frame,
+    #         text=frame_title,
+    #         bg=self.ui_settings.ui_bg_color_2,
+    #         fg=self.ui_settings.ui_title_font_color,
+    #         relief="raised",
+    #         justify="center",
+    #     )
+    #     title_label.grid(row=0, column=0, sticky="nsew")
+    #     title_label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
+
+    #     return None
+
+    # def aa(self, frame, frame_tag: str, frame_title: str):
+    #     """ """
+    #     rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
+    #     self.bb(frame, frame_title, rel_x, rel_y, rel_w, rel_h)
+    #     title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
+    #     frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
+    #     frame.place(
+    #         relx=rel_x,
+    #         rely=rel_y + title_offset,
+    #         relwidth=rel_w,
+    #         relheight=rel_h - title_offset,
+    #     )
+    #     self.frame_distances(frame, n_rows, n_cols)
+
+    #     return frame
+
+    def template_title(
+        self,
+        parent_frame: tk.Frame,
+        frame_title: str,
+        rel_x: float,
+        rel_y: float,
+        rel_w: float,
+        rel_h: float,
+    ) -> None:
         """ """
-        title_frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
+        title_frame = tk.Frame(parent_frame, bg=self.ui_settings.ui_bg_color_1)
         title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
         self.frame_distances(title_frame, 0, 1)
         title_label = tk.Label(
@@ -89,34 +104,17 @@ class GeneralUITemplate:
             justify="center",
         )
         title_label.grid(row=0, column=0, sticky="nsew")
-        title_label.config(
-            font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size)
-        )
+        title_label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
 
         return None
 
-    def aa(self, frame, frame_tag: str, frame_title: str):
-        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-        self.bb(frame, frame_title, rel_x, rel_y, rel_w, rel_h)
-        title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
-        frame = tk.Frame(frame, bg=self.ui_settings.ui_bg_color_1)
-        frame.place(
-            relx=rel_x,
-            rely=rel_y + title_offset,
-            relwidth=rel_w,
-            relheight=rel_h - title_offset,
-        )
-        self.frame_distances(frame, n_rows, n_cols)
-
-        return frame
-
-    def general_template_frames(self, frame_tag: str, frame_title: str) -> tk.Frame:
+    def gt_new_frame(self, parent_frame: tk.Frame, frame_tag: str, frame_title: str) -> tk.Frame:
         """ """
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-        self.template_title(frame_title, rel_x, rel_y, rel_w, rel_h)
+        self.template_title(parent_frame, frame_title, rel_x, rel_y, rel_w, rel_h)
         title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
 
-        frame = tk.Frame(self.root, bg=self.ui_settings.ui_bg_color_1)
+        frame = tk.Frame(parent_frame, bg=self.ui_settings.ui_bg_color_1)
         frame.place(
             relx=rel_x,
             rely=rel_y + title_offset,
@@ -127,8 +125,10 @@ class GeneralUITemplate:
 
         return frame
 
-    def general_template_entries(self, frame: tk.Frame, entry_key: str) -> None:
-
+    def gt_entry_widget(self, frame: tk.Frame, entry_key: str) -> None:
+        """
+        General template used for the creation of an tk.Entry widget.
+        """
         label = tk.Label(
             frame,
             text=self.ui_inp_vars[entry_key].text_val,
@@ -137,11 +137,7 @@ class GeneralUITemplate:
             relief="raised",
         )
 
-        label.grid(
-            row=self.ui_inp_vars[entry_key].rel_pos,
-            column=0,
-            sticky="nsew",
-        )
+        label.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=0, sticky="nsew")
 
         label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
 
@@ -159,18 +155,8 @@ class GeneralUITemplate:
 
         return None
 
-    def general_template_dropdown(self, frame: tk.Frame, dropdown_key: str) -> None:
-        """
-        General template used to create a dropdown widget.
-
-        Parameters
-        ----------
-        frame : tk.Frame
-            _description_
-        dropdown_key : str
-            _description_
-        """
-
+    def gt_combobox_widget(self, frame: tk.Frame, dropdown_key: str) -> None:
+        """ """
         label = tk.Label(
             frame,
             text=self.ui_inp_vars[dropdown_key].text_val,
@@ -180,13 +166,11 @@ class GeneralUITemplate:
             font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
         )
 
-        label.grid(
-            row=self.ui_inp_vars[dropdown_key].rel_pos,
-            column=0,
-            sticky="nsew",
-        )
+        label.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=0, sticky="nsew")
+
         max_len = max(len(item) for item in self.ui_inp_vars[dropdown_key].drop_options)
         max_len = 20
+
         combobox = ttk.Combobox(
             frame,
             textvariable=self.ui_inp_vars[dropdown_key].tk_var,
@@ -195,8 +179,5 @@ class GeneralUITemplate:
             font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
             width=max_len,
         )
-        combobox.grid(
-            row=self.ui_inp_vars[dropdown_key].rel_pos,
-            column=1,
-            sticky="nsew",
-        )
+
+        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="nsew")
