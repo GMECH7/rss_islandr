@@ -19,6 +19,9 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         root: tk.Toplevel,
         canvas_specs: list,
         frame_geometry_dict,
+        source_keys: list[str],
+        pathway_keys: list[str],
+        receptor_keys: list[str],
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -27,8 +30,8 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.frame_geometry_dict = frame_geometry_dict
         self.canvas_height = canvas_specs[0]
         self.canvas_width = canvas_specs[1]
-        self.notebook = ttk.Notebook(root)
-        self.notebook.pack(fill="both", expand=True)
+        # self.notebook = ttk.Notebook(root)
+        # self.notebook.pack(fill="both", expand=True)
 
         self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
         self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
@@ -39,18 +42,17 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         }
         self.__receptor_key_to_alias = self.receptor_aliases.getter()
 
-        self.__source_keys = ["IN"]
-        self.__pathway_keys = ["SL", "GW", "SW", "AR", "SD"]
-        self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
+        self.__source_keys = source_keys
+        self.__pathway_keys = pathway_keys
+        self.__receptor_keys = receptor_keys
         self.__source_pathway_keys = self.__source_keys + self.__pathway_keys
-        self.__source_pathway_receptor_keys = self.__source_pathway_keys + self.__receptor_keys
 
         self.__init__risk_selection_dict()
         self.__init__receptor_risk_selection_dict()
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
-        print("aaaaaaaaaaaaa", self.frame_geometry_dict)
+        # print("aaaaaaaaaaaaa", self.frame_geometry_dict)
         super().__init__(
             ui_settings,
             ui_inp_vars,
@@ -75,7 +77,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 parent_excel_col = None
 
             for i, mechanism_key in enumerate(mechanisms_dict):
-                print(key, i, mechanism_key)
+                # print(key, i, mechanism_key)
                 mechanism_alias = self.hazard_fetcher.getter(key, mechanism_key)["alias"]
                 severity_dict = self.hazard_fetcher.getter(key, mechanism_key)["severity"]
 
@@ -117,10 +119,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{key}_frame"].n_row = i + 2
-            print("aaaaaaaaaaaaa", self.frame_geometry_dict)
+            # print("aaaaaaaaaaaaa", self.frame_geometry_dict)
             # print(111111, i, self.ui_calc_vars[key])
             # print(222222, i, self.frame_geometry_dict[key])
-            print(333333, key, self.frame_geometry_dict[f"{key}_frame"].n_row)
+            # print(333333, key, self.frame_geometry_dict[f"{key}_frame"].n_row)
         return None
 
     def __init__risk_selection_dict(self):
@@ -221,10 +223,11 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
-    def __create_new_tab(self, frame_tag, frame_title, func):
+    def __create_new_tab(self, notebook, frame_tag, frame_title, func):
 
-        tab = tk.Frame(self.notebook)
-        self.notebook.add(tab, text=frame_title)
+        tab = tk.Frame(notebook)
+        notebook.add(tab, text=frame_title)
+
         self.__source_pathway_frame_creator(tab, frame_tag, frame_title, func)
 
     def __calculate_source_pathway_risk(self, frame: tk.Frame, frame_tag: str):
@@ -327,12 +330,25 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title))
         return frame_tags_titles
 
-    def ui(self, case: str, keys: list[str]):
+    def ui(self, parent_frame: tk.Frame, case: str):
 
-        frame_tags_titles = self.__create_frame_tags_titles(case, keys)
-        if case == "receptors":
-            func = self.__calculate_receptor_total_risk
-        else:
+        if case == "source":
+            frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             func = self.__calculate_source_pathway_risk
+            notebook = ttk.Notebook(parent_frame)
+            notebook.pack(fill="both", expand=True)
+
+        elif case == "pathways":
+            frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
+            func = self.__calculate_source_pathway_risk
+            notebook = ttk.Notebook(parent_frame)
+            notebook.pack(fill="both", expand=True)
+
+        elif case == "receptors":
+            frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
+            func = self.__calculate_receptor_total_risk
+            notebook = ttk.Notebook(parent_frame)
+            notebook.pack(fill="both", expand=True)
+
         for frame_tag, frame_title in frame_tags_titles:
-            self.__create_new_tab(frame_tag, frame_title, func)
+            self.__create_new_tab(notebook, frame_tag, frame_title, func)

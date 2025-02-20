@@ -40,7 +40,6 @@ class RSSUI:
 
         self.ui_inp_vars = {}  # this will be updated
         self.ui_calc_vars = {}  # this will be updated
-
         self.frame_geometry_dict = {}
 
         self.excel_file_template = PACKAGE_DIR / "templates/results.xlsx"
@@ -194,7 +193,7 @@ class RSSUI:
             canvas_specs,
             self.frame_geometry_dict,
         )
-        self.__window_creator_template(0, application)
+        self.__window_creator_template(0, application, self.site_info_page)
 
         canvas_specs = [
             self.ui_height,
@@ -209,15 +208,22 @@ class RSSUI:
             self.source_page,
             canvas_specs,
             self.frame_geometry_dict,
+            self.__source_keys,
+            self.__pathway_keys,
+            self.__receptor_keys,
         )
-        self.__window_creator_template(1, application2)
-        self.__window_creator_template(2, application2)
-        self.__window_creator_template(3, application2)
+        self.__window_creator_template(1, application2, self.source_page)
+        self.__window_creator_template(2, application2, self.pathways_page)
+        self.__window_creator_template(
+            3,
+            application2,
+            self.receptors_page,
+        )
 
         # Show the first page by default
         self.show_page(self.site_info_page)
 
-    def __window_creator_template(self, idx: int, application):
+    def __window_creator_template(self, idx: int, application, frame):
         """
         Creates UI elements for each page.
         """
@@ -242,11 +248,11 @@ class RSSUI:
         #     self.frame_geometry_dict,
         # )
         if idx == 1:
-            application.ui("source", self.__source_keys)
+            application.ui(frame, "source")
         elif idx == 2:
-            application.ui("pathways", self.__pathway_keys)
+            application.ui(frame, "pathways")
         elif idx == 3:
-            application.ui("receptors", self.__receptor_keys)
+            application.ui(frame, "receptors")
         else:
             application.ui()
 
