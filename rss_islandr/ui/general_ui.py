@@ -2,7 +2,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from rss_islandr.core.datatypes import UIInpVariable, UISettings
+from rss_islandr.core.datatypes import FramePlacing, UIInpVariable, UISettings
 
 
 class GeneralUITemplate:
@@ -10,7 +10,7 @@ class GeneralUITemplate:
         self,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
-        frame_geometry_dict,
+        frame_geometry_dict: dict[str, FramePlacing],
     ):
         """ """
         self.ui_inp_vars = ui_inp_vars

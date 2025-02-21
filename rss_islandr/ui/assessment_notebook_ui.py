@@ -7,7 +7,7 @@ from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
 from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTORS_JSON_DIR
-from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
+from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
@@ -18,9 +18,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        parent_frame: tk.Frame,
-        canvas_specs: list,
-        frame_geometry_dict,
+        frame_geometry_dict: dict[str, FramePlacing],
         source_keys: list[str],
         pathway_keys: list[str],
         receptor_keys: list[str],
@@ -228,7 +226,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def __create_new_tab(
         self, notebook: ttk.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
     ) -> None:
-        tab = tk.Frame(notebook, bg="red")
+        tab = tk.Frame(notebook, bg=self.ui_settings.ui_bg_color_2)
         notebook.add(tab, text=frame_title)
 
         self.__create_new_risk_frame(tab, frame_tag, frame_title, calc_risk_command)
@@ -331,23 +329,30 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def ui(self, parent_frame: tk.Frame, case: str):
         style = ttk.Style(parent_frame)
         style.theme_use("clam")
-        # Configure a custom notebook style
-        # Configure the Notebook style
+
+        #: Configure a custom notebook style
+        #: Configure the Notebook style
+        #: Background color of the entire Notebook
+        style.configure("Custom.TNotebook", background=self.ui_settings.ui_bg_color_1, borderwidth=0)
+        #: Style for inactive tabs
         style.configure(
-            "Custom.TNotebook", background="lightblue", borderwidth=0
-        )  # Background color of the entire Notebook
-        style.configure(
-            "Custom.TNotebook.Tab", background="lightgray", padding=[10, 5], font=("Helvetica", 10)
-        )  # Style for inactive tabs
+            "Custom.TNotebook.Tab",
+            background=self.ui_settings.ui_btn_font_color_1,
+            foreground=self.ui_settings.ui_font_color_2,
+            padding=[10, 5],
+            font=("Helvetica", 10),
+        )
+        #: Style for active tab
         style.map(
-            "Custom.TNotebook.Tab", background=[("selected", "darkblue")], foreground=[("selected", "white")]
-        )  # Style for active tab
-        style.configure("Custom.TFrame", background="lightyellow")
+            "Custom.TNotebook.Tab",
+            background=[("selected", self.ui_settings.ui_btn_bg_color_1)],
+            foreground=[("selected", self.ui_settings.ui_font_color_1)],
+        )
 
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             calc_risk_command = self.__calculate_source_pathway_risk
-            notebook = ttk.Notebook(parent_frame, style="Custom.TFrame")
+            notebook = ttk.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":

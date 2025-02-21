@@ -1,8 +1,10 @@
+import shutil
 import tkinter as tk
 from tkinter import messagebox
 
 import xlwings as xw
 
+from rss_islandr.core.config_parser import REPORTS_DIR, XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
 
 
@@ -42,10 +44,11 @@ class ExcelWriterBtnUI:
         self.__write_to_excel(values, positions)
 
     def __write_to_excel(self, values, positions):
+        shutil.copy(XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY)
         try:
             app = xw.App(visible=False)
             try:
-                workbook = xw.Book(self.excel_file_template)
+                workbook = xw.Book(XLSX_TEMPLATE_FILE_COPY)
             except FileNotFoundError:
                 workbook = xw.Book()
 
@@ -54,9 +57,10 @@ class ExcelWriterBtnUI:
                 if position is not None:
                     sheet.range(position).value = value
 
-            workbook.save("lelos.xlsx")
+            workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
             app.quit()
+            shutil.copy(XLSX_TEMPLATE_FILE_COPY, "reporting.xlsx")
             messagebox.showinfo("Success", "Values written to Excel successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

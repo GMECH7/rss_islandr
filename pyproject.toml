@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rss-islandr"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = ["Giorgos <gm7.gavroleon@gmail.com>"]
 readme = "README.md"
@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.12"
 pywin32 = "308"
 xlwings = "0.33.7"
+ttkbootstrap = "1.10.1"
+pywebview = "5.4"
 
 
 [build-system]

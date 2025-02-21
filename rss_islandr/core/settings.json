@@ -1,4 +1,14 @@
 {
+	"source_keys": [
+		"IN"
+	],
+	"pathway_keys": [
+		"SL",
+		"GW",
+		"SW",
+		"AR",
+		"SD"
+	],
 	"risk_limits_color": {
 		"green": [
 			0.0,
@@ -18,9 +28,9 @@
 			"ui_bg_color_1": "#19232d",
 			"ui_bg_color_2": "#292d3e",
 			"ui_font_color_1": "white",
-			"ui_font_color_2": "red",
+			"ui_font_color_2": "black",
 			"ui_btn_bg_color_1": "#19232d",
-			"ui_btn_bg_color_2": "orange",
+			"ui_btn_bg_color_2": "lightgray",
 			"ui_btn_font_color_1": "white",
 			"ui_btn_font_color_2": "white"
 		},
@@ -34,6 +44,7 @@
 			"ui_btn_font_color_1": "white",
 			"ui_btn_font_color_2": "white"
 		},
+		"app_title": "RSS-ISLANDR",
 		"font_type": "calibri",
 		"font_size": 12,
 		"ui_title_font_type": "calibri",
@@ -48,24 +59,6 @@
 			1600,
 			1600
 		],
-		"uis_canvas_names": {
-			"0": [
-				"Site information",
-				"Site info frame"
-			],
-			"1": [
-				"Risk assesment",
-				"Risk assesment"
-			],
-			"2": [
-				"Lelos",
-				"Risk assesment"
-			],
-			"3": [
-				"Lelos",
-				"Risk assesment"
-			]
-		},
 		"uis_frame_geometry": {
 			"site_info_frame": {
 				"x_l": 0.20,

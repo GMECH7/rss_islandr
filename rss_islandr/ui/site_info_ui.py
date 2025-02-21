@@ -4,11 +4,7 @@ import tkinter as tk
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
-from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable, UISettings
-
-
-class AnotherException(Exception):
-    pass
+from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 
 
 class SiteInfoUI(GeneralUITemplate):
@@ -18,8 +14,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
         parent_frame: tk.Frame,
-        canvas_specs: list,
-        frame_geometry_dict,
+        frame_geometry_dict: dict[str, FramePlacing],
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -30,9 +25,6 @@ class SiteInfoUI(GeneralUITemplate):
             self.data = json.load(file_inp)
 
         self.frame_geometry_dict = frame_geometry_dict
-        self.canvas_height = canvas_specs[0]
-        self.canvas_width = canvas_specs[1]
-        self.canvas_title = canvas_specs[2]
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
         self.__ui_inputs_entries()
@@ -108,11 +100,5 @@ class SiteInfoUI(GeneralUITemplate):
         return None
 
     def ui(self):
-        canvas = tk.Canvas(
-            self.parent_frame,
-            height=self.canvas_height,
-            width=self.canvas_width,
-            bg=self.ui_settings.ui_bg_color_1,
-        )
-        canvas.pack(fill="both", expand=True)
+        """ """
         self.site_info_frame()

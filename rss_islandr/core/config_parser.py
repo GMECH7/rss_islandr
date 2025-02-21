@@ -23,18 +23,27 @@ HYDRO_LEGEND_DIR = STATIC_DIR / "hydro_legend.png"
 
 DATA_DIR = PROJECT_DIR / "data"
 TEMPLATES_DIR = PROJECT_DIR / "templates"
+REPORTS_DIR = PROJECT_DIR / "reports"
 
 SETTINGS_JSON_DIR = PROJECT_DIR / "core" / "settings.json"
 RECEPTOR_FACTORS_JSON_DIR = DATA_DIR / "receptor_factors.json"
 RISK_FACTORS_JSON_DIR = DATA_DIR / "risk_factors.json"
 DROPDOWN_LISTS_JSON_DIR = DATA_DIR / "dropdown_lists.json"
-XLSX_FILE_DIR = TEMPLATES_DIR / "results.xlsx"
+XLSX_TEMPLATE_FILE = TEMPLATES_DIR / "results.xlsx"
+XLSX_TEMPLATE_FILE_COPY = TEMPLATES_DIR / "results__COPY.xlsx"
 with open(SETTINGS_JSON_DIR, "r", encoding="utf-8") as file_settings:
     settings = json.load(file_settings)
 
 # hardcoded
 skin_color = "dark_skin"
 
+#:
+source_keys: list[str] = settings["source_keys"]
+pathway_keys: list[str] = settings["pathway_keys"]
+risk_limits_color: dict[str, list[float]] = settings["risk_limits_color"]
+
+#: UI related settings
+app_title: str = settings["UI"]["app_title"]
 ui_title_font_type: str = settings["UI"]["ui_title_font_type"]
 ui_title_font_size: int = settings["UI"]["ui_title_font_size"]
 ui_title_font_color: str = settings["UI"]["ui_title_font_color"]
@@ -57,11 +66,7 @@ ui_btn_font_color_2: str = settings["UI"][skin_color]["ui_btn_font_color_2"]
 ui_heights: list[int] = settings["UI"]["ui_heights"]
 ui_widths: list[int] = settings["UI"]["ui_widths"]
 
-uis_canvas_names: dict[str, list["str"]] = settings["UI"]["uis_canvas_names"]
 uis_frame_geometry: dict[str, dict] = settings["UI"]["uis_frame_geometry"]
-
-
-risk_limits_color: dict[str, list[float]] = settings["risk_limits_color"]
 
 
 ui_settings = UISettings(
