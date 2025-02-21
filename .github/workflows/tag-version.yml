@@ -1,0 +1,51 @@
+name: Tag Version from pyproject.toml
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write # Grant write access to allow pushing tags
+
+jobs:
+  tag_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Extract version from pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(grep -oP '(?<=version = ")[^"]+' pyproject.toml)
+          echo "Version extracted: $VERSION"
+          echo "::set-output name=VERSION::$VERSION"
+
+      # Step to check if the tag already exists on the remote
+      - name: Check if tag exists on remote
+        id: check_tag
+        run: |
+          TAG="v${{ steps.get_version.outputs.VERSION }}"
+          if git ls-remote --tags origin | grep "refs/tags/$TAG"; then
+            echo "::set-output name=tag_exists::true"
+          else
+            echo "::set-output name=tag_exists::false"
+          fi
+
+      # Step to create and push the tag only if it doesn't exist
+      - name: Create and push Git tag if it does not exist
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Use GitHub's provided token
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.get_version.outputs.VERSION }}"
+          git push origin "v${{ steps.get_version.outputs.VERSION }}"
