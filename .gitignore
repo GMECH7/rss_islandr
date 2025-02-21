@@ -7,6 +7,8 @@ __pycache__/
 *.so
 islandr_env/
 islandr_env39/
+minimal.py
+reporting.xlsx
 _try_maps
 commands.txt
 # Distribution / packaging

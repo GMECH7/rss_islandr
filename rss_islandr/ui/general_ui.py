@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as tb
 
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable, UISettings
 
@@ -12,26 +11,20 @@ class GeneralUITemplate:
         ui_inp_vars: dict[str, UIInpVariable],
         frame_geometry_dict: dict[str, FramePlacing],
     ):
-        """ """
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
         self.frame_geometry_dict = frame_geometry_dict
 
     def __str__(self):
-        """ """
         return str(__class__.__name__)
 
-    def frame_distances(self, frame: tk.Frame, n_rows: int, n_cols: int) -> None:
-        """ """
+    def frame_distances(self, frame: tb.Frame, n_rows: int, n_cols: int) -> None:
         for i in range(n_rows):
             frame.grid_rowconfigure(i, weight=1)
         for i in range(n_cols):
             frame.grid_columnconfigure(i, weight=1)
 
-        return None
-
     def frame_limits(self, frame_tag: str) -> tuple:
-        """ """
         rel_x = self.frame_geometry_dict[frame_tag].x_l
         x_r = self.frame_geometry_dict[frame_tag].x_r
 
@@ -48,37 +41,25 @@ class GeneralUITemplate:
 
     def template_title(
         self,
-        parent_frame: tk.Frame,
+        parent_frame: tb.Frame,
         frame_title: str,
         rel_x: float,
         rel_y: float,
         rel_w: float,
         rel_h: float,
     ) -> None:
-        """ """
-        title_frame = tk.Frame(parent_frame, bg=self.ui_settings.ui_bg_color_1)
+        title_frame = tb.Frame(parent_frame)
         title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
         self.frame_distances(title_frame, 0, 1)
-        title_label = tk.Label(
-            title_frame,
-            text=frame_title,
-            bg=self.ui_settings.ui_bg_color_2,
-            fg=self.ui_settings.ui_title_font_color,
-            relief="raised",
-            justify="center",
-        )
+        title_label = tb.Label(title_frame, text=frame_title, anchor="center", justify="center", style="Title.TLabel")
         title_label.grid(row=0, column=0, sticky="nsew")
-        title_label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
 
-        return None
-
-    def gt_new_frame(self, parent_frame: tk.Frame, frame_tag: str, frame_title: str) -> tk.Frame:
-        """ """
+    def gt_new_frame(self, parent_frame: tb.Frame, frame_tag: str, frame_title: str) -> tb.Frame:
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
         self.template_title(parent_frame, frame_title, rel_x, rel_y, rel_w, rel_h)
         title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
 
-        frame = tk.Frame(parent_frame, bg=self.ui_settings.ui_bg_color_1)
+        frame = tb.Frame(parent_frame, style="Custom.TFrame")
         frame.place(
             relx=rel_x,
             rely=rel_y + title_offset,
@@ -89,59 +70,31 @@ class GeneralUITemplate:
 
         return frame
 
-    def gt_entry_widget(self, frame: tk.Frame, entry_key: str) -> None:
-        """
-        General template used for the creation of an tk.Entry widget.
-        """
-        label = tk.Label(
-            frame,
-            text=self.ui_inp_vars[entry_key].text_val,
-            bg=self.ui_settings.ui_bg_color_2,
-            fg=self.ui_settings.ui_font_color_1,
-            relief="raised",
-        )
-
+    def gt_entry_widget(self, frame: tb.Frame, entry_key: str) -> None:
+        label = tb.Label(frame, text=self.ui_inp_vars[entry_key].text_val, style="General.TLabel")
         label.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=0, sticky="nsew")
 
-        label.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
-
-        entry = tk.Entry(
+        entry = tb.Entry(
             frame,
             textvariable=self.ui_inp_vars[entry_key].tk_var,
-            bg=self.ui_settings.ui_bg_color_2,
-            fg=self.ui_settings.ui_font_color_1,
-            relief="raised",
-            justify="center",
+            justify="left",
+            style="EntryWidget.TLabel",
         )
-
         entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, sticky="nsew")
-        entry.config(font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_font_size))
 
-        return None
-
-    def gt_combobox_widget(self, frame: tk.Frame, dropdown_key: str) -> None:
-        """ """
-        label = tk.Label(
+    def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str) -> None:
+        label = tb.Label(
             frame,
             text=self.ui_inp_vars[dropdown_key].text_val,
-            bg=self.ui_settings.ui_bg_color_2,
-            fg=self.ui_settings.ui_font_color_1,
-            relief="raised",
+            style="General.TLabel",
             font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
         )
-
         label.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=0, sticky="nsew")
 
-        max_len = max(len(item) for item in self.ui_inp_vars[dropdown_key].drop_options)
-        max_len = 20
-
-        combobox = ttk.Combobox(
+        combobox = tb.Combobox(
             frame,
+            style="Custom.TCombobox",  # Apply the custom style
             textvariable=self.ui_inp_vars[dropdown_key].tk_var,
             values=self.ui_inp_vars[dropdown_key].drop_options or [],
-            state="readonly" if self.ui_inp_vars[dropdown_key].state == "disabled" else "normal",
-            font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
-            width=max_len,
         )
-
-        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="nsew")
+        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="new")

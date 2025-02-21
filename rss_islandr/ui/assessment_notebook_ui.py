@@ -1,8 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
 from typing import Callable
 
-# import ttkbootstrap as tb
+import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
@@ -101,7 +99,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     dropdown_severity.append(severity_alias)
                     alias_to_weight[severity_alias] = severity_weight
 
-                var = tk.StringVar()
+                var = tb.StringVar()
                 var.set(dropdown_severity[0])
 
                 # Store weight mapping for later use
@@ -121,7 +119,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 )
                 self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
 
-            ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
+            ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{risk_factor_key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{risk_factor_key}_frame"].n_row = i + 2
 
@@ -176,10 +174,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             dropdown_available_pathways_aliases = [
                 self.receptor_aliases.getter()[key] for key in dropdown_available_pathways_keys
             ]
-            pathway_var = tk.StringVar()
+            pathway_var = tb.StringVar()
             pathway_var.set(dropdown_available_pathways_aliases[0])
 
-            receptor_param = tk.StringVar()
+            receptor_param = tb.StringVar()
             receptor_param.set(dropdown_receptor_param[0])
 
             # Store weight mapping for later use
@@ -219,19 +217,19 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
             # always two rows in receptor dropdown
             excel_cell_risk = f"{parent_excel_col}{parent_excel_row + 2}"
-            ui_calc_var = UICalcVariable(tk.StringVar(value="0.0"), excel_cell_risk)
+            ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
     def __create_new_tab(
-        self, notebook: ttk.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
+        self, notebook: tb.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
     ) -> None:
-        tab = tk.Frame(notebook, bg=self.ui_settings.ui_bg_color_2)
+        tab = tb.Frame(notebook)
         notebook.add(tab, text=frame_title)
 
         self.__create_new_risk_frame(tab, frame_tag, frame_title, calc_risk_command)
 
-    def __calculate_source_pathway_risk(self, frame: tk.Frame, frame_tag: str):
+    def __calculate_source_pathway_risk(self, frame: tb.Frame, frame_tag: str):
         """
         Retrieves selected dropdown values and prints their corresponding weights.
         """
@@ -248,7 +246,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
         self.__light_bulb(frame, frame_tag, color)
 
-    def __calculate_receptor_total_risk(self, frame: tk.Frame, frame_tag: str) -> None:
+    def __calculate_receptor_total_risk(self, frame: tb.Frame, frame_tag: str) -> None:
         """ """
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
@@ -267,7 +265,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.ui_calc_vars[frame_tag].tk_var.set(f"{receptor_risk}")
         self.__light_bulb(frame, frame_tag, color)
 
-    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, calc_risk_command: Callable) -> tk.Frame:
+    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, calc_risk_command: Callable) -> tb.Frame:
         """ """
         frame_child = self.gt_new_frame(frame, frame_tag, frame_title)
 
@@ -279,18 +277,16 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__light_bulb(frame_child, frame_tag, "white")
 
         # frame_child_2 = tb.Frame(frame)
-        # frame_child_2 = tk.Frame(frame)
+        # frame_child_2 = tb.Frame(frame)
         # frame_child_2.place(relx=0.3, rely=0.5, relwidth=0.5, relheight=0.5)
-        # self.risk_meter = ttk.Progressbar(frame_child_2, orient="horizontal", length=200, mode="determinate")
+        # self.risk_meter = tb.Progressbar(frame_child_2, orient="horizontal", length=200, mode="determinate")
         # self.risk_meter.pack(fill="y")  # Adjust padding as needed
 
         return frame
 
-    def __btn_calculate_risk(self, frame: tk.Frame, frame_tag: str, calc_risk_command: Callable):
-        calculate_btn = tk.Button(
+    def __btn_calculate_risk(self, frame: tb.Frame, frame_tag: str, calc_risk_command: Callable):
+        calculate_btn = tb.Button(
             frame,
-            bg=self.ui_settings.ui_btn_bg_color_1,
-            fg=self.ui_settings.ui_btn_font_color_1,
             text="Calculate risk",
             command=lambda: calc_risk_command(frame, frame_tag),
         )
@@ -302,9 +298,9 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             sticky="nsew",
         )
 
-    def __light_bulb(self, frame: tk.Frame, frame_tag: str, color: str) -> None:
+    def __light_bulb(self, frame: tb.Frame, frame_tag: str, color: str) -> None:
         """ """
-        light = tk.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}", bg=color)
+        light = tb.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}")
         light.grid(
             row=self.frame_geometry_dict[frame_tag].n_row - 1,
             rowspan=2,
@@ -326,45 +322,23 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title))
         return frame_tags_titles
 
-    def ui(self, parent_frame: tk.Frame, case: str):
-        style = ttk.Style(parent_frame)
-        style.theme_use("clam")
-
-        #: Configure a custom notebook style
-        #: Configure the Notebook style
-        #: Background color of the entire Notebook
-        style.configure("Custom.TNotebook", background=self.ui_settings.ui_bg_color_1, borderwidth=0)
-        #: Style for inactive tabs
-        style.configure(
-            "Custom.TNotebook.Tab",
-            background=self.ui_settings.ui_btn_font_color_1,
-            foreground=self.ui_settings.ui_font_color_2,
-            padding=[10, 5],
-            font=("Helvetica", 10),
-        )
-        #: Style for active tab
-        style.map(
-            "Custom.TNotebook.Tab",
-            background=[("selected", self.ui_settings.ui_btn_bg_color_1)],
-            foreground=[("selected", self.ui_settings.ui_font_color_1)],
-        )
-
+    def ui(self, parent_frame: tb.Frame, case: str):
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             calc_risk_command = self.__calculate_source_pathway_risk
-            notebook = ttk.Notebook(parent_frame, style="Custom.TNotebook")
+            notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
             calc_risk_command = self.__calculate_source_pathway_risk
-            notebook = ttk.Notebook(parent_frame, style="Custom.TNotebook")
+            notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
             calc_risk_command = self.__calculate_receptor_total_risk
-            notebook = ttk.Notebook(parent_frame, style="Custom.TNotebook")
+            notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         for frame_tag, frame_title in frame_tags_titles:

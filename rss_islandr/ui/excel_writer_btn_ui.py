@@ -1,7 +1,7 @@
 import shutil
-import tkinter as tk
 from tkinter import messagebox
 
+import ttkbootstrap as tb
 import xlwings as xw
 
 from rss_islandr.core.config_parser import REPORTS_DIR, XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
@@ -65,11 +65,9 @@ class ExcelWriterBtnUI:
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
-    def button(self, frame: tk.Frame):
-        btn = tk.Button(
+    def button(self, frame: tb.Frame):
+        btn = tb.Button(
             frame,
-            bg=self.ui_settings.ui_btn_bg_color_1,
-            fg=self.ui_settings.ui_btn_font_color_1,
             text="Write to Excel",
             command=self.__on_button_click,
         )

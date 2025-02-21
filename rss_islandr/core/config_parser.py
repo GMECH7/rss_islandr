@@ -35,7 +35,7 @@ with open(SETTINGS_JSON_DIR, "r", encoding="utf-8") as file_settings:
     settings = json.load(file_settings)
 
 # hardcoded
-skin_color = "dark_skin"
+skin_color = "ttkboostrap_skin"
 
 #:
 source_keys: list[str] = settings["source_keys"]
@@ -51,11 +51,13 @@ ui_title_offset: float = settings["UI"]["ui_title_offset"]
 
 ui_bg_color_1: str = settings["UI"][skin_color]["ui_bg_color_1"]
 ui_bg_color_2: str = settings["UI"][skin_color]["ui_bg_color_2"]
+ui_bg_color_3: str = settings["UI"][skin_color]["ui_bg_color_3"]
 
 ui_font_type: str = settings["UI"]["font_type"]
 ui_font_size: int = settings["UI"]["font_size"]
 ui_font_color_1: str = settings["UI"][skin_color]["ui_font_color_1"]
 ui_font_color_2: str = settings["UI"][skin_color]["ui_font_color_2"]
+ui_font_color_3: str = settings["UI"][skin_color]["ui_font_color_3"]
 
 ui_btn_bg_color_1: str = settings["UI"][skin_color]["ui_btn_bg_color_1"]
 ui_btn_bg_color_2: str = settings["UI"][skin_color]["ui_btn_bg_color_2"]
@@ -76,10 +78,12 @@ ui_settings = UISettings(
     ui_title_offset,
     ui_bg_color_1,
     ui_bg_color_2,
+    ui_bg_color_3,
     ui_font_type,
     ui_font_size,
     ui_font_color_1,
     ui_font_color_2,
+    ui_font_color_3,
     ui_btn_bg_color_1,
     ui_btn_bg_color_2,
     ui_btn_font_color_1,
