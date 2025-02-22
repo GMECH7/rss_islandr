@@ -69,6 +69,7 @@ class CustomThemes:
             background=self.ui_settings.ui_bg_color_1,  # Background color
             foreground=self.ui_settings.ui_font_color_1,  # Font color
             font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_title_font_size, "bold"),  # Font type
+            relief="solid",
         )
 
         self.__style.configure(
@@ -82,6 +83,8 @@ class CustomThemes:
             "EntryWidget.TLabel",
             background=self.ui_settings.ui_bg_color_1,
             foreground=self.ui_settings.ui_font_color_1,
+            font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size, "bold"),  # Font type
+            borderwidth=0,  # Border width
         )
 
     def custom_frame(self):
@@ -92,14 +95,48 @@ class CustomThemes:
         )
 
     def custom_combobox(self):
+        self.__style.layout(
+            "Custom.TCombobox",
+            [
+                (
+                    "Combobox.button",  # Reintroduce the button element
+                    {
+                        "side": "right",  # Place the button on the right
+                        "children": [
+                            (
+                                "Combobox.downarrow",  # Element name
+                                {"sticky": "ns"},  # Properties
+                            )
+                        ],
+                    },
+                ),
+                (
+                    "Combobox.field",
+                    {
+                        "sticky": "nswe",  # Make the field stretch in all directions
+                        "border": "0",  # Remove any border
+                        "children": [
+                            (
+                                "Combobox.padding",
+                                {
+                                    "sticky": "nswe",  # Make padding stretch
+                                    "children": [
+                                        ("Combobox.textarea", {"sticky": "nswe"})  # Make text area stretch
+                                    ],
+                                },
+                            )
+                        ],
+                    },
+                ),
+            ],
+        )
+
         self.__style.configure(
             "Custom.TCombobox",
-            background=self.ui_settings.ui_bg_color_1,  # Background color of the Combobox
+            background=self.ui_settings.ui_bg_color_2,  # Background color of the Combobox
             foreground=self.ui_settings.ui_font_color_1,  # Text color
-            fieldbackground=self.ui_settings.ui_font_color_3,  # Background color of the input field
-            relief="flat",  # Remove border relief to allow full expansion
-            bordercolor="black",  # Border color (if needed)
-            arrowcolor="white",  # Color of the dropdown arrow
+            fieldbackground=self.ui_settings.ui_bg_color_1,  # Background color of the input field
+            arrowcolor=self.ui_settings.ui_bg_color_3,
         )
 
     def __call__(self):

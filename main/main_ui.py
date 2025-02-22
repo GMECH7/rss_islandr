@@ -28,11 +28,10 @@ class RSSUI:
     """Implementation of main UI"""
 
     def __init__(self, theme: str, root: tb.Window):
-        self.root = root
-        self.ui_settings = ui_settings
         ct = CustomThemes(theme, ui_settings)
         ct()
-
+        self.root = root
+        self.ui_settings = ui_settings
         self.main_view_height = ui_heights[0]
         self.main_view_width = ui_widths[0]
         self.ui_height = ui_heights[1]
@@ -48,6 +47,7 @@ class RSSUI:
 
         self.ui_inp_vars = {}
         self.ui_calc_vars = {}
+        self.meter_frames = {}
         self.frame_geometry_dict = {}
 
         self.excel_file_template = XLSX_TEMPLATE_FILE
@@ -56,10 +56,12 @@ class RSSUI:
         self.__source_keys = source_keys
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
+        self.__all_keys = self.__source_keys + self.__pathway_keys + self.__receptor_keys
         self.__frame_families = {
             "source_frame": [f"{inp}_frame" for inp in self.__source_keys],
             "pathway_frames": [f"{inp}_frame" for inp in self.__pathway_keys],
             "receptor_frames": [f"{inp}_frame" for inp in self.__receptor_keys],
+            "risk_frames": [f"{inp}_frame_risk" for inp in self.__all_keys],
         }
         self.__init__populate_frame_infos_dict()
         self.map_open = False
@@ -72,8 +74,12 @@ class RSSUI:
                 x_r = frame_info.get("x_r", 1.0)
                 y_u = frame_info.get("y_u", 0.0)
                 y_d = frame_info.get("y_d", 1.0)
+                #: the number of rows is updated in code
                 n_row = frame_info.get("n_row", 1)
-                n_col = frame_info.get("n_col", 1)
+                n_cols = 1 if frame_key == "risk_frames" else 2
+
+                #: the number of columns are by default 2 (1 label left 1 widget right)
+                n_col = frame_info.get("n_col", n_cols)
 
                 if frame_key in self.__frame_families:
                     for frame_key_specific in self.__frame_families[frame_key]:
@@ -180,6 +186,7 @@ class RSSUI:
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
+            self.meter_frames,
             self.frame_geometry_dict,
             self.__source_keys,
             self.__pathway_keys,
@@ -212,7 +219,7 @@ class RSSUI:
 
 
 def main():
-    theme = "superhero"
+    theme = "darkly"
     root = tb.Window(themename=theme)
     root.title(app_title)
     root.iconbitmap(ICO_DIR)

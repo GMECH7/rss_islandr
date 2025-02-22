@@ -1,3 +1,6 @@
+from PIL import Image
+
+Image.CUBIC = Image.BICUBIC
 from typing import Callable
 
 import ttkbootstrap as tb
@@ -16,6 +19,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
+        meter_frames: dict[str, tb.Meter],
         frame_geometry_dict: dict[str, FramePlacing],
         source_keys: list[str],
         pathway_keys: list[str],
@@ -25,6 +29,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
         self.frame_geometry_dict = frame_geometry_dict
+        self.meter_frames = meter_frames
 
         self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
         self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
@@ -240,11 +245,8 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             weights.append(selected_weight)
 
         risk = risk_calc(weights)
-
-        color = risk_color_assignment(risk)
-
         self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
-        self.__light_bulb(frame, frame_tag, color)
+        self.__update_meter(frame_tag, risk)
 
     def __calculate_receptor_total_risk(self, frame: tb.Frame, frame_tag: str) -> None:
         """ """
@@ -260,27 +262,30 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         pathway_risk = float(self.ui_calc_vars[f"{pathway_key}_frame"].tk_var.get())
 
         receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
-        color = risk_color_assignment(receptor_risk)
 
         self.ui_calc_vars[frame_tag].tk_var.set(f"{receptor_risk}")
-        self.__light_bulb(frame, frame_tag, color)
+        self.__update_meter(frame_tag, receptor_risk)
+
+    def __update_meter(self, frame_tag, risk: float):
+        # Determine the color based on the new value
+        color_ttk = risk_color_assignment(risk)
+        self.meter_frames[f"{frame_tag}_risk"].configure(amountused=100 * risk, bootstyle=color_ttk)
 
     def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, calc_risk_command: Callable) -> tb.Frame:
         """ """
-        frame_child = self.gt_new_frame(frame, frame_tag, frame_title)
+        #: Create frame that will hold the entries, dropdowns etc.
+        frame_form = self.gt_new_frame(frame, frame_tag, frame_title)
+        #: Create frame that will hold risk meter
+        frame_risk_meter = self.gt_new_frame_wo(frame, f"{frame_tag}_risk")
 
         for dropdown_key in self.ui_inp_vars:
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
-                self.gt_combobox_widget(frame_child, dropdown_key)
+                self.gt_combobox_widget(frame_form, dropdown_key)
 
-        self.__btn_calculate_risk(frame_child, frame_tag, calc_risk_command)
-        self.__light_bulb(frame_child, frame_tag, "white")
+        self.__btn_calculate_risk(frame_form, frame_tag, calc_risk_command)
 
-        # frame_child_2 = tb.Frame(frame)
-        # frame_child_2 = tb.Frame(frame)
-        # frame_child_2.place(relx=0.3, rely=0.5, relwidth=0.5, relheight=0.5)
-        # self.risk_meter = tb.Progressbar(frame_child_2, orient="horizontal", length=200, mode="determinate")
-        # self.risk_meter.pack(fill="y")  # Adjust padding as needed
+        meter = self.gt_meter_widget(frame_risk_meter, f"{frame_tag}_risk")
+        self.meter_frames[f"{frame_tag}_risk"] = meter
 
         return frame
 
@@ -293,18 +298,9 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         calculate_btn.grid(
             row=self.frame_geometry_dict[frame_tag].n_row - 1,
-            rowspan=2,
             column=0,
-            sticky="nsew",
-        )
-
-    def __light_bulb(self, frame: tb.Frame, frame_tag: str, color: str) -> None:
-        """ """
-        light = tb.Label(frame, text=f"{self.ui_calc_vars[frame_tag].tk_var.get()}")
-        light.grid(
-            row=self.frame_geometry_dict[frame_tag].n_row - 1,
             rowspan=2,
-            column=1,
+            columnspan=2,
             sticky="nsew",
         )
 

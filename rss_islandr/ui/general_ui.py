@@ -55,6 +55,7 @@ class GeneralUITemplate:
         title_label.grid(row=0, column=0, sticky="nsew")
 
     def gt_new_frame(self, parent_frame: tb.Frame, frame_tag: str, frame_title: str) -> tb.Frame:
+        """Create new frame with title (used in forms)"""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
         self.template_title(parent_frame, frame_title, rel_x, rel_y, rel_w, rel_h)
         title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
@@ -65,6 +66,20 @@ class GeneralUITemplate:
             rely=rel_y + title_offset,
             relwidth=rel_w,
             relheight=rel_h - title_offset,
+        )
+        self.frame_distances(frame, n_rows, n_cols)
+
+        return frame
+
+    def gt_new_frame_wo(self, parent_frame: tb.Frame, frame_tag: str) -> tb.Frame:
+        """Create new frame without title (used in risk meters)"""
+        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
+        frame = tb.Frame(parent_frame, style="Custom.TFrame")
+        frame.place(
+            relx=rel_x,
+            rely=rel_y,
+            relwidth=rel_w,
+            relheight=rel_h,
         )
         self.frame_distances(frame, n_rows, n_cols)
 
@@ -87,7 +102,6 @@ class GeneralUITemplate:
             frame,
             text=self.ui_inp_vars[dropdown_key].text_val,
             style="General.TLabel",
-            font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size),
         )
         label.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=0, sticky="nsew")
 
@@ -97,4 +111,22 @@ class GeneralUITemplate:
             textvariable=self.ui_inp_vars[dropdown_key].tk_var,
             values=self.ui_inp_vars[dropdown_key].drop_options or [],
         )
-        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="new")
+
+        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="nsew")
+
+    def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
+        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
+        print(rel_x, rel_y, rel_w, rel_h, n_rows, n_cols, frame_tag)
+        meter_widget = tb.Meter(
+            frame,
+            amountused=0,  # Initial value (e.g., 0%)
+            metertype="full",  # Type of meter: "full", "semi", or "arc"
+            subtext="Risk Level",  # Text below the meter
+            interactive=False,  # Disable user interaction
+        )
+        frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
+
+        self.frame_distances(frame, n_rows, n_cols)
+        meter_widget.grid(row=0, column=0, sticky="nsew")
+
+        return meter_widget
