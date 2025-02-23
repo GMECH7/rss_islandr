@@ -1,30 +1,25 @@
 import ttkbootstrap as tb
+
 from rss_islandr.core.datatypes import UISettings
-# TLabel (for ttk.Label)
-
-# TButton (for ttk.Button)
-
-# TCombobox (for ttk.Combobox)
-
-# TFrame (for ttk.Frame)
-
-# TNotebook (for ttk.Notebook)
-
-# TEntry (for ttk.Entry)
-
-# TCheckbutton (for ttk.Checkbutton)
 
 
-# TRadiobutton (for ttk.Radiobutton)
 class CustomThemes:
     """
     Defining custom themes
     ----------------------
     Once defined they may be infered with their style alias directly anywhere in the code.
 
-    The standard convention is to use the format:
+    The standard naming convention of a new syle: CustomName.WidgetType
 
-    CustomName.WidgetType
+    WidgetType options:
+        * TLabel (for ttk.Label)
+        * TButton (for ttk.Button)
+        * TCombobox (for ttk.Combobox)
+        * TFrame (for ttk.Frame)
+        * TNotebook (for ttk.Notebook)
+        * TEntry (for ttk.Entry)
+        * TCheckbutton (for ttk.Checkbutton)
+        * TRadiobutton (for ttk.Radiobutton)
     """
 
     def __init__(self, theme: str, ui_settings: UISettings):
@@ -34,7 +29,7 @@ class CustomThemes:
 
     def __str_to_color(self):
         """
-        This will convert str to style.color. For example 'dark' will become style.color.dark
+        Conversion str to style.color. For example 'dark' will become style.color.dark
         and then will be assigned to the corresponding ui_setting.
         """
         try:
@@ -48,6 +43,7 @@ class CustomThemes:
             raise ValueError(f"Color '{self.ui_settings.ui_bg_color_2}' not found in style.colors")
 
     def custom_notebook(self):
+        """Custom styles for Notebook widgets"""
         self.__style.configure("Custom.TNotebook", background=self.ui_settings.ui_bg_color_1, borderwidth=0.0)
 
         #: Style for inactive tabs
@@ -64,6 +60,7 @@ class CustomThemes:
         )
 
     def custom_labels(self):
+        """Custom styles for label widgets"""
         self.__style.configure(
             "Title.TLabel",
             background=self.ui_settings.ui_bg_color_1,  # Background color
@@ -89,9 +86,20 @@ class CustomThemes:
 
     def custom_frame(self):
         self.__style.configure(
+            "NavbarPad.TFrame",
+            background=self.ui_settings.ui_bg_color_1,
+        )
+        self.__style.configure(
             "Custom.TFrame",
             background=self.ui_settings.ui_bg_color_1,
             foreground=self.ui_settings.ui_font_color_1,
+        )
+
+    def custom_buttons(self):
+        self.__style.configure(
+            "Navbar.TButton",
+            background="red",
+            foreground="green",
         )
 
     def custom_combobox(self):
@@ -152,3 +160,4 @@ class CustomThemes:
         self.custom_labels()
         self.custom_frame()
         self.custom_combobox()
+        self.custom_buttons()

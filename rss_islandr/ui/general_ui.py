@@ -116,7 +116,6 @@ class GeneralUITemplate:
 
     def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-        print(rel_x, rel_y, rel_w, rel_h, n_rows, n_cols, frame_tag)
         meter_widget = tb.Meter(
             frame,
             amountused=0,  # Initial value (e.g., 0%)

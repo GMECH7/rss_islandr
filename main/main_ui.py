@@ -2,7 +2,6 @@ import sys
 
 import ttkbootstrap as tb
 from main_imports import PACKAGE_DIR
-from ttkbootstrap.constants import PRIMARY, SECONDARY, SUCCESS
 
 from rss_islandr.core.config_parser import (
     ICO_DIR,
@@ -99,14 +98,17 @@ class RSSUI:
 
     def __create_navbar(self) -> tb.Frame:
         nav_bar_frame = tb.Frame(self.root)
-        nav_bar_frame.place(relx=0, rely=0, relwidth=0.10, relheight=1.0)
+        nav_bar_frame.place(relx=0, rely=0, relwidth=self.__navbar_width, relheight=1.0)
         self.frame_distances(nav_bar_frame)
+        nav_bar_pad_frame = tb.Frame(self.root, style="NavbarPad.TFrame")
+        nav_bar_pad_frame.place(relx=self.__navbar_width, rely=0, relwidth=self.__navbar_padx, relheight=1.0)
         return nav_bar_frame
 
     def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
         btn_site_info = tb.Button(
             nav_bar_frame,
             text="Site info",
+            style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.site_info_page),
         )
         btn_site_info.grid(row=0, column=0, sticky="nsew")
@@ -115,6 +117,7 @@ class RSSUI:
         self.btn_map = tb.Button(
             nav_bar_frame,
             text="Show Map",
+            style=self.ui_settings.ui_btn_bg_color_1,
             command=self.toggle_map,
         )
         self.btn_map.grid(row=1, column=0, sticky="nsew")
@@ -123,6 +126,7 @@ class RSSUI:
         btn_source = tb.Button(
             nav_bar_frame,
             text="Source",
+            style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.source_page),
         )
         btn_source.grid(row=2, column=0, sticky="nsew")
@@ -131,7 +135,7 @@ class RSSUI:
         btn_pathways = tb.Button(
             nav_bar_frame,
             text="Pathways",
-            style="secondary",
+            style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.pathways_page),
         )
         btn_pathways.grid(row=3, column=0, sticky="nsew")
@@ -140,6 +144,7 @@ class RSSUI:
         btn_receptors = tb.Button(
             nav_bar_frame,
             text="Receptors",
+            style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.receptors_page),
         )
         btn_receptors.grid(row=4, column=0, sticky="nsew")
@@ -176,10 +181,19 @@ class RSSUI:
             self.pathways_page,
             self.receptors_page,
         ]:
-            self.page.place(relx=self.__frames_xstart, rely=0, relwidth=self.__frames_width, relheight=1.0)
+            self.page.place(
+                relx=self.__frames_xstart,
+                rely=0,
+                relwidth=self.__frames_width,
+                relheight=1.0,
+            )
 
         app_site_info = SiteInfoUI(
-            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.site_info_page, self.frame_geometry_dict
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.site_info_page,
+            self.frame_geometry_dict,
         )
 
         app_assesment = AssessmentNoteBookUI(

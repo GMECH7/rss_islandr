@@ -241,7 +241,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         weights = []
         for data in self.__risk_selection[frame_tag].values():
             selected_alias = data["var"].get()
-            selected_weight = data["weights"].get(selected_alias, 0.0)
+            selected_weight = data["weights"].get(selected_alias, "0")
             weights.append(selected_weight)
 
         risk = risk_calc(weights)
@@ -269,7 +269,14 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def __update_meter(self, frame_tag, risk: float):
         # Determine the color based on the new value
         color_ttk = risk_color_assignment(risk)
-        self.meter_frames[f"{frame_tag}_risk"].configure(amountused=100 * risk, bootstyle=color_ttk)
+
+        if risk == 0.0:
+            risk_formatted = "{:.0f}".format(risk)
+            boot_style = "default"
+        else:
+            risk_formatted = "{:.1f}".format(100 * risk)
+            boot_style = color_ttk
+        self.meter_frames[f"{frame_tag}_risk"].configure(amountused=risk_formatted, bootstyle=boot_style)
 
     def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, calc_risk_command: Callable) -> tb.Frame:
         """ """

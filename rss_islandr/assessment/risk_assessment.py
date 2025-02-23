@@ -1,7 +1,7 @@
 from core.config_parser import risk_limits_color
 
 
-def risk_calc(weight_values: list, roundoff=3) -> float:
+def risk_calc(weight_values: list) -> float:
     """
     _summary_
 
@@ -17,14 +17,11 @@ def risk_calc(weight_values: list, roundoff=3) -> float:
     float
         _description_
     """
-    if len(weight_values) == 0:
-        return 0.0
-
     risk_value = 1.0
     for val in weight_values:
         risk_value *= val
 
-    return round(risk_value, roundoff)
+    return risk_value
 
 
 def risk_color_assignment(value: float) -> str:
