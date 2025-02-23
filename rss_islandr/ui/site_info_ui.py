@@ -1,10 +1,13 @@
 import json
+import locale
 
 import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
+
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")  # or 'C.UTF-8', 'en_GB.UTF-8', etc.
 
 
 class SiteInfoUI(GeneralUITemplate):
@@ -27,8 +30,22 @@ class SiteInfoUI(GeneralUITemplate):
         self.frame_geometry_dict = frame_geometry_dict
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
+        self.__date_entries()
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
+
+    def __date_entries(self):
+        """ """
+        self.date_assessed = tb.StringVar(value="2015-02-03")
+        date_var = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.date_assessed,
+            rel_pos=2,
+            text_val="Date",
+            text_descr=None,
+            excel_cell="E3",
+        )
+        self.ui_inp_vars.update({"date_0_00": date_var})
 
     def __ui_inputs_entries(self) -> None:
         """
@@ -59,7 +76,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_activity = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.activity_var,
-            rel_pos=1,
+            rel_pos=2,
             text_val="Select Activity/Industry",
             text_descr=None,
             drop_options=self.activity_options,
@@ -69,7 +86,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_land_use = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.land_use_var,
-            rel_pos=2,
+            rel_pos=3,
             text_val="Select Land Use",
             text_descr=None,
             drop_options=self.land_use_options,
@@ -89,6 +106,12 @@ class SiteInfoUI(GeneralUITemplate):
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.parent_frame, frame_tag, frame_title)
 
+        date_entry = tb.DateEntry(frame, bootstyle="info", dateformat="%Y-%m-%d")
+
+        date_entry.grid(row=1, columnspan=2, sticky="new")
+
+        date_entry.bind("<<DateEntrySelected>>", lambda event: self.update_date_var(date_entry))
+
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
                 self.gt_entry_widget(frame, key)
@@ -96,8 +119,11 @@ class SiteInfoUI(GeneralUITemplate):
                 self.gt_combobox_widget(frame, key)
             else:
                 pass
-
         return None
+
+    def update_date_var(self, date_widget: tb.DateEntry):
+        print("fffff")
+        self.date_assessed.set(date_widget.entry.get())  # Update the variable with the selected date
 
     def ui(self):
         """ """

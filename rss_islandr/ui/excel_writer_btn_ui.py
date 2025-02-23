@@ -29,6 +29,8 @@ class ExcelWriterBtnUI:
                 value = self.ui_inp_vars[key].tk_var.get()
                 positions.append(position)
                 values.append(value)
+                if key == "date_0_00":
+                    print(position, value)
             except Exception:
                 pass
 
