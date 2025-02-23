@@ -1,8 +1,9 @@
-import tkinter as tk
 from dataclasses import dataclass, field
 from typing import List, Optional, TypedDict, Union
 
-TkValues = Union[tk.StringVar, tk.IntVar, tk.DoubleVar, tk.BooleanVar]
+import ttkbootstrap as tb
+
+TkValues = Union[tb.StringVar, tb.IntVar, tb.DoubleVar, tb.BooleanVar]
 
 
 class SeverityDict(TypedDict):
@@ -40,7 +41,7 @@ class UIInpVariable:
 
 @dataclass
 class UICalcVariable:
-    tk_var: tk.StringVar
+    tk_var: tb.StringVar
     excel_cell: Optional[str] = None
 
 
@@ -63,10 +64,12 @@ class UISettings:
     ui_title_offset: float
     ui_bg_color_1: str
     ui_bg_color_2: str
+    ui_bg_color_3: str
     ui_font_type: str
     ui_font_size: int
     ui_font_color_1: str
     ui_font_color_2: str
+    ui_font_color_3: str
     ui_btn_bg_color_1: str
     ui_btn_bg_color_2: str
     ui_btn_font_color_1: str

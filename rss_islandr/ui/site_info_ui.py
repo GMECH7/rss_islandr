@@ -1,6 +1,6 @@
 import json
-import tkinter as tk
 
+import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
@@ -13,7 +13,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        parent_frame: tk.Frame,
+        parent_frame: tb.Frame,
         frame_geometry_dict: dict[str, FramePlacing],
     ):
         self.ui_settings = ui_settings
@@ -34,7 +34,7 @@ class SiteInfoUI(GeneralUITemplate):
         """
         Definition of inputs. Used in __init__.
         """
-        self.site_name = tk.StringVar()
+        self.site_name = tb.StringVar()
         ui_var_site_name = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.site_name,
@@ -50,10 +50,10 @@ class SiteInfoUI(GeneralUITemplate):
         """
         Method used in __init__.
         """
-        self.activity_var = tk.StringVar()
+        self.activity_var = tb.StringVar()
         self.activity_options = self.data["activity_or_industry"]
 
-        self.land_use_var = tk.StringVar()
+        self.land_use_var = tb.StringVar()
         self.land_use_options = self.data["land_uses"]
 
         ui_var_activity = UIInpVariable(

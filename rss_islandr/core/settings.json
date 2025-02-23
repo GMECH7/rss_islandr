@@ -10,20 +10,32 @@
 		"SD"
 	],
 	"risk_limits_color": {
-		"green": [
+		"success": [
 			0.0,
 			0.10
 		],
-		"orange": [
+		"warning": [
 			0.10,
 			0.30
 		],
-		"red": [
+		"danger": [
 			0.30,
 			1.0
 		]
 	},
 	"UI": {
+		"ttkboostrap_skin": {
+			"ui_bg_color_1": "dark",
+			"ui_bg_color_2": "light",
+			"ui_bg_color_3": "info",
+			"ui_font_color_1": "light",
+			"ui_font_color_2": "dark",
+			"ui_font_color_3": "success",
+			"ui_btn_bg_color_1": "light-outline",
+			"ui_btn_bg_color_2": "light-solid",
+			"ui_btn_font_color_1": "light",
+			"ui_btn_font_color_2": "white"
+		},
 		"dark_skin": {
 			"ui_bg_color_1": "#19232d",
 			"ui_bg_color_2": "#292d3e",
@@ -48,7 +60,7 @@
 		"font_type": "calibri",
 		"font_size": 12,
 		"ui_title_font_type": "calibri",
-		"ui_title_font_size": 12,
+		"ui_title_font_size": 14,
 		"ui_title_font_color": "white",
 		"ui_title_offset": 0.03,
 		"ui_heights": [
@@ -64,9 +76,15 @@
 				"x_l": 0.20,
 				"x_r": 0.80,
 				"y_u": 0.10,
-				"y_d": 0.90,
+				"y_d": 0.50,
 				"n_row": 3,
 				"n_col": 2
+			},
+			"risk_frames": {
+				"x_l": 0.30,
+				"x_r": 0.70,
+				"y_u": 0.50,
+				"y_d": 0.81
 			},
 			"source_frame": {
 				"x_l": 0.30,
