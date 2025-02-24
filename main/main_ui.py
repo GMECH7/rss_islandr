@@ -19,6 +19,7 @@ from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
+from rss_islandr.ui.home_ui import HomeUI
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
@@ -27,7 +28,9 @@ class RSSUI:
     """Implementation of main UI"""
 
     def __init__(self, theme: str, root: tb.Window):
-        ct = CustomThemes(theme, ui_settings)
+        self.theme = theme
+        #: Create custom themes
+        ct = CustomThemes(tb.Style(theme), ui_settings)
         ct()
         self.root = root
         self.ui_settings = ui_settings
@@ -36,7 +39,7 @@ class RSSUI:
         self.ui_height = ui_heights[1]
         self.ui_width = ui_widths[1]
 
-        self.frame_n_rows = 7
+        self.frame_n_rows = 8
         self.frame_n_cols = 1
         self.__navbar_width = 0.1
         self.__navbar_padx = 0.005
@@ -104,6 +107,15 @@ class RSSUI:
         nav_bar_pad_frame.place(relx=self.__navbar_width, rely=0, relwidth=self.__navbar_padx, relheight=1.0)
         return nav_bar_frame
 
+    def __create_home_btn(self, nav_bar_frame: tb.Frame):
+        btn_home = tb.Button(
+            nav_bar_frame,
+            text="Home Page",
+            style=self.ui_settings.ui_btn_bg_color_1,
+            command=lambda: self.show_page(self.home_page),
+        )
+        btn_home.grid(row=0, column=0, sticky="nsew")
+
     def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
         btn_site_info = tb.Button(
             nav_bar_frame,
@@ -111,7 +123,7 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.site_info_page),
         )
-        btn_site_info.grid(row=0, column=0, sticky="nsew")
+        btn_site_info.grid(row=1, column=0, sticky="nsew")
 
     def __create_map_btn(self, nav_bar_frame: tb.Frame) -> None:
         self.btn_map = tb.Button(
@@ -120,7 +132,7 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=self.toggle_map,
         )
-        self.btn_map.grid(row=1, column=0, sticky="nsew")
+        self.btn_map.grid(row=2, column=0, sticky="nsew")
 
     def __create_source_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_source = tb.Button(
@@ -129,7 +141,7 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.source_page),
         )
-        btn_source.grid(row=2, column=0, sticky="nsew")
+        btn_source.grid(row=3, column=0, sticky="nsew")
 
     def __create_pathways_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_pathways = tb.Button(
@@ -138,7 +150,7 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.pathways_page),
         )
-        btn_pathways.grid(row=3, column=0, sticky="nsew")
+        btn_pathways.grid(row=4, column=0, sticky="nsew")
 
     def __create_receptors_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_receptors = tb.Button(
@@ -147,7 +159,7 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.show_page(self.receptors_page),
         )
-        btn_receptors.grid(row=4, column=0, sticky="nsew")
+        btn_receptors.grid(row=5, column=0, sticky="nsew")
 
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
         excel_writer = ExcelWriterBtnUI(
@@ -157,10 +169,12 @@ class RSSUI:
             self.excel_file_template,
         )
         btn_xlsx_writer = excel_writer.button(nav_bar_frame)
-        btn_xlsx_writer.grid(row=6, column=0, sticky="nsew")
+        btn_xlsx_writer.grid(row=7, column=0, sticky="nsew")
 
     def create_ui(self) -> None:
         nav_bar_frame = self.__create_navbar()
+        #: Create navbar buttons
+        self.__create_home_btn(nav_bar_frame)
         self.__create_site_info_btn(nav_bar_frame)
         self.__create_map_btn(nav_bar_frame)
         self.__create_source_btn(nav_bar_frame)
@@ -168,6 +182,7 @@ class RSSUI:
         self.__create_receptors_btn(nav_bar_frame)
         self.__create_xlsx_writer_btn(nav_bar_frame)
 
+        self.home_page = tb.Frame(self.root)
         self.site_info_page = tb.Frame(self.root)
         self.map_page = tb.Frame(self.root)
         self.source_page = tb.Frame(self.root)
@@ -175,6 +190,7 @@ class RSSUI:
         self.receptors_page = tb.Frame(self.root)
 
         for self.page in [
+            self.home_page,
             self.site_info_page,
             self.map_page,
             self.source_page,
@@ -187,6 +203,8 @@ class RSSUI:
                 relwidth=self.__frames_width,
                 relheight=1.0,
             )
+
+        app_home = HomeUI(self.home_page, self.theme)
 
         app_site_info = SiteInfoUI(
             self.ui_settings,
@@ -207,12 +225,13 @@ class RSSUI:
             self.__receptor_keys,
         )
 
+        app_home.ui()
         app_site_info.ui()
         app_assesment.ui(self.source_page, "source")
         app_assesment.ui(self.pathways_page, "pathways")
         app_assesment.ui(self.receptors_page, "receptors")
 
-        self.show_page(self.site_info_page)
+        self.show_page(self.home_page)
 
     def show_page(self, page):
         page.tkraise()

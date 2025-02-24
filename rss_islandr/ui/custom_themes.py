@@ -22,8 +22,8 @@ class CustomThemes:
         * TRadiobutton (for ttk.Radiobutton)
     """
 
-    def __init__(self, theme: str, ui_settings: UISettings):
-        self.__style = tb.Style(theme)
+    def __init__(self, style: tb.Style, ui_settings: UISettings):
+        self.__style = style
         self.ui_settings = ui_settings
         self.__str_to_color()
 
@@ -40,7 +40,7 @@ class CustomThemes:
             self.ui_settings.ui_font_color_2 = getattr(self.__style.colors, self.ui_settings.ui_font_color_2)
             self.ui_settings.ui_font_color_3 = getattr(self.__style.colors, self.ui_settings.ui_font_color_3)
         except AttributeError:
-            raise ValueError(f"Color '{self.ui_settings.ui_bg_color_2}' not found in style.colors")
+            raise ValueError("Color not found in style.colors")
 
     def custom_notebook(self):
         """Custom styles for Notebook widgets"""
