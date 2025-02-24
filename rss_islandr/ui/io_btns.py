@@ -97,7 +97,7 @@ class IOBtns:
         if not file_path:  # User canceled the dialog
             return
 
-        with open("scenario.json", "w") as scenario_file:
+        with open(file_path, "w") as scenario_file:
             json.dump(self.saved_scenario, scenario_file, indent=4)
 
     def btn_write_scenario(self, frame: tb.Frame) -> tb.Button:
@@ -112,7 +112,7 @@ class IOBtns:
 
         if not file_path:  # User canceled the dialog
             return
-        with open("scenario.json", "r") as file:
+        with open(file_path, "r") as file:
             scenario_data = json.load(file)
         for ui_inp_var in self.ui_inp_vars:
             self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
