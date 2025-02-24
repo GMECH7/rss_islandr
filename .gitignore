@@ -9,6 +9,8 @@ islandr_env/
 islandr_env39/
 minimal.py
 reporting.xlsx
+scenario.json
+
 _try_maps
 commands.txt
 # Distribution / packaging

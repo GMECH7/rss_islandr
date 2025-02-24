@@ -18,8 +18,8 @@ from rss_islandr.core.config_parser import (
 from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
-from rss_islandr.ui.excel_writer_btn_ui import ExcelWriterBtnUI
 from rss_islandr.ui.home_ui import HomeUI
+from rss_islandr.ui.io_btns import IOBtns
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
@@ -39,7 +39,7 @@ class RSSUI:
         self.ui_height = ui_heights[1]
         self.ui_width = ui_widths[1]
 
-        self.frame_n_rows = 8
+        self.frame_n_rows = 10
         self.frame_n_cols = 1
         self.__navbar_width = 0.1
         self.__navbar_padx = 0.005
@@ -162,14 +162,34 @@ class RSSUI:
         btn_receptors.grid(row=5, column=0, sticky="nsew")
 
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
-        excel_writer = ExcelWriterBtnUI(
+        excel_writer = IOBtns(
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.excel_file_template,
         )
-        btn_xlsx_writer = excel_writer.button(nav_bar_frame)
+        btn_xlsx_writer = excel_writer.btn_write_xlsx(nav_bar_frame)
         btn_xlsx_writer.grid(row=7, column=0, sticky="nsew")
+
+    def __create_scenario_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
+        excel_writer = IOBtns(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.excel_file_template,
+        )
+        btn_scenario_writer = excel_writer.btn_write_scenario(nav_bar_frame)
+        btn_scenario_writer.grid(row=8, column=0, sticky="nsew")
+
+    def __create_scenario_reader_btn(self, nav_bar_frame: tb.Frame) -> None:
+        excel_writer = IOBtns(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.excel_file_template,
+        )
+        btn_scenario_writer = excel_writer.btn_read_scenario(nav_bar_frame)
+        btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
 
     def create_ui(self) -> None:
         nav_bar_frame = self.__create_navbar()
@@ -181,6 +201,8 @@ class RSSUI:
         self.__create_pathways_btn(nav_bar_frame)
         self.__create_receptors_btn(nav_bar_frame)
         self.__create_xlsx_writer_btn(nav_bar_frame)
+        self.__create_scenario_writer_btn(nav_bar_frame)
+        self.__create_scenario_reader_btn(nav_bar_frame)
 
         self.home_page = tb.Frame(self.root)
         self.site_info_page = tb.Frame(self.root)
