@@ -25,7 +25,7 @@
 	},
 	"UI": {
 		"ttkboostrap_skin": {
-			"ui_bg_color_1": "dark",
+			"ui_bg_color_1": "secondary",
 			"ui_bg_color_2": "light",
 			"ui_bg_color_3": "info",
 			"ui_font_color_1": "light",

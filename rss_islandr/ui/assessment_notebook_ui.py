@@ -123,6 +123,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     state="enabled",
                 )
                 self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
+                self.ui_inp_vars[f"drop_{risk_factor_key}_1_0{i}"].tk_var.trace_add(
+                    "write",
+                    lambda *args, rfk=risk_factor_key, idx=i: self.__calculate_source_pathway_risk(f"{rfk}_frame"),
+                )
 
             ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{risk_factor_key}_frame": ui_calc_var})
@@ -219,12 +223,31 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             )
             self.ui_inp_vars.update({f"drop_{key}_1_0": ui_var_pathway})
             self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
+            self.ui_inp_vars[f"drop_{key}_1_0"].tk_var.trace_add(
+                "write",
+                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_frame"),
+            )
+            self.ui_inp_vars[f"drop_{key}_1_1"].tk_var.trace_add(
+                "write",
+                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_frame"),
+            )
 
             # always two rows in receptor dropdown
             excel_cell_risk = f"{parent_excel_col}{parent_excel_row + 2}"
             ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
             self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
+
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
+
+        # self.ui_calc_vars["SL_frame"].tk_var.trace_add(
+        #     "write", lambda *args: self.__calculate_receptor_total_risk("SL_receptor_frame")
+        # )
+
+        # self.ui_calc_vars["AR_frame"].tk_var.trace_add(
+        #     "write", lambda *args: self.__calculate_receptor_total_risk("SL_receptor_frame")
+        # )
+
+        print(self.ui_calc_vars.keys())
 
     def __create_new_tab(
         self, notebook: tb.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
@@ -234,10 +257,11 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         self.__create_new_risk_frame(tab, frame_tag, frame_title, calc_risk_command)
 
-    def __calculate_source_pathway_risk(self, frame: tb.Frame, frame_tag: str):
+    def __calculate_source_pathway_risk(self, frame_tag: str):
         """
         Retrieves selected dropdown values and prints their corresponding weights.
         """
+        print("THIS IS MY TAG", frame_tag)
         weights = []
         for data in self.__risk_selection[frame_tag].values():
             selected_alias = data["var"].get()
@@ -246,10 +270,14 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         risk = risk_calc(weights)
         self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
-        self.__update_meter(frame_tag, risk)
+        self.__update_meter(frame_tag)
 
-    def __calculate_receptor_total_risk(self, frame: tb.Frame, frame_tag: str) -> None:
-        """ """
+    def __calculate_receptor_total_risk(self, frame_tag: str) -> None:
+        """
+        Calculate the total risk of the receptor.
+        For this the respective source and the pathway risks should have been precalcualted.
+        """
+        print(frame_tag)
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
         pathway_alias = data["pathway"].get()
@@ -264,10 +292,12 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
 
         self.ui_calc_vars[frame_tag].tk_var.set(f"{receptor_risk}")
-        self.__update_meter(frame_tag, receptor_risk)
 
-    def __update_meter(self, frame_tag, risk: float):
-        # Determine the color based on the new value
+        self.__update_meter(frame_tag)
+
+    def __update_meter(self, frame_tag: str):
+        """Update meter on button click"""
+        risk = float(self.ui_calc_vars[frame_tag].tk_var.get())
         color_ttk = risk_color_assignment(risk)
 
         if risk == 0.0:
@@ -300,7 +330,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         calculate_btn = tb.Button(
             frame,
             text="Calculate risk",
-            command=lambda: calc_risk_command(frame, frame_tag),
+            command=lambda: calc_risk_command(frame_tag),
         )
 
         calculate_btn.grid(

@@ -50,20 +50,20 @@ class HomeUI:
         # Determine the new theme and update button text accordingly
         if self.theme == "darkly":  # If the current theme is dark, switch to light
             self.theme = "minty"
-            self.toggle_button.config(text="Switch to Dark Mode")
+            self.toggle_button.config(text="Switch to Light Mode")
         else:  # If the current theme is light, switch to dark
             self.theme = "darkly"
-            self.toggle_button.config(text="Switch to Light Mode")
+            self.toggle_button.config(text="Switch to Dark Mode")
 
         # Reinitialize the style with the new theme
         self.__style = tb.Style(theme=self.theme)
         ct = CustomThemes(self.__style, ui_settings)
         ct()
 
-        self.ui_settings = ui_settings
+        # self.ui_settings = ui_settings
 
     def __toggle_btn(self, frame: tb.Frame):
-        self.toggle_button = tb.Button(frame, text="Switch to Dark Mode", command=self.toggle_theme)
+        self.toggle_button = tb.Button(frame, text="Switch to Light Mode", command=self.toggle_theme)
         self.toggle_button.pack(pady=20)
 
     def ui(self):
