@@ -19,7 +19,7 @@ from rss_islandr.core.datatypes import FramePlacing
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.home_ui import HomeUI
-from rss_islandr.ui.io_btns import IOBtns
+from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
@@ -162,33 +162,18 @@ class RSSUI:
         btn_receptors.grid(row=5, column=0, sticky="nsew")
 
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
-        excel_writer = IOBtns(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.excel_file_template,
-        )
-        btn_xlsx_writer = excel_writer.btn_write_xlsx(nav_bar_frame)
+        excel_writer = ExportExcelReportBtn(self.ui_inp_vars, self.ui_calc_vars)
+        btn_xlsx_writer = excel_writer.btn(nav_bar_frame)
         btn_xlsx_writer.grid(row=7, column=0, sticky="nsew")
 
     def __create_scenario_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
-        excel_writer = IOBtns(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.excel_file_template,
-        )
-        btn_scenario_writer = excel_writer.btn_write_scenario(nav_bar_frame)
+        excel_writer = ExportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
+        btn_scenario_writer = excel_writer.btn(nav_bar_frame)
         btn_scenario_writer.grid(row=8, column=0, sticky="nsew")
 
     def __create_scenario_reader_btn(self, nav_bar_frame: tb.Frame) -> None:
-        excel_writer = IOBtns(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.excel_file_template,
-        )
-        btn_scenario_writer = excel_writer.btn_read_scenario(nav_bar_frame)
+        excel_writer = ImportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
+        btn_scenario_writer = excel_writer.btn(nav_bar_frame)
         btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
 
     def create_ui(self) -> None:

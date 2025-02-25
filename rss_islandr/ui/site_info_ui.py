@@ -122,7 +122,6 @@ class SiteInfoUI(GeneralUITemplate):
         return None
 
     def update_date_var(self, date_widget: tb.DateEntry):
-        print("fffff")
         self.date_assessed.set(date_widget.entry.get())  # Update the variable with the selected date
 
     def ui(self):
