@@ -30,18 +30,20 @@ class SiteInfoUI(GeneralUITemplate):
         self.frame_geometry_dict = frame_geometry_dict
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
-        self.__date_entries()
+        self.__ui_inputs_dates()
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
 
-    def __date_entries(self):
-        """ """
-        self.date_assessed = tb.StringVar(value="2015-02-03")
+    def __ui_inputs_dates(self):
+        """
+        Definition of date widget inputs.
+        """
+        self.date_assessed = tb.StringVar()
         date_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.date_assessed,
-            rel_pos=2,
-            text_val="Date",
+            rel_pos=1,
+            text_val="Assessment date",
             text_descr=None,
             excel_cell="E3",
         )
@@ -49,7 +51,7 @@ class SiteInfoUI(GeneralUITemplate):
 
     def __ui_inputs_entries(self) -> None:
         """
-        Definition of inputs. Used in __init__.
+        Definition of entry widget inputs.
         """
         self.site_name = tb.StringVar()
         ui_var_site_name = UIInpVariable(
@@ -65,13 +67,16 @@ class SiteInfoUI(GeneralUITemplate):
 
     def __ui_inputs_dropdown(self) -> None:
         """
-        Method used in __init__.
+        Definition of dropdown widget inputs.
         """
         self.activity_var = tb.StringVar()
         self.activity_options = self.data["activity_or_industry"]
 
         self.land_use_var = tb.StringVar()
         self.land_use_options = self.data["land_uses"]
+
+        self.soil_type_var = tb.StringVar()
+        self.soil_type_options = self.data["soil_type"]
 
         ui_var_activity = UIInpVariable(
             frame_tag="site_info_frame",
@@ -93,8 +98,19 @@ class SiteInfoUI(GeneralUITemplate):
             excel_cell="J2",
         )
 
+        ui_var_soil_type = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.soil_type_var,
+            rel_pos=4,
+            text_val="Select Soil type",
+            text_descr=None,
+            drop_options=self.soil_type_options,
+            excel_cell="J3",
+        )
+
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
         self.ui_inp_vars.update({"drop_0_01": ui_var_land_use})
+        self.ui_inp_vars.update({"drop_0_02": ui_var_soil_type})
 
         return None
 
@@ -106,23 +122,16 @@ class SiteInfoUI(GeneralUITemplate):
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.parent_frame, frame_tag, frame_title)
 
-        date_entry = tb.DateEntry(frame, bootstyle="info", dateformat="%Y-%m-%d")
-
-        date_entry.grid(row=1, columnspan=2, sticky="new")
-
-        date_entry.bind("<<DateEntrySelected>>", lambda event: self.update_date_var(date_entry))
-
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
                 self.gt_entry_widget(frame, key)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "drop" in key:
                 self.gt_combobox_widget(frame, key)
+            elif self.ui_inp_vars[key].frame_tag == frame_tag and "date" in key:
+                self.gt_date_entry_widget(frame, key)
             else:
                 pass
         return None
-
-    def update_date_var(self, date_widget: tb.DateEntry):
-        self.date_assessed.set(date_widget.entry.get())  # Update the variable with the selected date
 
     def ui(self):
         """ """

@@ -200,5 +200,19 @@
     "Wetlands - Maritime wetlands",
     "Water Bodies - Inland Waters",
     "Water Bodies - Marine Waters"
+  ],
+  "soil_type": [
+    "SILT - clayey silt",
+    "SILT - sandy silt",
+    "SILT - gravelly silt",
+    "CLAY - silty clay",
+    "CLAY - sandy clay",
+    "CLAY - gravelly clay",
+    "SAND - silty sand",
+    "SAND - clayey sand",
+    "SAND - gravelly sand",
+    "GRAVEL - silty gravel",
+    "GRAVEL - clayey gravel",
+    "GRAVEL - sandy gravel"
   ]
 }

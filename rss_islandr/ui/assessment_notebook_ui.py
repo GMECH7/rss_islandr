@@ -48,6 +48,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
+        self.__init__create_traces_receptors()
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
 
@@ -239,15 +240,36 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
-        # self.ui_calc_vars["SL_frame"].tk_var.trace_add(
-        #     "write", lambda *args: self.__calculate_receptor_total_risk("SL_receptor_frame")
-        # )
+    def __init__create_traces_receptors(self):
+        """Receptors are dependent on sources and pathways"""
 
-        # self.ui_calc_vars["AR_frame"].tk_var.trace_add(
-        #     "write", lambda *args: self.__calculate_receptor_total_risk("SL_receptor_frame")
-        # )
-
-        print(self.ui_calc_vars.keys())
+        # IN_frame everywhere
+        # THE OTHER frames may never be triggered
+        for receptor_key in self.__receptor_keys:
+            self.ui_calc_vars["IN_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            self.ui_calc_vars["SL_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            self.ui_calc_vars["GW_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            self.ui_calc_vars["SW_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            self.ui_calc_vars["AR_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            self.ui_calc_vars["SD_frame"].tk_var.trace_add(
+                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
+            )
+            # for pathway in self.receptor_fetcher.getter(receptor_key)["available_pathways"]:
+            #     print(1111, pathway)
+            #     self.ui_calc_vars[f"{receptor_key}_frame"].tk_var.trace_add(
+            #         "write",
+            #         lambda *args, rfk=pathway: self.__calculate_receptor_total_risk(f"{rfk}_receptor_frame"),
+            #     )
 
     def __create_new_tab(
         self, notebook: tb.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
@@ -277,7 +299,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         Calculate the total risk of the receptor.
         For this the respective source and the pathway risks should have been precalcualted.
         """
-        print(frame_tag)
+        print("I am in receptor man", frame_tag)
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
         pathway_alias = data["pathway"].get()

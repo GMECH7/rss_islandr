@@ -102,41 +102,12 @@ class GeneralUITemplate:
 
         return frame
 
-    # def gt_entry_widget(self, frame: tb.Frame, entry_key: str) -> None:
-    #     label = tb.Label(frame, text=self.ui_inp_vars[entry_key].text_val, style="General.TLabel")
-    #     label.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=0, sticky="nsew")
-
-    #     entry = tb.Entry(
-    #         frame,
-    #         textvariable=self.ui_inp_vars[entry_key].tk_var,
-    #         justify="left",
-    #         style="EntryWidget.TLabel",
-    #     )
-    #     entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, sticky="nsew")
-
     def gt_entry_widget(self, frame: tb.Frame, entry_key: str) -> None:
         label = tb.Label(frame, text=self.ui_inp_vars[entry_key].text_val)
         label.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=0, sticky="we")
 
         entry = tb.Entry(frame, textvariable=self.ui_inp_vars[entry_key].tk_var, justify="left")
         entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, sticky="we")
-
-    # def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str) -> None:
-    #     label = tb.Label(
-    #         frame,
-    #         text=self.ui_inp_vars[dropdown_key].text_val,
-    #         style="General.TLabel",
-    #     )
-    #     label.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=0, sticky="nsew")
-
-    #     combobox = tb.Combobox(
-    #         frame,
-    #         style="Custom.TCombobox",  # Apply the custom style
-    #         textvariable=self.ui_inp_vars[dropdown_key].tk_var,
-    #         values=self.ui_inp_vars[dropdown_key].drop_options or [],
-    #     )
-
-    #     combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="nsew")
 
     def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str) -> None:
         label = tb.Label(frame, text=self.ui_inp_vars[dropdown_key].text_val)
@@ -151,6 +122,7 @@ class GeneralUITemplate:
         combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="we")
 
     def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
+        """create a meter widget and place it in a frame."""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
         meter_widget = tb.Meter(
             frame,
@@ -165,3 +137,16 @@ class GeneralUITemplate:
         meter_widget.grid(row=0, column=0, sticky="nsew")
 
         return meter_widget
+
+    def gt_date_entry_widget(self, frame: tb.Frame, date_key: str):
+        """ """
+        label = tb.Label(frame, text=self.ui_inp_vars[date_key].text_val)
+        label.grid(row=self.ui_inp_vars[date_key].rel_pos, column=0, sticky="we")
+        date_entry = tb.DateEntry(frame, bootstyle="dark", dateformat="%Y-%m-%d")
+        date_entry.grid(row=self.ui_inp_vars[date_key].rel_pos, column=1, sticky="we")
+        date_entry.bind("<FocusOut>", lambda event: self.__update_date_var(event, date_entry, date_key))
+
+    def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
+        """ """
+        date = date_entry.entry.get()
+        self.ui_inp_vars[date_key].tk_var.set(date)  # type: ignore
