@@ -9,7 +9,7 @@ class CustomThemes:
     ----------------------
     Once defined they may be infered with their style alias directly anywhere in the code.
 
-    The standard naming convention of a new syle: CustomName.WidgetType
+    The standard naming convention of a new syle is: CustomName.WidgetType
 
     WidgetType options:
         * TLabel (for ttk.Label)
@@ -24,7 +24,7 @@ class CustomThemes:
 
     def __init__(self, style: tb.Style, ui_settings: UISettings):
         self.__style = style
-        self.ui_settings = ui_settings
+        self.__ui_settings = ui_settings
         self.__str_to_color()
 
     def __str_to_color(self):
@@ -33,76 +33,76 @@ class CustomThemes:
         and then will be assigned to the corresponding ui_setting.
         """
         try:
-            self.ui_settings.ui_bg_color_1 = getattr(self.__style.colors, self.ui_settings.ui_bg_color_1)
-            self.ui_settings.ui_bg_color_2 = getattr(self.__style.colors, self.ui_settings.ui_bg_color_2)
-            self.ui_settings.ui_bg_color_3 = getattr(self.__style.colors, self.ui_settings.ui_bg_color_3)
-            self.ui_settings.ui_font_color_1 = getattr(self.__style.colors, self.ui_settings.ui_font_color_1)
-            self.ui_settings.ui_font_color_2 = getattr(self.__style.colors, self.ui_settings.ui_font_color_2)
-            self.ui_settings.ui_font_color_3 = getattr(self.__style.colors, self.ui_settings.ui_font_color_3)
+            self.__ui_bg_color_1 = getattr(self.__style.colors, self.__ui_settings.ui_bg_color_1)
+            self.__ui_bg_color_2 = getattr(self.__style.colors, self.__ui_settings.ui_bg_color_2)
+            self.__ui_font_color_1 = getattr(self.__style.colors, self.__ui_settings.ui_font_color_1)
+            self.__ui_font_color_2 = getattr(self.__style.colors, self.__ui_settings.ui_font_color_2)
         except AttributeError:
             raise ValueError("Color not found in style.colors")
 
     def custom_notebook(self):
         """Custom styles for Notebook widgets"""
-        self.__style.configure("Custom.TNotebook", background=self.ui_settings.ui_bg_color_1, borderwidth=0.0)
+        self.__style.configure("Custom.TNotebook", background=self.__ui_bg_color_1, borderwidth=0.0)
 
         #: Style for inactive tabs
         self.__style.configure(
             "Custom.TNotebook.Tab",
-            background=self.ui_settings.ui_bg_color_2,
-            foreground=self.ui_settings.ui_font_color_2,
+            background=self.__ui_bg_color_2,
+            foreground=self.__ui_font_color_2,
         )
         #: Style for active tab
         self.__style.map(
             "Custom.TNotebook.Tab",
-            background=[("selected", self.ui_settings.ui_bg_color_1)],
-            foreground=[("selected", self.ui_settings.ui_font_color_1)],
+            background=[("selected", self.__ui_bg_color_1)],
+            foreground=[("selected", self.__ui_font_color_1)],
         )
 
     def custom_labels(self):
         """Custom styles for label widgets"""
         self.__style.configure(
             "Title.TLabel",
-            background=self.ui_settings.ui_bg_color_1,  # Background color
-            foreground=self.ui_settings.ui_font_color_1,  # Font color
-            font=(self.ui_settings.ui_title_font_type, self.ui_settings.ui_title_font_size, "bold"),  # Font type
+            background=self.__ui_bg_color_1,  # Background color
+            foreground=self.__ui_font_color_1,  # Font color
+            font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),  # Font type
             relief="solid",
         )
 
         self.__style.configure(
             "General.TLabel",
-            background=self.ui_settings.ui_bg_color_1,
-            foreground=self.ui_settings.ui_font_color_1,
-            font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size, "bold"),  # Font type
+            background=self.__ui_bg_color_1,
+            foreground=self.__ui_font_color_1,
+            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),  # Font type
         )
 
         self.__style.configure(
             "EntryWidget.TLabel",
-            background=self.ui_settings.ui_bg_color_1,
-            foreground=self.ui_settings.ui_font_color_1,
-            font=(self.ui_settings.ui_font_type, self.ui_settings.ui_font_size, "bold"),  # Font type
+            background=self.__ui_bg_color_1,
+            foreground=self.__ui_font_color_1,
+            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),  # Font type
             borderwidth=0,  # Border width
         )
 
     def custom_frame(self):
         self.__style.configure(
             "NavbarPad.TFrame",
-            background=self.ui_settings.ui_bg_color_1,
+            background=self.__ui_bg_color_1,
         )
         self.__style.configure(
             "Custom.TFrame",
-            background=self.ui_settings.ui_bg_color_1,
-            foreground=self.ui_settings.ui_font_color_1,
+            background=self.__ui_bg_color_1,
+            foreground=self.__ui_font_color_1,
         )
 
     def custom_buttons(self):
+        """Not USED"""
         self.__style.configure(
             "Navbar.TButton",
-            background="red",
-            foreground="green",
+            background="light",
+            foreground="dark",
         )
 
     def custom_combobox(self):
+        """Not USED"""
         self.__style.layout(
             "Custom.TCombobox",
             [
@@ -141,10 +141,10 @@ class CustomThemes:
 
         self.__style.configure(
             "Custom.TCombobox",
-            background=self.ui_settings.ui_bg_color_2,  # Background color of the Combobox
-            foreground=self.ui_settings.ui_font_color_1,  # Text color
-            fieldbackground=self.ui_settings.ui_bg_color_1,  # Background color of the input field
-            arrowcolor=self.ui_settings.ui_bg_color_3,
+            background=self.__ui_bg_color_2,  # Background color of the Combobox
+            foreground=self.__ui_font_color_1,  # Text color
+            fieldbackground=self.__ui_bg_color_1,  # Background color of the input field
+            arrowcolor=self.__ui_bg_color_2,
         )
 
     def __call__(self):
@@ -159,5 +159,5 @@ class CustomThemes:
         self.custom_notebook()
         self.custom_labels()
         self.custom_frame()
-        self.custom_combobox()
+        # self.custom_combobox()
         self.custom_buttons()

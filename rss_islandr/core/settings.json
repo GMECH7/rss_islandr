@@ -24,37 +24,27 @@
 		]
 	},
 	"UI": {
-		"ttkboostrap_skin": {
-			"ui_bg_color_1": "secondary",
+		"dark": {
+			"ui_ttkbootstrap_theme": "darkly",
+			"ui_bg_color_1": "dark",
 			"ui_bg_color_2": "light",
-			"ui_bg_color_3": "info",
 			"ui_font_color_1": "light",
 			"ui_font_color_2": "dark",
-			"ui_font_color_3": "success",
 			"ui_btn_bg_color_1": "light-outline",
 			"ui_btn_bg_color_2": "light-solid",
 			"ui_btn_font_color_1": "light",
-			"ui_btn_font_color_2": "white"
+			"ui_btn_font_color_2": "dark"
 		},
-		"dark_skin": {
-			"ui_bg_color_1": "#19232d",
-			"ui_bg_color_2": "#292d3e",
-			"ui_font_color_1": "white",
-			"ui_font_color_2": "black",
-			"ui_btn_bg_color_1": "#19232d",
-			"ui_btn_bg_color_2": "lightgray",
-			"ui_btn_font_color_1": "white",
-			"ui_btn_font_color_2": "white"
-		},
-		"islandr_skin": {
-			"ui_bg_color_1": "#1f3498",
-			"ui_bg_color_2": "white",
-			"ui_font_color_1": "#800000",
-			"ui_font_color_2": "#9cb146",
-			"ui_btn_bg_color_1": "blue",
-			"ui_btn_bg_color_2": "orange",
-			"ui_btn_font_color_1": "white",
-			"ui_btn_font_color_2": "white"
+		"light": {
+			"ui_ttkbootstrap_theme": "morph",
+			"ui_bg_color_1": "light",
+			"ui_bg_color_2": "secondary",
+			"ui_font_color_1": "secondary",
+			"ui_font_color_2": "light",
+			"ui_btn_bg_color_1": "secondary-outline",
+			"ui_btn_bg_color_2": "secondary-solid",
+			"ui_btn_font_color_1": "dark",
+			"ui_btn_font_color_2": "dark"
 		},
 		"app_title": "RSS-ISLANDR",
 		"font_type": "calibri",

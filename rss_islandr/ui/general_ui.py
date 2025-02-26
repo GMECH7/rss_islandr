@@ -10,10 +10,12 @@ class GeneralUITemplate:
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         frame_geometry_dict: dict[str, FramePlacing],
+        **kwargs,
     ):
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
         self.frame_geometry_dict = frame_geometry_dict
+        self.__widgets_reconfigured = kwargs.get("widgets_reconfigured", {})
 
     def __str__(self):
         return str(__class__.__name__)
@@ -142,9 +144,10 @@ class GeneralUITemplate:
         """ """
         label = tb.Label(frame, text=self.ui_inp_vars[date_key].text_val)
         label.grid(row=self.ui_inp_vars[date_key].rel_pos, column=0, sticky="we")
-        date_entry = tb.DateEntry(frame, bootstyle="dark", dateformat="%Y-%m-%d")
+        date_entry = tb.DateEntry(frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d")
         date_entry.grid(row=self.ui_inp_vars[date_key].rel_pos, column=1, sticky="we")
         date_entry.bind("<FocusOut>", lambda event: self.__update_date_var(event, date_entry, date_key))
+        self.__widgets_reconfigured[date_entry] = "ui_bg_color_1"
 
     def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
         """ """

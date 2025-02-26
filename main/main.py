@@ -12,7 +12,6 @@ filename = "risk_factors.json"
 filename_2 = "receptor_factors.json"
 
 if __name__ == "__main__":
-
     json_file = os.path.join(filepath, filename)
     hazard_fetcher = RisksDataFetcher(json_file)
 
@@ -45,5 +44,3 @@ if __name__ == "__main__":
         parameter_alias = receptor_fetcher.getter("SL", parameter_key)["alias"]
         parameter_weight = receptor_fetcher.getter("SL", parameter_key)["weight"]
         param_alias_to_weight[parameter_alias] = parameter_weight
-
-    print(param_alias_to_weight)

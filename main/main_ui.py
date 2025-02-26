@@ -6,16 +6,16 @@ from main_imports import PACKAGE_DIR
 from rss_islandr.core.config_parser import (
     ICO_DIR,
     MAP_DIR,
-    XLSX_TEMPLATE_FILE,
     app_title,
     pathway_keys,
+    settings,
     source_keys,
     ui_heights,
-    ui_settings,
     ui_widths,
     uis_frame_geometry,
 )
 from rss_islandr.core.datatypes import FramePlacing
+from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.home_ui import HomeUI
@@ -27,17 +27,20 @@ from rss_islandr.ui.site_info_ui import SiteInfoUI
 class RSSUI:
     """Implementation of main UI"""
 
-    def __init__(self, theme: str, root: tb.Window):
-        self.theme = theme
+    def __init__(self, root: tb.Window):
+        self.ui_settings = read_skin_details(settings, "dark")
+        self.theme = self.ui_settings.ui_ttkbootstrap_theme
+
         #: Create custom themes
-        ct = CustomThemes(tb.Style(theme), ui_settings)
+        ct = CustomThemes(tb.Style(self.theme), self.ui_settings)
         ct()
         self.root = root
-        self.ui_settings = ui_settings
+
         self.main_view_height = ui_heights[0]
         self.main_view_width = ui_widths[0]
         self.ui_height = ui_heights[1]
         self.ui_width = ui_widths[1]
+        self.widgets_reconfigured = {}
 
         self.frame_n_rows = 10
         self.frame_n_cols = 1
@@ -51,8 +54,6 @@ class RSSUI:
         self.ui_calc_vars = {}
         self.meter_frames = {}
         self.frame_geometry_dict = {}
-
-        self.excel_file_template = XLSX_TEMPLATE_FILE
 
         self.map_ui = MapUI(MAP_DIR)
         self.__source_keys = source_keys
@@ -115,6 +116,7 @@ class RSSUI:
             command=lambda: self.show_page(self.home_page),
         )
         btn_home.grid(row=0, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
 
     def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
         btn_site_info = tb.Button(
@@ -124,6 +126,7 @@ class RSSUI:
             command=lambda: self.show_page(self.site_info_page),
         )
         btn_site_info.grid(row=1, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
 
     def __create_map_btn(self, nav_bar_frame: tb.Frame) -> None:
         self.btn_map = tb.Button(
@@ -133,6 +136,7 @@ class RSSUI:
             command=self.toggle_map,
         )
         self.btn_map.grid(row=2, column=0, sticky="nsew")
+        self.widgets_reconfigured[self.btn_map] = "ui_btn_bg_color_1"
 
     def __create_source_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_source = tb.Button(
@@ -142,6 +146,7 @@ class RSSUI:
             command=lambda: self.show_page(self.source_page),
         )
         btn_source.grid(row=3, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_source] = "ui_btn_bg_color_1"
 
     def __create_pathways_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_pathways = tb.Button(
@@ -151,6 +156,7 @@ class RSSUI:
             command=lambda: self.show_page(self.pathways_page),
         )
         btn_pathways.grid(row=4, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_pathways] = "ui_btn_bg_color_1"
 
     def __create_receptors_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_receptors = tb.Button(
@@ -160,6 +166,7 @@ class RSSUI:
             command=lambda: self.show_page(self.receptors_page),
         )
         btn_receptors.grid(row=5, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
 
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
         excel_writer = ExportExcelReportBtn(self.ui_inp_vars, self.ui_calc_vars)
@@ -211,7 +218,7 @@ class RSSUI:
                 relheight=1.0,
             )
 
-        app_home = HomeUI(self.home_page, self.theme)
+        app_home = HomeUI(self.home_page, self.ui_settings, self.widgets_reconfigured)
 
         app_site_info = SiteInfoUI(
             self.ui_settings,
@@ -219,6 +226,7 @@ class RSSUI:
             self.ui_calc_vars,
             self.site_info_page,
             self.frame_geometry_dict,
+            self.widgets_reconfigured,
         )
 
         app_assesment = AssessmentNoteBookUI(
@@ -254,16 +262,19 @@ class RSSUI:
             self.btn_map.config(text="Close Map")
 
     def on_closing(self):
+        """Cleaning up resources"""
         self.root.destroy()
         sys.exit()
 
 
 def main():
-    theme = "darkly"
+    ui_settings = read_skin_details(settings, "dark")
+    theme = ui_settings.ui_ttkbootstrap_theme  # always start with the dark theme
     root = tb.Window(themename=theme)
+    root.minsize(800, 800)
     root.title(app_title)
     root.iconbitmap(ICO_DIR)
-    main = RSSUI(theme, root)
+    main = RSSUI(root)
     main.create_ui()
     root.protocol("WM_DELETE_WINDOW", main.on_closing)
     root.mainloop()

@@ -57,6 +57,7 @@ class FramePlacing:
 
 @dataclass
 class UISettings:
+    ui_ttkbootstrap_theme: str
     ui_title_font_type: str
     ui_title_font_size: int
     ui_title_font_color: str
@@ -64,12 +65,10 @@ class UISettings:
     ui_title_offset: float
     ui_bg_color_1: str
     ui_bg_color_2: str
-    ui_bg_color_3: str
     ui_font_type: str
     ui_font_size: int
     ui_font_color_1: str
     ui_font_color_2: str
-    ui_font_color_3: str
     ui_btn_bg_color_1: str
     ui_btn_bg_color_2: str
     ui_btn_font_color_1: str

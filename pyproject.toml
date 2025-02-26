@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rss-islandr"
-version = "1.3.0"
+version = "1.4.0"
 description = ""
 authors = ["Giorgos <gm7.gavroleon@gmail.com>"]
 readme = "README.md"

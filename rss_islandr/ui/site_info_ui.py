@@ -18,6 +18,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_calc_vars: dict[str, UICalcVariable],
         parent_frame: tb.Frame,
         frame_geometry_dict: dict[str, FramePlacing],
+        widgets_reconfigured,
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -29,7 +30,7 @@ class SiteInfoUI(GeneralUITemplate):
 
         self.frame_geometry_dict = frame_geometry_dict
 
-        super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
+        super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict, widgets_reconfigured=widgets_reconfigured)
         self.__ui_inputs_dates()
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()

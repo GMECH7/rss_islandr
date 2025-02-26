@@ -242,7 +242,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
     def __init__create_traces_receptors(self):
         """Receptors are dependent on sources and pathways"""
-
+        # TODO Here I must make it dynamic
         # IN_frame everywhere
         # THE OTHER frames may never be triggered
         for receptor_key in self.__receptor_keys:
@@ -283,7 +283,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """
         Retrieves selected dropdown values and prints their corresponding weights.
         """
-        print("THIS IS MY TAG", frame_tag)
         weights = []
         for data in self.__risk_selection[frame_tag].values():
             selected_alias = data["var"].get()
@@ -299,7 +298,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         Calculate the total risk of the receptor.
         For this the respective source and the pathway risks should have been precalcualted.
         """
-        print("I am in receptor man", frame_tag)
         data = self.__receptor_risk_selection[frame_tag][frame_tag]
 
         pathway_alias = data["pathway"].get()

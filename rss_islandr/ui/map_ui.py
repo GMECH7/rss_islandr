@@ -15,7 +15,6 @@ class MapUI:
     def show_map(self):
         """Launch the webview window in a separate process."""
         script_path = os.path.abspath(__file__)  # Path to the current script
-        print(script_path)
         self.webview_process = subprocess.Popen([sys.executable, script_path, "--webview"])
 
     def close_map(self):
