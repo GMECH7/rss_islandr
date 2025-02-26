@@ -7,15 +7,18 @@ CRNT_DIR = Path(__file__).parent
 STATIC_DIR = CRNT_DIR.resolve().parent / "static"
 
 
+import webview
+
+
 class MapUI:
     def __init__(self, map_html: Path):
         self.map_html = map_html
         self.webview_process = None
+        self.coordinates = None  # Stores latest latitude and longitude
 
     def show_map(self):
         """Launch the webview window in a separate process."""
-        script_path = os.path.abspath(__file__)  # Path to the current script
-        self.webview_process = subprocess.Popen([sys.executable, script_path, "--webview"])
+        self.webview_process = subprocess.Popen([sys.executable, __file__, "--webview"])
 
     def close_map(self):
         """Terminate the webview process."""
@@ -23,16 +26,31 @@ class MapUI:
             self.webview_process.terminate()
             self.webview_process = None
 
+    def get_coordinates(self):
+        """Retrieve the latest coordinates and reset them after reading."""
+        coords = self.coordinates
+        self.coordinates = None  # Reset after reading
+        return coords
+
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
-        import webview
 
+        class Api:
+            def __init__(self, map_ui_instance):
+                self.map_ui = map_ui_instance  # Reference to MapUI instance
+
+            def send_coordinates(self, lat, lng):
+                print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+                self.map_ui.coordinates = (lat, lng)  # Store received coordinates
+
+        api_instance = Api(self)  # Create API instance linked to MapUI
         webview.create_window(
             "Embedded Map",
             str(self.map_html),
             width=800,
             height=600,
             background_color="#19232d",
+            js_api=api_instance,  # Attach the JavaScript API
         )
         webview.start()
 

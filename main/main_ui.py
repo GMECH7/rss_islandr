@@ -1,4 +1,6 @@
 import sys
+import threading
+import time
 
 import ttkbootstrap as tb
 from main_imports import PACKAGE_DIR
@@ -14,7 +16,7 @@ from rss_islandr.core.config_parser import (
     ui_widths,
     uis_frame_geometry,
 )
-from rss_islandr.core.datatypes import FramePlacing
+from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
@@ -50,12 +52,22 @@ class RSSUI:
         self.__frames_width = 1.0 - self.__navbar_padx - self.__navbar_width
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
-        self.ui_inp_vars = {}
+        self.__lat = tb.StringVar()
+        lat = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.__lat,
+            rel_pos=1,
+            text_val="Latitude",
+            text_descr=None,
+            excel_cell="H3",
+        )
+        self.ui_inp_vars = {"aa": lat}
         self.ui_calc_vars = {}
         self.meter_frames = {}
         self.frame_geometry_dict = {}
 
         self.map_ui = MapUI(MAP_DIR)
+
         self.__source_keys = source_keys
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
@@ -261,10 +273,29 @@ class RSSUI:
             self.map_open = True
             self.btn_map.config(text="Close Map")
 
+            # Start a thread to check for coordinate updates
+            threading.Thread(target=self.monitor_coordinates, daemon=True).start()
+
+    def monitor_coordinates(self):
+        """Continuously checks for new coordinates from MapUI when the map is open."""
+        while self.map_open:
+            coords = self.map_ui.get_coordinates()
+            print(coords)
+            if coords is not None:
+                lat, lng = coords
+                self.update_coordinates(lat, lng)
+            time.sleep(1)  # Polling interval
+
     def on_closing(self):
         """Cleaning up resources"""
         self.root.destroy()
         sys.exit()
+
+    def update_coordinates(self, lat, lng):
+        """Callback function to update the coordinates label."""
+        self.ui_inp_vars["aa"].tk_var.set(lat)
+        self.ui_inp_vars["long"] = lng
+        print(f"Updated Coordinates: {lat}, {lng}")
 
 
 def main():

@@ -101,6 +101,13 @@
             map.setView([lat, lng], map.getZoom());
             document.getElementById('lat').value = lat.toFixed(5);
             document.getElementById('lng').value = lng.toFixed(5);
+            sendLocation(lat, lng);
+        }
+
+        function sendLocation(lat, lng) {
+            if (window.pywebview) {
+                window.pywebview.api.send_coordinates(lat, lng);
+            }
         }
 
         map.on('click', function(e) {

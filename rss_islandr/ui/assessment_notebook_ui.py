@@ -292,6 +292,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         risk = risk_calc(weights)
         self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
         self.__update_meter(frame_tag)
+        print(11111111111, self.ui_inp_vars["aa"].tk_var.get())
 
     def __calculate_receptor_total_risk(self, frame_tag: str) -> None:
         """
