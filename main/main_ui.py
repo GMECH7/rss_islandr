@@ -52,16 +52,7 @@ class RSSUI:
         self.__frames_width = 1.0 - self.__navbar_padx - self.__navbar_width
         self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
-        self.__lat = tb.StringVar()
-        lat = UIInpVariable(
-            frame_tag="site_info_frame",
-            tk_var=self.__lat,
-            rel_pos=1,
-            text_val="Latitude",
-            text_descr=None,
-            excel_cell="H3",
-        )
-        self.ui_inp_vars = {"aa": lat}
+        self.ui_inp_vars = {}
         self.ui_calc_vars = {}
         self.meter_frames = {}
         self.frame_geometry_dict = {}
@@ -78,8 +69,32 @@ class RSSUI:
             "receptor_frames": [f"{inp}_frame" for inp in self.__receptor_keys],
             "risk_frames": [f"{inp}_frame_risk" for inp in self.__all_keys],
         }
+        self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
         self.map_open = False
+
+    def __init__lat_lng_vars(self):
+        """Definition of langtitude and longtitude variables which are updated from the map."""
+
+        lat = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=tb.StringVar(value="0.0"),
+            rel_pos=1,
+            text_val="Latitude",
+            text_descr=None,
+            excel_cell="H3",
+        )
+
+        lng = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=tb.StringVar(value="0.0"),
+            rel_pos=1,
+            text_val="Latitude",
+            text_descr=None,
+            excel_cell="H4",
+        )
+
+        self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng})
 
     def __init__populate_frame_infos_dict(self):
         for frame_key in uis_frame_geometry:
@@ -91,7 +106,12 @@ class RSSUI:
                 y_d = frame_info.get("y_d", 1.0)
                 #: the number of rows is updated in code
                 n_row = frame_info.get("n_row", 1)
-                n_cols = 1 if frame_key == "risk_frames" else 2
+                if frame_key == "risk_frames":
+                    n_cols = 1
+                elif frame_key == "site_info_frame":
+                    n_cols = 3
+                else:
+                    n_cols = 2
 
                 #: the number of columns are by default 2 (1 label left 1 widget right)
                 n_col = frame_info.get("n_col", n_cols)
@@ -270,10 +290,11 @@ class RSSUI:
             self.btn_map.config(text="Show Map")
         else:
             self.map_ui.run_webview()
+            # self.map_ui.show_map()
             self.map_open = True
             self.btn_map.config(text="Close Map")
 
-            # Start a thread to check for coordinate updates
+            #: Start a thread to check for coordinate updates in the webview app.
             threading.Thread(target=self.monitor_coordinates, daemon=True).start()
 
     def monitor_coordinates(self):
@@ -284,7 +305,7 @@ class RSSUI:
             if coords is not None:
                 lat, lng = coords
                 self.update_coordinates(lat, lng)
-            time.sleep(1)  # Polling interval
+            time.sleep(1.0)  # Polling interval (s)
 
     def on_closing(self):
         """Cleaning up resources"""
@@ -293,8 +314,8 @@ class RSSUI:
 
     def update_coordinates(self, lat, lng):
         """Callback function to update the coordinates label."""
-        self.ui_inp_vars["aa"].tk_var.set(lat)
-        self.ui_inp_vars["long"] = lng
+        self.ui_inp_vars["map_0_00"].tk_var.set(lat)
+        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
         print(f"Updated Coordinates: {lat}, {lng}")
 
 

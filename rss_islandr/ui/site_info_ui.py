@@ -125,14 +125,22 @@ class SiteInfoUI(GeneralUITemplate):
 
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
-                self.gt_entry_widget(frame, key)
+                self.gt_entry_widget(frame, key, 2)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "drop" in key:
-                self.gt_combobox_widget(frame, key)
+                self.gt_combobox_widget(frame, key, 2)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "date" in key:
-                self.gt_date_entry_widget(frame, key)
+                self.gt_date_entry_widget(frame, key, 2)
             else:
                 pass
-        return None
+
+        label = tb.Label(frame, text="Longtitude (Updated automatically)")
+        label.grid(column=0, row=5, sticky="we")
+
+        lat_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
+        lat_entry.grid(column=1, row=5, sticky="we")
+
+        lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
+        lng_entry.grid(column=2, row=5, sticky="we")
 
     def ui(self):
         """ """

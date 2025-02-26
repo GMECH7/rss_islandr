@@ -104,14 +104,15 @@ class GeneralUITemplate:
 
         return frame
 
-    def gt_entry_widget(self, frame: tb.Frame, entry_key: str) -> None:
+    def gt_entry_widget(self, frame: tb.Frame, entry_key: str, column_span: int = 1) -> None:
         label = tb.Label(frame, text=self.ui_inp_vars[entry_key].text_val)
         label.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=0, sticky="we")
 
         entry = tb.Entry(frame, textvariable=self.ui_inp_vars[entry_key].tk_var, justify="left")
-        entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, sticky="we")
+        entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, columnspan=column_span, sticky="we")
 
-    def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str) -> None:
+    def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str, column_span: int = 1) -> None:
+        """create a combobox widget (dropdown list)."""
         label = tb.Label(frame, text=self.ui_inp_vars[dropdown_key].text_val)
         label.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=0, sticky="we")
 
@@ -121,7 +122,7 @@ class GeneralUITemplate:
             values=self.ui_inp_vars[dropdown_key].drop_options or [],
         )
 
-        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, sticky="we")
+        combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, columnspan=column_span, sticky="we")
 
     def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
         """create a meter widget and place it in a frame."""
@@ -140,12 +141,16 @@ class GeneralUITemplate:
 
         return meter_widget
 
-    def gt_date_entry_widget(self, frame: tb.Frame, date_key: str):
-        """ """
+    def gt_date_entry_widget(self, frame: tb.Frame, date_key: str, column_span: int = 1) -> None:
+        """
+        create a date entry widget doing the following:
+            1. Bind it with FocusOut.
+            2. Assign it to self.__widgets_reconfigured (change color if UI skin is altered).
+        """
         label = tb.Label(frame, text=self.ui_inp_vars[date_key].text_val)
         label.grid(row=self.ui_inp_vars[date_key].rel_pos, column=0, sticky="we")
         date_entry = tb.DateEntry(frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d")
-        date_entry.grid(row=self.ui_inp_vars[date_key].rel_pos, column=1, sticky="we")
+        date_entry.grid(row=self.ui_inp_vars[date_key].rel_pos, column=1, columnspan=column_span, sticky="we")
         date_entry.bind("<FocusOut>", lambda event: self.__update_date_var(event, date_entry, date_key))
         self.__widgets_reconfigured[date_entry] = "ui_bg_color_1"
 

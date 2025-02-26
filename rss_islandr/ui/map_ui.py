@@ -1,13 +1,20 @@
-import os
 import subprocess
 import sys
 from pathlib import Path
+
+import webview
 
 CRNT_DIR = Path(__file__).parent
 STATIC_DIR = CRNT_DIR.resolve().parent / "static"
 
 
-import webview
+class Api:
+    def __init__(self, map_ui_instance):
+        self.map_ui = map_ui_instance  # Reference to MapUI instance
+
+    def send_coordinates(self, lat, lng):
+        print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+        self.map_ui.coordinates = (lat, lng)  # Store received coordinates
 
 
 class MapUI:
@@ -35,14 +42,6 @@ class MapUI:
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
 
-        class Api:
-            def __init__(self, map_ui_instance):
-                self.map_ui = map_ui_instance  # Reference to MapUI instance
-
-            def send_coordinates(self, lat, lng):
-                print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
-                self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-
         api_instance = Api(self)  # Create API instance linked to MapUI
         webview.create_window(
             "Embedded Map",
@@ -52,6 +51,7 @@ class MapUI:
             background_color="#19232d",
             js_api=api_instance,  # Attach the JavaScript API
         )
+        print(111258458, api_instance.map_ui.coordinates)
         webview.start()
 
 
