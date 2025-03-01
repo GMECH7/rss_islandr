@@ -70,7 +70,7 @@ class GeneralBtnsUI:
 
         menu = Menu(menu_btn, tearoff=0)
 
-        menu.add_command(label="Write to Excel", command=write_to_excel.on_btn_click)
-        menu.add_command(label="Write to json", command=write_to_json.on_btn_click)
-        menu.add_command(label="Read Scenario", command=read_from_json.on_btn_click)
+        menu.add_command(label="Export report", command=write_to_excel.on_btn_click)
+        menu.add_command(label="Export scenario", command=write_to_json.on_btn_click)
+        menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
         menu_btn["menu"] = menu

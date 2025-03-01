@@ -13,8 +13,8 @@ class Api:
         self.map_ui = map_ui_instance  # Reference to MapUI instance
 
     def send_coordinates(self, lat, lng):
-        print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
+        print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
 
 class MapUI:
@@ -41,7 +41,6 @@ class MapUI:
 
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
-
         api_instance = Api(self)  # Create API instance linked to MapUI
         webview.create_window(
             "Embedded Map",
@@ -51,15 +50,14 @@ class MapUI:
             background_color="#19232d",
             js_api=api_instance,  # Attach the JavaScript API
         )
-        print(111258458, api_instance.map_ui.coordinates)
-        webview.start()
+        print("Webview started. Waiting for coordinates...")
+        webview.start(debug=True)
 
 
 # # Entry point for the webview process
 # if __name__ == "__main__":
 #     import argparse
 
-#     print(__name__)
 #     # Parse command-line arguments
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument("--webview", action="store_true", help="Run webview in a separate process")
@@ -67,6 +65,5 @@ class MapUI:
 
 #     if args.webview:
 #         # If --webview flag is passed, run the webview window
-#         # script_path = os.path.abspath(__file__)
 #         map_ui = MapUI(STATIC_DIR / "map.html")
 #         map_ui.run_webview()

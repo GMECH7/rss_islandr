@@ -25,6 +25,7 @@ from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, Impo
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.navbars_ui import HorizontalNavbar
 from rss_islandr.ui.site_info_ui import SiteInfoUI
+from ttkbootstrap.dialogs import Messagebox
 
 
 class RSSUI:
@@ -45,7 +46,7 @@ class RSSUI:
         self.ui_width = ui_widths[1]
         self.widgets_reconfigured = {}
 
-        self.frame_n_rows = 6
+        self.frame_n_rows = 7
         self.frame_n_cols = 1
         self.__navbar_width = 0.1
         self.__navbar_padx = 0.005
@@ -58,6 +59,7 @@ class RSSUI:
         self.meter_frames = {}
         self.frame_geometry_dict = {}
 
+        self.map_open = True
         self.map_ui = MapUI(MAP_DIR)
 
         self.__source_keys = source_keys
@@ -72,7 +74,6 @@ class RSSUI:
         }
         self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
-        self.map_open = False
 
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map."""
@@ -201,6 +202,25 @@ class RSSUI:
         btn_receptors.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
 
+    def __restore_all(self):
+        """ """
+        Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
+        for tk_var_tag in self.ui_inp_vars:
+            val_default = self.ui_inp_vars[tk_var_tag].val_default
+            self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
+
+    def __create_restore_vars(self, frame: tb.Frame) -> tb.Button:
+        """Restore to default button"""
+        restore_btn = tb.Button(
+            frame,
+            style="warning",
+            text="Restore defaults",
+            command=self.__restore_all,
+        )
+        restore_btn.grid(row=6, column=0, sticky="nsew")
+
+        return restore_btn
+
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
         excel_writer = ExportExcelReportBtn(self.ui_inp_vars, self.ui_calc_vars)
         btn_xlsx_writer = excel_writer.btn(nav_bar_frame)
@@ -225,6 +245,7 @@ class RSSUI:
         self.__create_source_btn(nav_bar_frame)
         self.__create_pathways_btn(nav_bar_frame)
         self.__create_receptors_btn(nav_bar_frame)
+        self.__create_restore_vars(nav_bar_frame)
         # self.__create_xlsx_writer_btn(nav_bar_frame)
         # self.__create_scenario_writer_btn(nav_bar_frame)
         # self.__create_scenario_reader_btn(nav_bar_frame)
@@ -300,17 +321,17 @@ class RSSUI:
 
     def toggle_map(self):
         print("ffffffffffff")
-        if self.map_open:
-            self.map_ui.close_map()
-            self.map_open = False
-            self.btn_map.config(text="Show Map")
-        else:
-            self.map_ui.run_webview()
-            # self.map_ui.show_map()
-            self.map_open = True
-            self.btn_map.config(text="Show Map")
-        # self.map_ui.run_webview()
-        # self.btn_map.config(text="Show Map")
+        # if self.map_open:
+        #     self.map_ui.close_map()
+        #     self.map_open = False
+        #     self.btn_map.config(text="Show Map")
+        # else:
+        #     self.map_ui.run_webview()
+        #     # self.map_ui.show_map()
+        #     self.map_open = True
+        #     self.btn_map.config(text="Show Map")
+        self.map_ui.run_webview()
+        self.btn_map.config(text="Show Map")
         #: Start a thread to check for coordinate updates in the webview app.
         threading.Thread(target=self.monitor_coordinates, daemon=True).start()
 

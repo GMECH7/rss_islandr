@@ -121,11 +121,13 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     tk_var=var,
                     rel_pos=i,
                     text_val=mechanism_alias,
+                    val_default=dropdown_severity[0],
                     text_descr=None,
                     drop_options=dropdown_severity,
                     excel_cell=excel_cell,
                     state="enabled",
                 )
+                # self.__local_vars.append(f"drop_{risk_factor_key}_1_0{i}")
                 self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
                 self.ui_inp_vars[f"drop_{risk_factor_key}_1_0{i}"].tk_var.trace_add(
                     "write",
@@ -209,6 +211,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 tk_var=pathway_var,
                 rel_pos=0,
                 text_val="Pathway",
+                val_default=dropdown_available_pathways_aliases[0],
                 text_descr=None,
                 drop_options=dropdown_available_pathways_aliases,
                 excel_cell=f"{parent_excel_col}{parent_excel_row}",
@@ -220,6 +223,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 tk_var=receptor_param,
                 rel_pos=1,
                 text_val="Parameter",
+                val_default=dropdown_receptor_param[0],
                 text_descr=None,
                 drop_options=dropdown_receptor_param,
                 excel_cell=f"{parent_excel_col}{parent_excel_row + 1}",
@@ -344,27 +348,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
                 self.gt_combobox_widget(frame_form, dropdown_key)
 
-        self.__btn_calculate_risk(frame_form, frame_tag, calc_risk_command)
-
         meter = self.gt_meter_widget(frame_risk_meter, f"{frame_tag}_risk")
         self.meter_frames[f"{frame_tag}_risk"] = meter
 
         return frame
-
-    def __btn_calculate_risk(self, frame: tb.Frame, frame_tag: str, calc_risk_command: Callable):
-        calculate_btn = tb.Button(
-            frame,
-            text="Calculate risk",
-            command=lambda: calc_risk_command(frame_tag),
-        )
-
-        calculate_btn.grid(
-            row=self.frame_geometry_dict[frame_tag].n_row - 1,
-            column=0,
-            rowspan=2,
-            columnspan=2,
-            sticky="nsew",
-        )
 
     def __create_frame_tags_titles(self, case: str, keys: list[str]):
         frame_tags_titles = []

@@ -214,5 +214,32 @@
     "GRAVEL - silty gravel",
     "GRAVEL - clayey gravel",
     "GRAVEL - sandy gravel"
+  ],
+  "soil_types": {
+    "SILT": [
+      "SILT - clayey silt",
+      "SILT - sandy silt",
+      "SILT - gravelly silt"
+    ],
+    "CLAY": [
+      "CLAY - silty clay",
+      "CLAY - sandy clay",
+      "CLAY - gravelly clay"
+    ],
+    "SAND": [
+      "SAND - silty sand",
+      "SAND - clayey sand",
+      "SAND - gravelly sand"
+    ],
+    "GRAVEL": [
+      "GRAVEL - silty gravel",
+      "GRAVEL - clayey gravel",
+      "GRAVEL - sandy gravel"
+    ]
+  },
+  "site_status": [
+    "Active",
+    "Proposed",
+    "Legacy"
   ]
 }

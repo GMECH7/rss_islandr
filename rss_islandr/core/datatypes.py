@@ -3,7 +3,7 @@ from typing import List, Optional, TypedDict, Union
 
 import ttkbootstrap as tb
 
-TkValues = Union[tb.StringVar, tb.IntVar, tb.DoubleVar, tb.BooleanVar]
+TkValues = tb.StringVar
 
 
 class SeverityDict(TypedDict):
@@ -33,6 +33,7 @@ class UIInpVariable:
     tk_var: TkValues
     rel_pos: int
     text_val: str
+    val_default: Optional[str] = ""
     text_descr: Optional[str] = None
     drop_options: Optional[List[str]] = None
     excel_cell: Optional[str] = None

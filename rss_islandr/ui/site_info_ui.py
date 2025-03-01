@@ -39,6 +39,8 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
 
+    # self.__ui_inputs_nested_dropdown()
+
     def __ui_inputs_dates(self):
         """
         Definition of date widget inputs.
@@ -80,6 +82,10 @@ class SiteInfoUI(GeneralUITemplate):
         self.land_use_var = tb.StringVar()
         self.land_use_options = self.data["land_uses"]
 
+        self.site_status_var = tb.StringVar()
+        self.site_status_var.set("Active")
+        self.site_status_options = self.data["site_status"]
+
         self.soil_type_var = tb.StringVar()
         self.soil_type_options = self.data["soil_type"]
 
@@ -87,7 +93,7 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.activity_var,
             rel_pos=2,
-            text_val="Select Activity/Industry",
+            text_val="Select activity/industry",
             text_descr=None,
             drop_options=self.activity_options,
             excel_cell="C4",
@@ -97,7 +103,7 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.land_use_var,
             rel_pos=3,
-            text_val="Select Land Use",
+            text_val="Select land Use",
             text_descr=None,
             drop_options=self.land_use_options,
             excel_cell="J2",
@@ -107,17 +113,114 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.soil_type_var,
             rel_pos=4,
-            text_val="Select Soil type",
+            text_val="Select soil type",
             text_descr=None,
             drop_options=self.soil_type_options,
             excel_cell="J3",
         )
 
+        ui_var_site_status = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.site_status_var,
+            rel_pos=5,
+            text_val="Select site status",
+            text_descr=None,
+            drop_options=self.site_status_options,
+            excel_cell="J3",
+        )
+
+        self.site_status_var.trace_add("write", self.update_date_widgets)
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
         self.ui_inp_vars.update({"drop_0_01": ui_var_land_use})
-        self.ui_inp_vars.update({"drop_0_02": ui_var_soil_type})
+        self.ui_inp_vars.update({"drop_0_02": ui_var_site_status})
+        self.ui_inp_vars.update({"drop_0_03": ui_var_soil_type})
 
         return None
+
+    def __ui_inputs_nested_dropdown(self):
+        """Initialize the nested dropdown for soil types."""
+        # Dictionary of soil types
+        self.soil_types_dict = self.data["soil_types"]
+
+        # First dropdown: Select soil category
+        self.soil_type_1_var = tb.StringVar()
+        self.soil_type_1_options = list(self.soil_types_dict.keys())
+        self.soil_type_1_var.set(self.soil_type_1_options[0])  # Set default value
+
+        # Create the first dropdown UI element
+        ui_var_soil_type_1 = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.soil_type_1_var,
+            rel_pos=4,
+            text_val="Select soil type",
+            val_default=self.soil_type_1_options[0],
+            text_descr=None,
+            drop_options=self.soil_type_1_options,
+            excel_cell="J3",
+        )
+
+        # Second dropdown: Select soil type (dependent on the first dropdown)
+        self.soil_type_2_var = tb.StringVar()
+
+        # Bind the update function to the first dropdown
+        self.soil_type_1_var.trace_add("write", self.update_soil_options)
+
+        # Initialize the second dropdown options based on the first dropdown's default value
+        self.soil_type_2_options = self.soil_types_dict[self.soil_type_1_var.get()]
+        self.soil_type_2_var.set(self.soil_type_2_options[0])  # Set default value
+
+        # Create the second dropdown UI element
+        self.ui_var_soil_type_2 = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.soil_type_2_var,
+            rel_pos=4,
+            text_val="Select soil type",
+            val_default=self.soil_type_2_options[0],
+            text_descr=None,
+            drop_options=self.soil_type_2_options,
+            excel_cell="J3",
+        )
+        print(self.ui_var_soil_type_2.drop_options)
+
+        # Add the dropdowns to the UI variables dictionary
+        self.ui_inp_vars.update({"ndro_0_00": ui_var_soil_type_1})
+        self.ui_inp_vars.update({"ndro_0_01": self.ui_var_soil_type_2})
+
+    def update_soil_options(self, *args):
+        """Update the options in the second dropdown based on the first dropdown's selection."""
+        selected_category = self.soil_type_1_var.get()
+
+        # Update the options for the second dropdown
+        self.soil_type_2_options = self.soil_types_dict[selected_category]
+        self.soil_type_2_var.set(self.soil_type_2_options[0])  # Set default value
+
+        # Update the dropdown options in the UI
+        self.ui_var_soil_type_2.drop_options = self.soil_type_2_options
+
+        # Update the Combobox widget's values
+        if hasattr(self.ui_var_soil_type_2, "combobox"):  # Ensure the Combobox widget exists
+            self.ui_var_soil_type_2.combobox["values"] = self.soil_type_2_options
+
+    def update_date_widgets(self, *args):
+        selected_option = self.site_status_var.get()
+
+        if selected_option == "Active" or selected_option == "Proposed":
+            # Show only the start date widget
+            self.start_date_label = tb.Label(self.frame, text="Start Date")
+            self.start_date_label.grid(row=6, column=0, sticky="ew")
+            self.start_date_entry.grid(row=6, column=1, sticky="ew")
+            self.end_date_entry.grid_remove()
+        elif selected_option == "Legacy":
+            self.start_date_label = tb.Label(self.frame, text="Start-End Dates")
+            # Show both start and end date widgets
+            self.start_date_label.grid(row=6, column=0, sticky="ew")
+            self.start_date_entry.grid(row=6, column=1, sticky="ew")
+            self.end_date_entry.grid(row=6, column=2, sticky="ew")
+        else:
+            # Hide both widgets if no option is selected
+            self.start_date_label.grid_remove()
+            self.start_date_entry.grid_remove()
+            self.end_date_entry.grid_remove()
 
     def site_info_frame(self) -> None:
         """
@@ -126,7 +229,7 @@ class SiteInfoUI(GeneralUITemplate):
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.__parent_frame, frame_tag, frame_title)
-
+        self.frame = frame
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
                 self.gt_entry_widget(frame, key, 2)
@@ -134,17 +237,24 @@ class SiteInfoUI(GeneralUITemplate):
                 self.gt_combobox_widget(frame, key, 2)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "date" in key:
                 self.gt_date_entry_widget(frame, key, 2)
+            elif self.ui_inp_vars[key].frame_tag == frame_tag and "ndro" in key and float(key[-2:]) % 2 == 0:
+                print(float(key[-2:]) % 2)
+                self.gt_nested_combobox_widget(frame, key, 1)
             else:
                 pass
 
         label = tb.Label(frame, text="Longtitude (Updated automatically)")
-        label.grid(column=0, row=5, sticky="we")
+        label.grid(column=0, row=1, sticky="we")
 
         lat_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
-        lat_entry.grid(column=1, row=5, sticky="we")
+        lat_entry.grid(column=1, row=1, sticky="we")
 
         lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
-        lng_entry.grid(column=2, row=5, sticky="we")
+        lng_entry.grid(column=2, row=1, sticky="we")
+
+        self.start_date_label = tb.Label(frame, text="Start Date:")
+        self.start_date_entry = tb.DateEntry(frame)
+        self.end_date_entry = tb.DateEntry(frame)
 
     def ui(self):
         """ """
