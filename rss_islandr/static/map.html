@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
-        #map { width: 100%; height: 800px; }
+        #map { width: 100%; height: 900px; }
         #info { padding: 5px; }
         .legend {
             position: absolute;
@@ -30,17 +30,17 @@
 
     <div>
         <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)">
-        <label for="toggleGeology">Surface Geology</label>
+        <label for="toggleGeology" style="color: white;">Surface Geology</label>
     </div>
     <div>
         <input type="checkbox" id="toggleMines" onclick="toggleLayer(this, wmsMinesLayer)">
-        <label for="toggleMines">Mines</label>
+        <label for="toggleMines" style="color: white;">Mines</label>
     </div>
     <div>
         <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
-        <label for="toggleHydroMap">Hydrogeological Map</label>
+        <label for="toggleHydroMap" style="color: white;">Hydrogeological Map</label>
     </div>
-    <div id="info">Click on a layer to get more information.</div>
+    <div id="info" style="color: white;">Click on a layer to get more information.</div>
 
     <img id="geologyLegend" class="legend" src="geology_legend.png" alt="Geology Legend">
     <img id="hydroLegend" class="legend" src="hydro_legend.png" alt="Hydrogeological Legend">

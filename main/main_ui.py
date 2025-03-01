@@ -34,9 +34,9 @@ class RSSUI:
     def __init__(self, root: tb.Window):
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
-
+        tb_style = tb.Style(self.theme)
         #: Create custom themes
-        ct = CustomThemes(tb.Style(self.theme), self.ui_settings)
+        ct = CustomThemes(tb_style, self.ui_settings)
         ct()
         self.root = root
 
@@ -60,7 +60,7 @@ class RSSUI:
         self.frame_geometry_dict = {}
 
         self.map_open = True
-        self.map_ui = MapUI(MAP_DIR)
+        self.map_ui = MapUI(MAP_DIR, tb_style)
 
         self.__source_keys = source_keys
         self.__pathway_keys = pathway_keys

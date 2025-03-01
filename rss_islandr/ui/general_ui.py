@@ -56,23 +56,6 @@ class GeneralUITemplate:
         title_label = tb.Label(title_frame, text=frame_title, anchor="center", justify="center", style="Title.TLabel")
         title_label.grid(row=0, column=0, sticky="nsew")
 
-    # def gt_new_frame(self, parent_frame: tb.Frame, frame_tag: str, frame_title: str) -> tb.Frame:
-    #     """Create new frame with title (used in forms)"""
-    #     rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-    #     self.template_title(parent_frame, frame_title, rel_x, rel_y, rel_w, rel_h)
-    #     title_offset = 0.0 if frame_title == "" else self.ui_settings.ui_title_offset
-
-    #     frame = tb.Frame(parent_frame, style="Custom.TFrame")
-    #     frame.place(
-    #         relx=rel_x,
-    #         rely=rel_y + title_offset,
-    #         relwidth=rel_w,
-    #         relheight=rel_h - title_offset,
-    #     )
-    #     self.frame_distances(frame, n_rows, n_cols)
-
-    #     return frame
-
     def gt_new_frame(self, parent_frame: tb.Frame, frame_tag: str, frame_title: str) -> tb.Frame:
         """Create new frame with title (used in forms)"""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)

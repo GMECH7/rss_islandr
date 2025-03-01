@@ -46,9 +46,7 @@ class CustomThemes:
 
         #: Style for inactive tabs
         self.__style.configure(
-            "Custom.TNotebook.Tab",
-            background=self.__ui_bg_color_2,
-            foreground=self.__ui_font_color_2,
+            "Custom.TNotebook.Tab", background=self.__ui_bg_color_2, foreground=self.__ui_font_color_2
         )
         #: Style for active tab
         self.__style.map(
@@ -64,7 +62,7 @@ class CustomThemes:
             background=self.__ui_bg_color_1,  # Background color
             foreground=self.__ui_font_color_1,  # Font color
             font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),  # Font type
-            relief="solid",
+            relief="flat",
         )
 
         self.__style.configure(
@@ -103,6 +101,11 @@ class CustomThemes:
             relief="flat",  # Remove the border (flat appearance)
             borderwidth=0,  # Set border width to 0
             padding=10,  # Add padding (optional)
+        )
+        self.__style.map(
+            "Custom.Menubutton.TMenubutton",
+            background=[("active", self.__ui_bg_color_2)],  # Change background color on hover
+            foreground=[("active", self.__ui_font_color_2)],
         )
 
     def custom_combobox(self):
