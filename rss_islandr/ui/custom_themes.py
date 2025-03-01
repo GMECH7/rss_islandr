@@ -95,10 +95,14 @@ class CustomThemes:
 
     def custom_buttons(self):
         """Not USED"""
+        background_color = self.__style.colors.get("bg")
         self.__style.configure(
-            "Navbar.TButton",
-            background="light",
-            foreground="dark",
+            "Custom.Menubutton.TMenubutton",  # Custom style name
+            background=background_color,  # Use the theme's background color
+            foreground=self.__ui_font_color_1,  # Set the text color to white
+            relief="flat",  # Remove the border (flat appearance)
+            borderwidth=0,  # Set border width to 0
+            padding=10,  # Add padding (optional)
         )
 
     def custom_combobox(self):

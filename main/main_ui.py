@@ -23,6 +23,7 @@ from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.home_ui import HomeUI
 from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
+from rss_islandr.ui.navbars_ui import HorizontalNavbar
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -150,16 +151,6 @@ class RSSUI:
         btn_home.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
 
-    def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
-        btn_site_info = tb.Button(
-            nav_bar_frame,
-            text="Site info",
-            style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.site_info_page),
-        )
-        btn_site_info.grid(row=1, column=0, sticky="nsew")
-        self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
-
     def __create_map_btn(self, nav_bar_frame: tb.Frame) -> None:
         self.btn_map = tb.Button(
             nav_bar_frame,
@@ -167,8 +158,18 @@ class RSSUI:
             style=self.ui_settings.ui_btn_bg_color_1,
             command=self.toggle_map,
         )
-        self.btn_map.grid(row=2, column=0, sticky="nsew")
+        self.btn_map.grid(row=1, column=0, sticky="nsew")
         self.widgets_reconfigured[self.btn_map] = "ui_btn_bg_color_1"
+
+    def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
+        btn_site_info = tb.Button(
+            nav_bar_frame,
+            text="Site info",
+            style=self.ui_settings.ui_btn_bg_color_1,
+            command=lambda: self.show_page(self.site_info_page),
+        )
+        btn_site_info.grid(row=2, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
 
     def __create_source_btn(self, nav_bar_frame: tb.Frame) -> None:
         btn_source = tb.Button(
@@ -250,7 +251,15 @@ class RSSUI:
                 relheight=1.0,
             )
 
-        app_home = HomeUI(self.home_page, self.ui_settings, self.widgets_reconfigured)
+        home_navbar_frame, home_frame = HorizontalNavbar()(self.home_page)
+        app_home = HomeUI(
+            home_navbar_frame,
+            home_frame,
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.widgets_reconfigured,
+        )
 
         app_site_info = SiteInfoUI(
             self.ui_settings,
@@ -271,7 +280,7 @@ class RSSUI:
             self.__pathway_keys,
             self.__receptor_keys,
         )
-
+        # receptors_navbar, receptors_frame = HorizontalNavbar()(self.receptors_page)
         app_home.ui()
         app_site_info.ui()
         app_assesment.ui(self.source_page, "source")
@@ -284,18 +293,19 @@ class RSSUI:
         page.tkraise()
 
     def toggle_map(self):
-        if self.map_open:
-            self.map_ui.close_map()
-            self.map_open = False
-            self.btn_map.config(text="Show Map")
-        else:
-            self.map_ui.run_webview()
-            # self.map_ui.show_map()
-            self.map_open = True
-            self.btn_map.config(text="Close Map")
-
-            #: Start a thread to check for coordinate updates in the webview app.
-            threading.Thread(target=self.monitor_coordinates, daemon=True).start()
+        # if self.map_open:
+        #     self.map_ui.close_map()
+        #     self.map_open = False
+        #     self.btn_map.config(text="Show Map")
+        # else:
+        #     self.map_ui.run_webview()
+        #     # self.map_ui.show_map()
+        #     self.map_open = True
+        #     self.btn_map.config(text="Close Map")
+        self.map_ui.run_webview()
+        self.btn_map.config(text="Show Map")
+        #: Start a thread to check for coordinate updates in the webview app.
+        threading.Thread(target=self.monitor_coordinates, daemon=True).start()
 
     def monitor_coordinates(self):
         """Continuously checks for new coordinates from MapUI when the map is open."""

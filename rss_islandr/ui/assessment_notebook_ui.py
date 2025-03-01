@@ -382,6 +382,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             calc_risk_command = self.__calculate_source_pathway_risk
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
+            # notebook.place(relx=0.0, rely=0.05, relwidth=1.0, relheight=0.95)
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
