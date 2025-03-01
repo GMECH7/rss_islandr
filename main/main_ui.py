@@ -4,6 +4,7 @@ import time
 
 import ttkbootstrap as tb
 from main_imports import PACKAGE_DIR
+from ttkbootstrap.dialogs import Messagebox
 
 from rss_islandr.core.config_parser import (
     ICO_DIR,
@@ -25,7 +26,6 @@ from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, Impo
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.navbars_ui import HorizontalNavbar
 from rss_islandr.ui.site_info_ui import SiteInfoUI
-from ttkbootstrap.dialogs import Messagebox
 
 
 class RSSUI:
@@ -134,7 +134,8 @@ class RSSUI:
         for i in range(self.frame_n_cols):
             frame.columnconfigure(i, weight=1)
 
-    def __create_navbar(self) -> tb.Frame:
+    def __create_vertical_navbar(self) -> tb.Frame:
+        """"""
         nav_bar_frame = tb.Frame(self.root)
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__navbar_width, relheight=1.0)
         self.frame_distances(nav_bar_frame)
@@ -204,10 +205,13 @@ class RSSUI:
 
     def __restore_all(self):
         """ """
-        Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
-        for tk_var_tag in self.ui_inp_vars:
-            val_default = self.ui_inp_vars[tk_var_tag].val_default
-            self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
+        result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
+        if result == "Yes":
+            for tk_var_tag in self.ui_inp_vars:
+                val_default = self.ui_inp_vars[tk_var_tag].val_default
+                self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
+        else:
+            pass
 
     def __create_restore_vars(self, frame: tb.Frame) -> tb.Button:
         """Restore to default button"""
@@ -237,7 +241,7 @@ class RSSUI:
         btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
 
     def create_ui(self) -> None:
-        nav_bar_frame = self.__create_navbar()
+        nav_bar_frame = self.__create_vertical_navbar()
         #: Create navbar buttons
         self.__create_home_btn(nav_bar_frame)
         self.__create_site_info_btn(nav_bar_frame)

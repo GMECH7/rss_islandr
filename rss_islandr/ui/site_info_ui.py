@@ -49,12 +49,22 @@ class SiteInfoUI(GeneralUITemplate):
         date_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.date_assessed,
-            rel_pos=1,
+            rel_pos=2,
             text_val="Assessment date",
             text_descr=None,
             excel_cell="E3",
         )
+        self.date_oper_start = tb.StringVar()
+        date_oper_start_var = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.date_assessed,
+            rel_pos=7,
+            text_val="Operation start & end dates",
+            text_descr=None,
+            excel_cell="E4",
+        )
         self.ui_inp_vars.update({"date_0_00": date_var})
+        self.ui_inp_vars.update({"date_0_01": date_oper_start_var})
 
     def __ui_inputs_entries(self) -> None:
         """
@@ -92,7 +102,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_activity = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.activity_var,
-            rel_pos=2,
+            rel_pos=3,
             text_val="Select activity/industry",
             text_descr=None,
             drop_options=self.activity_options,
@@ -102,7 +112,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_land_use = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.land_use_var,
-            rel_pos=3,
+            rel_pos=4,
             text_val="Select land Use",
             text_descr=None,
             drop_options=self.land_use_options,
@@ -112,7 +122,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_soil_type = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.soil_type_var,
-            rel_pos=4,
+            rel_pos=5,
             text_val="Select soil type",
             text_descr=None,
             drop_options=self.soil_type_options,
@@ -122,7 +132,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_site_status = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.site_status_var,
-            rel_pos=5,
+            rel_pos=6,
             text_val="Select site status",
             text_descr=None,
             drop_options=self.site_status_options,
@@ -204,28 +214,30 @@ class SiteInfoUI(GeneralUITemplate):
     def update_date_widgets(self, *args):
         selected_option = self.site_status_var.get()
 
-        if selected_option == "Active" or selected_option == "Proposed":
-            # Show only the start date widget
-            self.start_date_label = tb.Label(self.frame, text="Start Date")
-            self.start_date_label.grid(row=6, column=0, sticky="ew")
-            self.start_date_entry.grid(row=6, column=1, sticky="ew")
-            self.end_date_entry.grid_remove()
-        elif selected_option == "Legacy":
-            self.start_date_label = tb.Label(self.frame, text="Start-End Dates")
-            # Show both start and end date widgets
-            self.start_date_label.grid(row=6, column=0, sticky="ew")
-            self.start_date_entry.grid(row=6, column=1, sticky="ew")
-            self.end_date_entry.grid(row=6, column=2, sticky="ew")
-        else:
-            # Hide both widgets if no option is selected
-            self.start_date_label.grid_remove()
-            self.start_date_entry.grid_remove()
-            self.end_date_entry.grid_remove()
+        # if selected_option == "Active" or selected_option == "Proposed":
+        #     # Show only the start date widget
+        #     self.start_date_label = tb.Label(self.frame, text="Start Date")
+        #     self.start_date_label.grid(row=6, column=0, sticky="ew")
+        #     self.start_date_entry.grid(row=6, column=1, sticky="ew")
+        #     self.end_date_entry.grid_remove()
+        # elif selected_option == "Legacy":
+        #     self.start_date_label = tb.Label(self.frame, text="Start-End Dates")
+        #     # Show both start and end date widgets
+        #     self.start_date_label.grid(row=6, column=0, sticky="ew")
+        #     self.start_date_entry.grid(row=6, column=1, sticky="ew")
+        #     self.end_date_entry.grid(row=6, column=2, sticky="ew")
+        # else:
+        #     # Hide both widgets if no option is selected
+        #     self.start_date_label.grid_remove()
+        #     self.start_date_entry.grid_remove()
+        #     self.end_date_entry.grid_remove()
 
     def site_info_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
+        # TODO I will have to make dynamic the DateEntries
+        # TODO I have to check the nested comboboxes
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.__parent_frame, frame_tag, frame_title)
@@ -253,8 +265,15 @@ class SiteInfoUI(GeneralUITemplate):
         lng_entry.grid(column=2, row=1, sticky="we")
 
         self.start_date_label = tb.Label(frame, text="Start Date:")
-        self.start_date_entry = tb.DateEntry(frame)
-        self.end_date_entry = tb.DateEntry(frame)
+        # self.gt_date_entry_widget(frame, "date_0_01", 1)
+        # self.start_date_entry = tb.DateEntry(
+        #     frame,
+        #     bootstyle=self.ui_settings.ui_bg_color_1,
+        # )
+        # self.end_date_entry = tb.DateEntry(
+        #     frame,
+        #     bootstyle=self.ui_settings.ui_bg_color_1,
+        # )
 
     def ui(self):
         """ """
