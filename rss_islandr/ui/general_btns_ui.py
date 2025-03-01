@@ -17,7 +17,6 @@ class GeneralBtnsUI:
         self.__ui_inp_vars = ui_inp_vars
         self.__ui_calc_vars = ui_calc_vars
         self.__widgets_reconfigured = widgets_reconfigured
-        self.map_open = False
 
     def toggle_theme(self):
         """Switch theme (dark-light)"""

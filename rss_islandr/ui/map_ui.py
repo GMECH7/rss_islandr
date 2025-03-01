@@ -55,18 +55,18 @@ class MapUI:
         webview.start()
 
 
-# Entry point for the webview process
-if __name__ == "__main__":
-    import argparse
+# # Entry point for the webview process
+# if __name__ == "__main__":
+#     import argparse
 
-    print(__name__)
-    # Parse command-line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--webview", action="store_true", help="Run webview in a separate process")
-    args = parser.parse_args()
+#     print(__name__)
+#     # Parse command-line arguments
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--webview", action="store_true", help="Run webview in a separate process")
+#     args = parser.parse_args()
 
-    if args.webview:
-        # If --webview flag is passed, run the webview window
-        # script_path = os.path.abspath(__file__)
-        map_ui = MapUI(STATIC_DIR / "map.html")
-        map_ui.run_webview()
+#     if args.webview:
+#         # If --webview flag is passed, run the webview window
+#         # script_path = os.path.abspath(__file__)
+#         map_ui = MapUI(STATIC_DIR / "map.html")
+#         map_ui.run_webview()

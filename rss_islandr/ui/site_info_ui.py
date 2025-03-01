@@ -2,6 +2,7 @@ import json
 import locale
 
 import ttkbootstrap as tb
+from general_btns_ui import GeneralBtnsUI
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
@@ -13,17 +14,20 @@ locale.setlocale(locale.LC_ALL, "en_US.UTF-8")  # or 'C.UTF-8', 'en_GB.UTF-8', e
 class SiteInfoUI(GeneralUITemplate):
     def __init__(
         self,
+        parent_navbar_frame: tb.Frame,
+        parent_frame: tb.Frame,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        parent_frame: tb.Frame,
         frame_geometry_dict: dict[str, FramePlacing],
         widgets_reconfigured,
     ):
+        self.__parent_navbar_frame = parent_navbar_frame
+        self.__parent_frame = parent_frame
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
-        self.parent_frame = parent_frame
+        self.gnrl_btns_ui = GeneralBtnsUI(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
         with open(DROPDOWN_LISTS_JSON_DIR, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
@@ -121,7 +125,7 @@ class SiteInfoUI(GeneralUITemplate):
         """
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
-        frame = self.gt_new_frame(self.parent_frame, frame_tag, frame_title)
+        frame = self.gt_new_frame(self.__parent_frame, frame_tag, frame_title)
 
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
@@ -144,4 +148,5 @@ class SiteInfoUI(GeneralUITemplate):
 
     def ui(self):
         """ """
+        self.gnrl_btns_ui.file_menu_btn(self.__parent_navbar_frame)
         self.site_info_frame()

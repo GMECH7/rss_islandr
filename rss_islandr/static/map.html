@@ -27,7 +27,7 @@
     <button onclick="updateMarker()">Update Map</button>
 
     <div>
-        <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)" checked>
+        <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)">
         <label for="toggleGeology">Surface Geology</label>
     </div>
     <div>
@@ -35,7 +35,7 @@
         <label for="toggleMines">Mines</label>
     </div>
     <div>
-        <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
+        <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)" checked>
         <label for="toggleHydroMap">Hydrogeological Map</label>
     </div>
     <div id="info">Click on a layer to get more information.</div>
@@ -105,10 +105,14 @@
         }
 
         function sendLocation(lat, lng) {
-            if (window.pywebview) {
+            if (window.pywebview && window.pywebview.api) {
                 window.pywebview.api.send_coordinates(lat, lng);
+            } else {
+                console.log("PyWebView API not ready, retrying...");
+                setTimeout(() => sendLocation(lat, lng), 500);
             }
         }
+        
 
         map.on('click', function(e) {
             setMarker(e.latlng.lat, e.latlng.lng);

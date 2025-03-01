@@ -45,7 +45,7 @@ class RSSUI:
         self.ui_width = ui_widths[1]
         self.widgets_reconfigured = {}
 
-        self.frame_n_rows = 10
+        self.frame_n_rows = 6
         self.frame_n_cols = 1
         self.__navbar_width = 0.1
         self.__navbar_padx = 0.005
@@ -225,9 +225,9 @@ class RSSUI:
         self.__create_source_btn(nav_bar_frame)
         self.__create_pathways_btn(nav_bar_frame)
         self.__create_receptors_btn(nav_bar_frame)
-        self.__create_xlsx_writer_btn(nav_bar_frame)
-        self.__create_scenario_writer_btn(nav_bar_frame)
-        self.__create_scenario_reader_btn(nav_bar_frame)
+        # self.__create_xlsx_writer_btn(nav_bar_frame)
+        # self.__create_scenario_writer_btn(nav_bar_frame)
+        # self.__create_scenario_reader_btn(nav_bar_frame)
 
         self.home_page = tb.Frame(self.root)
         self.site_info_page = tb.Frame(self.root)
@@ -261,11 +261,13 @@ class RSSUI:
             self.widgets_reconfigured,
         )
 
+        site_info_navbar_frame, site_info_frame = HorizontalNavbar()(self.site_info_page)
         app_site_info = SiteInfoUI(
+            site_info_navbar_frame,
+            site_info_frame,
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
-            self.site_info_page,
             self.frame_geometry_dict,
             self.widgets_reconfigured,
         )
@@ -279,13 +281,17 @@ class RSSUI:
             self.__source_keys,
             self.__pathway_keys,
             self.__receptor_keys,
+            self.widgets_reconfigured,
         )
-        # receptors_navbar, receptors_frame = HorizontalNavbar()(self.receptors_page)
+        source_navbar_frame, source_frame = HorizontalNavbar()(self.source_page)
+        pathways_navbar_frame, pathways_frame = HorizontalNavbar()(self.pathways_page)
+        receptors_navbar_frame, receptors_frame = HorizontalNavbar()(self.receptors_page)
+
         app_home.ui()
         app_site_info.ui()
-        app_assesment.ui(self.source_page, "source")
-        app_assesment.ui(self.pathways_page, "pathways")
-        app_assesment.ui(self.receptors_page, "receptors")
+        app_assesment.ui(source_navbar_frame, source_frame, "source")
+        app_assesment.ui(pathways_navbar_frame, pathways_frame, "pathways")
+        app_assesment.ui(receptors_navbar_frame, receptors_frame, "receptors")
 
         self.show_page(self.home_page)
 
@@ -293,17 +299,18 @@ class RSSUI:
         page.tkraise()
 
     def toggle_map(self):
-        # if self.map_open:
-        #     self.map_ui.close_map()
-        #     self.map_open = False
-        #     self.btn_map.config(text="Show Map")
-        # else:
-        #     self.map_ui.run_webview()
-        #     # self.map_ui.show_map()
-        #     self.map_open = True
-        #     self.btn_map.config(text="Close Map")
-        self.map_ui.run_webview()
-        self.btn_map.config(text="Show Map")
+        print("ffffffffffff")
+        if self.map_open:
+            self.map_ui.close_map()
+            self.map_open = False
+            self.btn_map.config(text="Show Map")
+        else:
+            self.map_ui.run_webview()
+            # self.map_ui.show_map()
+            self.map_open = True
+            self.btn_map.config(text="Show Map")
+        # self.map_ui.run_webview()
+        # self.btn_map.config(text="Show Map")
         #: Start a thread to check for coordinate updates in the webview app.
         threading.Thread(target=self.monitor_coordinates, daemon=True).start()
 

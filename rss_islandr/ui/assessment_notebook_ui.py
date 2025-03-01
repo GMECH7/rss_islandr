@@ -11,6 +11,7 @@ from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTO
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
+from general_btns_ui import GeneralBtnsUI
 
 
 class AssessmentNoteBookUI(GeneralUITemplate):
@@ -24,6 +25,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         source_keys: list[str],
         pathway_keys: list[str],
         receptor_keys: list[str],
+        widgets_reconfigured,
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
@@ -49,6 +51,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
         self.__init__create_traces_receptors()
+        self.gnrl_btns_ui = GeneralBtnsUI(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
 
@@ -377,12 +380,12 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title))
         return frame_tags_titles
 
-    def ui(self, parent_frame: tb.Frame, case: str):
+    def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str):
+        self.gnrl_btns_ui.file_menu_btn(parent_navbar_frame)
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             calc_risk_command = self.__calculate_source_pathway_risk
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
-            # notebook.place(relx=0.0, rely=0.05, relwidth=1.0, relheight=0.95)
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
