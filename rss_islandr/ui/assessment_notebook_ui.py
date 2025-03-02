@@ -304,8 +304,8 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         risk = risk_calc(weights)
         self.ui_calc_vars[frame_tag].tk_var.set(f"{risk}")
         self.__update_meter(frame_tag)
-        print("latitude is:", self.ui_inp_vars["map_0_00"].tk_var.get())
-        print("longtitude is:", self.ui_inp_vars["map_0_01"].tk_var.get())
+        # print("latitude is:", self.ui_inp_vars["map_0_00"].tk_var.get())
+        # print("longtitude is:", self.ui_inp_vars["map_0_01"].tk_var.get())
 
     def __calculate_receptor_total_risk(self, frame_tag: str) -> None:
         """

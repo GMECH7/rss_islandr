@@ -73,8 +73,9 @@ class RSSUI:
             tk_var=tb.StringVar(value="0.0"),
             rel_pos=1,
             text_val="Latitude",
+            val_default="0.0",
             text_descr=None,
-            excel_cell="H3",
+            excel_cell="C4",
         )
 
         lng = UIInpVariable(
@@ -82,8 +83,9 @@ class RSSUI:
             tk_var=tb.StringVar(value="0.0"),
             rel_pos=1,
             text_val="Latitude",
+            val_default="0.0",
             text_descr=None,
-            excel_cell="H4",
+            excel_cell="D4",
         )
 
         self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng})

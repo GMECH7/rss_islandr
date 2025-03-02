@@ -52,19 +52,30 @@ class SiteInfoUI(GeneralUITemplate):
             rel_pos=2,
             text_val="Assessment date",
             text_descr=None,
-            excel_cell="E3",
+            excel_cell="C3",
         )
+
         self.date_oper_start = tb.StringVar()
         date_oper_start_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.date_assessed,
+            tk_var=self.date_oper_start,
             rel_pos=7,
             text_val="Operation start & end dates",
             text_descr=None,
-            excel_cell="E4",
+            excel_cell="M3",
+        )
+        self.date_oper_end = tb.StringVar()
+        date_oper_end_var = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.date_oper_end,
+            rel_pos=7,
+            text_val="Operation start & end dates",
+            text_descr=None,
+            excel_cell="M4",
         )
         self.ui_inp_vars.update({"date_0_00": date_var})
-        self.ui_inp_vars.update({"date_0_01": date_oper_start_var})
+        self.ui_inp_vars.update({"datte_0_01": date_oper_start_var})
+        self.ui_inp_vars.update({"datte_0_02": date_oper_end_var})
 
     def __ui_inputs_entries(self) -> None:
         """
@@ -93,7 +104,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.land_use_options = self.data["land_uses"]
 
         self.site_status_var = tb.StringVar()
-        self.site_status_var.set("Active")
+        self.site_status_var.set("")
         self.site_status_options = self.data["site_status"]
 
         self.soil_type_var = tb.StringVar()
@@ -106,7 +117,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select activity/industry",
             text_descr=None,
             drop_options=self.activity_options,
-            excel_cell="C4",
+            excel_cell="H2",
         )
 
         ui_var_land_use = UIInpVariable(
@@ -116,7 +127,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select land Use",
             text_descr=None,
             drop_options=self.land_use_options,
-            excel_cell="J2",
+            excel_cell="H3",
         )
 
         ui_var_soil_type = UIInpVariable(
@@ -126,7 +137,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select soil type",
             text_descr=None,
             drop_options=self.soil_type_options,
-            excel_cell="J3",
+            excel_cell="H4",
         )
 
         ui_var_site_status = UIInpVariable(
@@ -136,7 +147,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Select site status",
             text_descr=None,
             drop_options=self.site_status_options,
-            excel_cell="J3",
+            excel_cell="M2",
         )
 
         self.site_status_var.trace_add("write", self.update_date_widgets)
@@ -214,23 +225,21 @@ class SiteInfoUI(GeneralUITemplate):
     def update_date_widgets(self, *args):
         selected_option = self.site_status_var.get()
 
-        # if selected_option == "Active" or selected_option == "Proposed":
-        #     # Show only the start date widget
-        #     self.start_date_label = tb.Label(self.frame, text="Start Date")
-        #     self.start_date_label.grid(row=6, column=0, sticky="ew")
-        #     self.start_date_entry.grid(row=6, column=1, sticky="ew")
-        #     self.end_date_entry.grid_remove()
-        # elif selected_option == "Legacy":
-        #     self.start_date_label = tb.Label(self.frame, text="Start-End Dates")
-        #     # Show both start and end date widgets
-        #     self.start_date_label.grid(row=6, column=0, sticky="ew")
-        #     self.start_date_entry.grid(row=6, column=1, sticky="ew")
-        #     self.end_date_entry.grid(row=6, column=2, sticky="ew")
-        # else:
-        #     # Hide both widgets if no option is selected
-        #     self.start_date_label.grid_remove()
-        #     self.start_date_entry.grid_remove()
-        #     self.end_date_entry.grid_remove()
+        if selected_option == "Active" or selected_option == "Proposed":
+            # Show only the start date widget
+            self.start_end_oper_label.config(text="Operation start date")
+            self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
+            self.start_date_entry.grid(row=7, column=1, sticky="ew")
+            self.end_date_entry.grid_remove()
+        elif selected_option == "Legacy":
+            self.start_end_oper_label.config(text="Operation start & end dates")
+            self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
+            self.start_date_entry.grid(row=7, column=1, sticky="ew")
+            self.end_date_entry.grid(row=7, column=2, sticky="ew")
+        else:
+            self.start_end_oper_label.grid_remove()
+            self.start_date_entry.grid_remove()
+            self.end_date_entry.grid_remove()
 
     def site_info_frame(self) -> None:
         """
@@ -255,7 +264,7 @@ class SiteInfoUI(GeneralUITemplate):
             else:
                 pass
 
-        label = tb.Label(frame, text="Longtitude (Updated automatically)")
+        label = tb.Label(frame, text="Latitude & Longitude)")
         label.grid(column=0, row=1, sticky="we")
 
         lat_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
@@ -264,16 +273,15 @@ class SiteInfoUI(GeneralUITemplate):
         lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
         lng_entry.grid(column=2, row=1, sticky="we")
 
-        self.start_date_label = tb.Label(frame, text="Start Date:")
-        # self.gt_date_entry_widget(frame, "date_0_01", 1)
-        # self.start_date_entry = tb.DateEntry(
-        #     frame,
-        #     bootstyle=self.ui_settings.ui_bg_color_1,
-        # )
-        # self.end_date_entry = tb.DateEntry(
-        #     frame,
-        #     bootstyle=self.ui_settings.ui_bg_color_1,
-        # )
+        self.start_end_oper_label = tb.Label(self.frame, text="")
+        self.start_date_entry = tb.DateEntry(
+            self.frame,
+            bootstyle=self.ui_settings.ui_bg_color_1,
+        )
+        self.end_date_entry = tb.DateEntry(
+            self.frame,
+            bootstyle=self.ui_settings.ui_bg_color_1,
+        )
 
     def ui(self):
         """ """

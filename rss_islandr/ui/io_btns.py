@@ -146,6 +146,7 @@ class ImportScenarioBtn(IOBtns):
         with open(file_path, "r") as file_inp:
             scenario_data = json.load(file_inp)
         for ui_inp_var in self.ui_inp_vars:
+            print(ui_inp_var, scenario_data[ui_inp_var])
             self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
 
     def btn(self, frame: tb.Frame) -> tb.Button:
