@@ -118,9 +118,12 @@ class ExportScenarioBtn(IOBtns):
 
         if not file_path:  # User canceled the dialog
             return
-
-        with open(file_path, "w") as scenario_file:
-            json.dump(self.saved_scenario, scenario_file, indent=4)
+        try:
+            with open(file_path, "w") as scenario_file:
+                json.dump(self.saved_scenario, scenario_file, indent=4)
+                messagebox.showinfo("Success", "Scenario values exported!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
 
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """
@@ -142,12 +145,15 @@ class ImportScenarioBtn(IOBtns):
         )
         if not file_path:  # User canceled the dialog
             return
-
-        with open(file_path, "r") as file_inp:
-            scenario_data = json.load(file_inp)
-        for ui_inp_var in self.ui_inp_vars:
-            print(ui_inp_var, scenario_data[ui_inp_var])
-            self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
+        try:
+            with open(file_path, "r") as file_inp:
+                scenario_data = json.load(file_inp)
+            for ui_inp_var in self.ui_inp_vars:
+                # print(ui_inp_var, scenario_data[ui_inp_var])
+                self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
+            messagebox.showinfo("Success", "Scenario values imported!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
 
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """

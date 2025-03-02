@@ -124,7 +124,7 @@ class GeneralUITemplate:
 
         combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, columnspan=column_span, sticky="we")
         dropdown_key_2 = dropdown_key[:-2] + f"0{int(dropdown_key[-2:]) + 1}"
-        print(dropdown_key_2)
+        # print(dropdown_key_2)
         combobox = tb.Combobox(
             frame,
             textvariable=self.ui_inp_vars[dropdown_key_2].tk_var,

@@ -8,8 +8,9 @@ __pycache__/
 islandr_env/
 islandr_env39/
 minimal.py
-reporting.xlsx
-scenario.json
+minimal2.py
+vertical_navbar_ui.py
+/results/
 
 _try_maps
 commands.txt
