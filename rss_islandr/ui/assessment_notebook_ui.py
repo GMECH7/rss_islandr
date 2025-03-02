@@ -1,17 +1,17 @@
-from PIL import Image
-
-Image.CUBIC = Image.BICUBIC
 from typing import Callable
 
 import ttkbootstrap as tb
+from general_btns_ui import GeneralBtnsUI
 from general_ui import GeneralUITemplate
+from PIL import Image
 
 from rss_islandr.assessment import risk_calc, risk_color_assignment
 from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTORS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
-from general_btns_ui import GeneralBtnsUI
+
+Image.CUBIC = Image.BICUBIC
 
 
 class AssessmentNoteBookUI(GeneralUITemplate):
@@ -78,6 +78,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         return parent_excel_col, parent_excel_row
 
     def __assemble_xlsx_row(self, i: int, parent_excel_col: str, parent_excel_row: int) -> tuple[str, str]:
+        """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
         excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
 
@@ -279,12 +280,16 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             #     )
 
     def __create_new_tab(
-        self, notebook: tb.Notebook, frame_tag: str, frame_title: str, calc_risk_command: Callable
+        self,
+        notebook: tb.Notebook,
+        frame_tag: str,
+        frame_title: str,
     ) -> None:
+        """ """
         tab = tb.Frame(notebook)
         notebook.add(tab, text=frame_title)
 
-        self.__create_new_risk_frame(tab, frame_tag, frame_title, calc_risk_command)
+        self.__create_new_risk_frame(tab, frame_tag, frame_title)
 
     def __calculate_source_pathway_risk(self, frame_tag: str):
         """
@@ -337,7 +342,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             boot_style = color_ttk
         self.meter_frames[f"{frame_tag}_risk"].configure(amountused=risk_formatted, bootstyle=boot_style)
 
-    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, calc_risk_command: Callable) -> tb.Frame:
+    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str) -> tb.Frame:
         """ """
         #: Create frame that will hold the entries, dropdowns etc.
         frame_form = self.gt_new_frame(frame, frame_tag, frame_title)
@@ -354,6 +359,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         return frame
 
     def __create_frame_tags_titles(self, case: str, keys: list[str]):
+        """ """
         frame_tags_titles = []
         if case == "source" or case == "pathway":
             for risk_factor_key in keys:
@@ -368,24 +374,22 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         return frame_tags_titles
 
     def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str):
+        """ """
         self.gnrl_btns_ui.file_menu_btn(parent_navbar_frame)
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
-            calc_risk_command = self.__calculate_source_pathway_risk
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
-            calc_risk_command = self.__calculate_source_pathway_risk
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
-            calc_risk_command = self.__calculate_receptor_total_risk
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         for frame_tag, frame_title in frame_tags_titles:
-            self.__create_new_tab(notebook, frame_tag, frame_title, calc_risk_command)
+            self.__create_new_tab(notebook, frame_tag, frame_title)

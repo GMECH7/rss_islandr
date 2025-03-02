@@ -2,6 +2,8 @@ import ttkbootstrap as tb
 from core.datatypes import UISettings
 from general_btns_ui import GeneralBtnsUI
 
+from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+
 
 class HomeUI:
     def __init__(
@@ -9,8 +11,8 @@ class HomeUI:
         parent_navbar_frame: tb.Frame,
         parent_frame: tb.Frame,
         ui_settings: UISettings,
-        ui_inp_vars,
-        ui_calc_vars,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
         widgets_reconfigured: dict,
     ):
         """
@@ -18,12 +20,18 @@ class HomeUI:
 
         Parameters
         ----------
+        parent_navbar_frame : tb.Frame
+            Parent navbar frame.
         parent_frame : tb.Frame
             Parent frame.
         ui_settings : UISettings
             This is a dataclass that holds the ui settings.
             It is always initialized using the dark theme option,
             but gets updated when the toggle button is pressed.
+        ui_inp_vars : dict[str, UIInpVariable]
+            All UI input variables are stored and updated here.
+        ui_calc_vars : dict[str, UICalcVariable]
+            All UI calculated variables are stored and updated here.
         widgets_reconfigured : dict[tb.Frame, str]
             This dictionary holds the pair of frame and the bootsyle
             used in their rendering. All widgets that have a bootsyle

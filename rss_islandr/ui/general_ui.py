@@ -4,7 +4,17 @@ import ttkbootstrap as tb
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable, UISettings
 
 
+def frame_distances(frame: tb.Frame, n_rows: int, n_cols: int) -> None:
+    """Configure frame in a grid."""
+    for i in range(n_rows):
+        frame.grid_rowconfigure(i, weight=1)
+    for i in range(n_cols):
+        frame.grid_columnconfigure(i, weight=1)
+
+
 class GeneralUITemplate:
+    """General widget templates."""
+
     def __init__(
         self,
         ui_settings: UISettings,
@@ -19,12 +29,6 @@ class GeneralUITemplate:
 
     def __str__(self):
         return str(__class__.__name__)
-
-    def frame_distances(self, frame: tb.Frame, n_rows: int, n_cols: int) -> None:
-        for i in range(n_rows):
-            frame.grid_rowconfigure(i, weight=1)
-        for i in range(n_cols):
-            frame.grid_columnconfigure(i, weight=1)
 
     def frame_limits(self, frame_tag: str) -> tuple:
         rel_x = self.frame_geometry_dict[frame_tag].x_l
@@ -52,7 +56,7 @@ class GeneralUITemplate:
     ) -> None:
         title_frame = tb.Frame(parent_frame)
         title_frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
-        self.frame_distances(title_frame, 0, 1)
+        frame_distances(title_frame, 0, 1)
         title_label = tb.Label(title_frame, text=frame_title, anchor="center", justify="center", style="Title.TLabel")
         title_label.grid(row=0, column=0, sticky="nsew")
 
@@ -69,7 +73,7 @@ class GeneralUITemplate:
             relwidth=rel_w,
             relheight=rel_h - title_offset,
         )
-        self.frame_distances(frame, n_rows, n_cols)
+        frame_distances(frame, n_rows, n_cols)
 
         return frame
 
@@ -83,7 +87,7 @@ class GeneralUITemplate:
             relwidth=rel_w,
             relheight=rel_h,
         )
-        self.frame_distances(frame, n_rows, n_cols)
+        frame_distances(frame, n_rows, n_cols)
 
         return frame
 
@@ -141,7 +145,7 @@ class GeneralUITemplate:
         )
         frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
 
-        self.frame_distances(frame, n_rows, n_cols)
+        frame_distances(frame, n_rows, n_cols)
         meter_widget.grid(row=0, column=0, sticky="nsew")
 
         return meter_widget

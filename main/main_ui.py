@@ -21,6 +21,7 @@ from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
+from rss_islandr.ui.general_ui import frame_distances
 from rss_islandr.ui.home_ui import HomeUI
 from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
@@ -32,32 +33,20 @@ class RSSUI:
     """Implementation of main UI"""
 
     def __init__(self, root: tb.Window):
+        """ """
+        self.root = root
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
         tb_style = tb.Style(self.theme)
         #: Create custom themes
         ct = CustomThemes(tb_style, self.ui_settings)
         ct()
-        self.root = root
-
-        self.main_view_height = ui_heights[0]
-        self.main_view_width = ui_widths[0]
-        self.ui_height = ui_heights[1]
-        self.ui_width = ui_widths[1]
-        self.widgets_reconfigured = {}
-
-        self.frame_n_rows = 7
-        self.frame_n_cols = 1
-        self.__navbar_width = 0.1
-        self.__navbar_padx = 0.005
-        self.__frames_xstart = self.__navbar_width + self.__navbar_padx
-        self.__frames_width = 1.0 - self.__navbar_padx - self.__navbar_width
-        self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
         self.ui_inp_vars = {}
         self.ui_calc_vars = {}
         self.meter_frames = {}
         self.frame_geometry_dict = {}
+        self.widgets_reconfigured = {}
 
         self.map_open = True
         self.map_ui = MapUI(MAP_DIR, tb_style)
@@ -74,9 +63,10 @@ class RSSUI:
         }
         self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
+        self.__init__handle_geometry()
 
     def __init__lat_lng_vars(self):
-        """Definition of langtitude and longtitude variables which are updated from the map."""
+        """Definition of langtitude and longtitude variables which are updated from the map app."""
 
         lat = UIInpVariable(
             frame_tag="site_info_frame",
@@ -99,6 +89,7 @@ class RSSUI:
         self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng})
 
     def __init__populate_frame_infos_dict(self):
+        """ """
         for frame_key in uis_frame_geometry:
             frame_info = uis_frame_geometry[frame_key]
             try:
@@ -109,15 +100,14 @@ class RSSUI:
                 #: the number of rows is updated in code
                 n_row = frame_info.get("n_row", 1)
                 if frame_key == "risk_frames":
-                    n_cols = 1
+                    n_cols_default = 1
                 elif frame_key == "site_info_frame":
-                    n_cols = 3
+                    n_cols_default = 3
                 else:
-                    n_cols = 2
+                    n_cols_default = 2
 
                 #: the number of columns are by default 2 (1 label left 1 widget right)
-                n_col = frame_info.get("n_col", n_cols)
-
+                n_col = frame_info.get("n_col", n_cols_default)
                 if frame_key in self.__frame_families:
                     for frame_key_specific in self.__frame_families[frame_key]:
                         frame_place = FramePlacing(x_l, x_r, y_u, y_d, n_row, n_col)
@@ -128,22 +118,31 @@ class RSSUI:
             except Exception:
                 pass
 
-    def frame_distances(self, frame) -> None:
-        for i in range(self.frame_n_rows):
-            frame.rowconfigure(i, weight=1)
-        for i in range(self.frame_n_cols):
-            frame.columnconfigure(i, weight=1)
+    def __init__handle_geometry(self):
+        """ """
+        self.main_view_height = ui_heights[0]
+        self.main_view_width = ui_widths[0]
+        self.ui_height = ui_heights[1]
+        self.ui_width = ui_widths[1]
+        self.__frame_n_rows = self.frame_geometry_dict["vertical_navbar_frame"].n_row
+        self.__frame_n_cols = self.frame_geometry_dict["vertical_navbar_frame"].n_col
+        self.__navbar_width = 0.1
+        self.__navbar_padx = 0.005
+        self.__frames_xstart = self.__navbar_width + self.__navbar_padx
+        self.__frames_width = 1.0 - self.__navbar_padx - self.__navbar_width
+        self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
 
     def __create_vertical_navbar(self) -> tb.Frame:
-        """"""
+        """Create vertical navbar visible in all app."""
         nav_bar_frame = tb.Frame(self.root)
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__navbar_width, relheight=1.0)
-        self.frame_distances(nav_bar_frame)
+        frame_distances(nav_bar_frame, self.__frame_n_rows, self.__frame_n_cols)
         nav_bar_pad_frame = tb.Frame(self.root, style="NavbarPad.TFrame")
         nav_bar_pad_frame.place(relx=self.__navbar_width, rely=0, relwidth=self.__navbar_padx, relheight=1.0)
         return nav_bar_frame
 
     def __create_home_btn(self, nav_bar_frame: tb.Frame):
+        """ """
         btn_home = tb.Button(
             nav_bar_frame,
             text="Home Page",
@@ -154,6 +153,7 @@ class RSSUI:
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
 
     def __create_map_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """ """
         self.btn_map = tb.Button(
             nav_bar_frame,
             text="Show Map",
@@ -164,6 +164,7 @@ class RSSUI:
         self.widgets_reconfigured[self.btn_map] = "ui_btn_bg_color_1"
 
     def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
+        """ """
         btn_site_info = tb.Button(
             nav_bar_frame,
             text="Site info",
@@ -174,6 +175,7 @@ class RSSUI:
         self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
 
     def __create_source_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """ """
         btn_source = tb.Button(
             nav_bar_frame,
             text="Source",
@@ -184,6 +186,7 @@ class RSSUI:
         self.widgets_reconfigured[btn_source] = "ui_btn_bg_color_1"
 
     def __create_pathways_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """ """
         btn_pathways = tb.Button(
             nav_bar_frame,
             text="Pathways",
@@ -194,6 +197,7 @@ class RSSUI:
         self.widgets_reconfigured[btn_pathways] = "ui_btn_bg_color_1"
 
     def __create_receptors_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """ """
         btn_receptors = tb.Button(
             nav_bar_frame,
             text="Receptors",
@@ -324,7 +328,6 @@ class RSSUI:
         page.tkraise()
 
     def toggle_map(self):
-        print("ffffffffffff")
         # if self.map_open:
         #     self.map_ui.close_map()
         #     self.map_open = False
@@ -343,7 +346,6 @@ class RSSUI:
         """Continuously checks for new coordinates from MapUI when the map is open."""
         while self.map_open:
             coords = self.map_ui.get_coordinates()
-            print(coords)
             if coords is not None:
                 lat, lng = coords
                 self.update_coordinates(lat, lng)
@@ -358,7 +360,7 @@ class RSSUI:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        print(f"Updated Coordinates: {lat}, {lng}")
+        # print(f"Updated Coordinates: {lat}, {lng}")
 
 
 def main():

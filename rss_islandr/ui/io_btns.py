@@ -102,13 +102,7 @@ class ExportExcelReportBtn(IOBtns):
 
 
 class ExportScenarioBtn(IOBtns):
-    """
-    Implementation of input-output buttons.
-    ---------------------------------------
-    1. Write to excel (reporting)
-    2. Write to json file (scenario)
-    3. Read from json file (scenario)
-    """
+    """Implementation of button for exporting a scenario to a json file."""
 
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
@@ -135,7 +129,7 @@ class ExportScenarioBtn(IOBtns):
 
 
 class ImportScenarioBtn(IOBtns):
-    """ """
+    """Implementation of button for importing a scenario from a json file."""
 
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)

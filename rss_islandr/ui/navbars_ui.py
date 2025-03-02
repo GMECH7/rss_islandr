@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+from general_ui import frame_distances
 
 
 class HorizontalNavbar:
@@ -7,31 +8,22 @@ class HorizontalNavbar:
         self.__rel_width = rel_width
 
     def __create_horizontal_navbar(self, parent_frame: tb.Frame) -> tb.Frame:
-        """Create a horizontal navbar for the home page"""
+        """Create a horizontal navbar."""
         nav_bar_frame = tb.Frame(parent_frame)
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__rel_width, relheight=self.__rel_height)
-        self.__frame_distances(nav_bar_frame)
+        frame_distances(nav_bar_frame, 1, 12)
 
         return nav_bar_frame
 
     def __create_child_frame(self, parent_frame: tb.Frame) -> tb.Frame:
-        """Create a horizontal navbar for the home page"""
+        """Create a child frame (under the horizontal navbar)."""
         child_frame = tb.Frame(parent_frame)
         child_frame.place(relx=0, rely=self.__rel_height, relwidth=self.__rel_width, relheight=1 - self.__rel_height)
-        self.__frame_distances(child_frame)
 
         return child_frame
 
-    def __frame_distances(self, frame) -> None:
-        for i in range(1):
-            frame.rowconfigure(i, weight=1)
-        for i in range(12):
-            frame.columnconfigure(i, weight=1)
-
     def __call__(self, parent_frame: tb.Frame):
-        """
-        Return
-        """
+        """ """
         navbar_frame = self.__create_horizontal_navbar(parent_frame)
         child_frame = self.__create_child_frame(parent_frame)
 

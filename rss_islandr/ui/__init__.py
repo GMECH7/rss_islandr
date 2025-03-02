@@ -2,7 +2,7 @@
 from .assessment_notebook_ui import AssessmentNoteBookUI
 from .custom_themes import CustomThemes
 from .general_btns_ui import GeneralBtnsUI
-from .general_ui import GeneralUITemplate
+from .general_ui import GeneralUITemplate, frame_distances
 from .home_ui import HomeUI
 from .io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, IOBtns
 from .map_ui import MapUI
@@ -15,6 +15,7 @@ __all__ = [
     "ExportScenarioBtn",
     "ImportScenarioBtn",
     "GeneralUITemplate",
+    "frame_distances",
     "MapUI",
     "SiteInfoUI",
     "AssessmentNoteBookUI",
