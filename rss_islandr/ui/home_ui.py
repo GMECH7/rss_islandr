@@ -45,3 +45,4 @@ class HomeUI:
     def ui(self):
         self.gnrl_btns_ui.toggle_skin_btn(self.__parent_navbar_frame)
         self.gnrl_btns_ui.file_menu_btn(self.__parent_navbar_frame)
+        self.gnrl_btns_ui.docs_menu_button(self.__parent_navbar_frame)

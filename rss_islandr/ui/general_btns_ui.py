@@ -5,7 +5,7 @@ from core.config_parser import settings
 from core.datatypes import UISettings
 from core.skin_reader import read_skin_details
 from custom_themes import CustomThemes
-from io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
+from io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, PopupImage
 
 
 class GeneralBtnsUI:
@@ -56,21 +56,36 @@ class GeneralBtnsUI:
 
         self.toggle_button.grid()
 
-        self.toggle_button.grid(row=0, column=10)
+        self.toggle_button.grid(row=0, column=11)
 
     def file_menu_btn(self, frame: tb.Frame):
-        """ """
+        """
+        File menu. Import and Export options.
+        """
         write_to_excel = ExportExcelReportBtn(self.__ui_inp_vars, self.__ui_calc_vars)
         write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
         read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
 
         menu_btn = tb.Menubutton(frame, text="File", style="Custom.Menubutton.TMenubutton")
         menu_btn.grid(row=0, column=0, sticky="nsw")
-        # self.__widgets_reconfigured[menu_btn] = "ui_btn_bg_color_2"
 
         menu = Menu(menu_btn, tearoff=0)
 
         menu.add_command(label="Export report", command=write_to_excel.on_btn_click)
         menu.add_command(label="Export scenario", command=write_to_json.on_btn_click)
         menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
+        menu_btn["menu"] = menu
+
+    def docs_menu_button(self, frame: tb.Frame):
+        """
+        Various documents displayed in popup menus.
+        """
+        popup_image = PopupImage(self.__ui_inp_vars, self.__ui_calc_vars)
+        menu_btn = tb.Menubutton(frame, text="Documents", style="Custom.Menubutton.TMenubutton")
+        menu_btn.grid(row=0, column=1, sticky="nsw")
+
+        menu = Menu(menu_btn, tearoff=0)
+
+        menu.add_command(label="Conceptual site model (CSM)", command=lambda: popup_image.on_btn_click(frame))
+
         menu_btn["menu"] = menu
