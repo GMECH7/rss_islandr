@@ -92,7 +92,7 @@ class CustomThemes:
         )
 
     def custom_buttons(self):
-        """Not USED"""
+        """ """
         background_color = self.__style.colors.get("bg")
         self.__style.configure(
             "Custom.Menubutton.TMenubutton",  # Custom style name

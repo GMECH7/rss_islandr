@@ -27,6 +27,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
+        self.__widgets_reconfigured = widgets_reconfigured
         self.gnrl_btns_ui = GeneralBtnsUI(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
         with open(DROPDOWN_LISTS_JSON_DIR, "r", encoding="utf-8") as file_inp:
@@ -272,16 +273,26 @@ class SiteInfoUI(GeneralUITemplate):
 
         lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
         lng_entry.grid(column=2, row=1, sticky="we")
-
+        # TODO This must become dynamic and the entry widget should be used
         self.start_end_oper_label = tb.Label(self.frame, text="")
         self.start_date_entry = tb.DateEntry(
-            self.frame,
-            bootstyle=self.ui_settings.ui_bg_color_1,
+            self.frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
         )
-        self.end_date_entry = tb.DateEntry(
-            self.frame,
-            bootstyle=self.ui_settings.ui_bg_color_1,
+        self.start_date_entry.bind(
+            "<FocusOut>", lambda event: self.__update_date_var(event, self.start_date_entry, "datte_0_01")
         )
+        self.__widgets_reconfigured[self.start_date_entry] = "ui_bg_color_1"
+
+        self.end_date_entry = tb.DateEntry(self.frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d")
+        self.end_date_entry.bind(
+            "<FocusOut>", lambda event: self.__update_date_var(event, self.end_date_entry, "datte_0_02")
+        )
+        self.__widgets_reconfigured[self.end_date_entry] = "ui_bg_color_1"
+
+    def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
+        """ """
+        date = date_entry.entry.get()
+        self.ui_inp_vars[date_key].tk_var.set(date)  # type: ignore
 
     def ui(self):
         """ """

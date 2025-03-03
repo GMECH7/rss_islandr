@@ -80,7 +80,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def __assemble_xlsx_row(self, i: int, parent_excel_col: str, parent_excel_row: int) -> tuple[str, str]:
         """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
-        excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
+        # TODO I have altered the dynamic calculation. I must see how to do that in the future
+        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
+
+        excel_cell_risk = f"{parent_excel_col}17"
 
         return excel_cell, excel_cell_risk
 
