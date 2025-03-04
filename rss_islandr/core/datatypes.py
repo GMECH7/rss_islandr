@@ -5,6 +5,8 @@ import ttkbootstrap as tb
 
 TkValues = tb.StringVar
 
+TkWidgets = Union[tb.Button, tb.Entry]
+
 
 class SeverityDict(TypedDict):
     alias: str

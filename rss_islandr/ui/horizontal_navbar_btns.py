@@ -2,16 +2,24 @@ from tkinter import Menu
 
 import ttkbootstrap as tb
 from core.config_parser import settings
-from core.datatypes import UISettings
+from core.datatypes import TkWidgets, UISettings
 from core.skin_reader import read_skin_details
 from custom_themes import CustomThemes
 from io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, PopupImage
 
+from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 
-class GeneralBtnsUI:
-    """Implementation of buttons that may be used anywhere in the app."""
 
-    def __init__(self, ui_settings: UISettings, ui_inp_vars, ui_calc_vars, widgets_reconfigured: dict[tb.Frame, str]):
+class HorizontalNavbarBtns:
+    """Implementation of buttons used in the horizontal navbar"""
+
+    def __init__(
+        self,
+        ui_settings: UISettings,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
+        widgets_reconfigured: dict[TkWidgets, str],
+    ):
         self.__theme_type = "dark"
         self.ui_settings = ui_settings
         self.__ui_inp_vars = ui_inp_vars
@@ -55,10 +63,9 @@ class GeneralBtnsUI:
         )
 
         self.toggle_button.grid()
-
         self.toggle_button.grid(row=0, column=11)
 
-    def file_menu_btn(self, frame: tb.Frame):
+    def file_menu_btn(self, frame: tb.Frame) -> None:
         """
         File menu. Import and Export options.
         """
@@ -76,16 +83,16 @@ class GeneralBtnsUI:
         menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
         menu_btn["menu"] = menu
 
-    def docs_menu_button(self, frame: tb.Frame):
+    def docs_menu_button(self, frame: tb.Frame) -> None:
         """
         Various documents displayed in popup menus.
         """
         popup_image = PopupImage(self.__ui_inp_vars, self.__ui_calc_vars)
+
         menu_btn = tb.Menubutton(frame, text="Documents", style="Custom.Menubutton.TMenubutton")
         menu_btn.grid(row=0, column=1, sticky="nsw")
 
         menu = Menu(menu_btn, tearoff=0)
 
         menu.add_command(label="Conceptual site model (CSM)", command=lambda: popup_image.on_btn_click(frame))
-
         menu_btn["menu"] = menu

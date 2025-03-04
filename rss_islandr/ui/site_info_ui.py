@@ -2,7 +2,6 @@ import json
 import locale
 
 import ttkbootstrap as tb
-from general_btns_ui import GeneralBtnsUI
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
@@ -28,7 +27,6 @@ class SiteInfoUI(GeneralUITemplate):
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
         self.__widgets_reconfigured = widgets_reconfigured
-        self.gnrl_btns_ui = GeneralBtnsUI(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
         with open(DROPDOWN_LISTS_JSON_DIR, "r", encoding="utf-8") as file_inp:
             self.data = json.load(file_inp)
@@ -296,5 +294,4 @@ class SiteInfoUI(GeneralUITemplate):
 
     def ui(self):
         """ """
-        self.gnrl_btns_ui.file_menu_btn(self.__parent_navbar_frame)
         self.site_info_frame()

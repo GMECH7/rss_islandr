@@ -1,5 +1,4 @@
 import ttkbootstrap as tb
-from general_btns_ui import GeneralBtnsUI
 from general_ui import GeneralUITemplate
 from PIL import Image
 
@@ -23,8 +22,32 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         source_keys: list[str],
         pathway_keys: list[str],
         receptor_keys: list[str],
-        widgets_reconfigured: dict[tb.Frame, str],
+        **kwargs,
     ):
+        """
+        _summary_
+
+        Parameters
+        ----------
+        ui_settings : UISettings
+            This is a dataclass that holds the ui settings.
+            It is always initialized using the dark theme option,
+            but gets updated when the toggle button is pressed.
+        ui_inp_vars : dict[str, UIInpVariable]
+            All UI input variables are stored and updated here.
+        ui_calc_vars : dict[str, UICalcVariable]
+            All UI calculated variables are stored and updated here.
+        meter_frames : dict[str, tb.Meter]
+            _description_
+        frame_geometry_dict : dict[str, FramePlacing]
+            _description_
+        source_keys : list[str]
+            _description_
+        pathway_keys : list[str]
+            _description_
+        receptor_keys : list[str]
+            _description_
+        """
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
@@ -34,6 +57,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = receptor_keys
         self.__source_pathway_keys = self.__source_keys + self.__pathway_keys
+        self.__widgets_reconfigured = kwargs.get("widgets_reconfigured", {})
 
         self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
         self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
@@ -47,7 +71,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
         self.__init__create_traces_receptors()
-        self.gnrl_btns_ui = GeneralBtnsUI(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
         super().__init__(ui_settings, ui_inp_vars, self.frame_geometry_dict)
 
@@ -353,7 +376,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
     def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
         """ """
-        self.gnrl_btns_ui.file_menu_btn(parent_navbar_frame)
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")

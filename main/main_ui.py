@@ -23,9 +23,9 @@ from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.general_ui import frame_distances
 from rss_islandr.ui.home_ui import HomeUI
+from rss_islandr.ui.horizontal_navbar import HorizontalNavbar
 from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
-from rss_islandr.ui.navbars_ui import HorizontalNavbar
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
 
@@ -209,7 +209,7 @@ class RSSUI:
         btn_receptors.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
 
-    def __restore_all(self):
+    def __restore_all(self) -> None:
         """ """
         result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
         if result == "Yes":
@@ -232,23 +232,27 @@ class RSSUI:
         return restore_btn
 
     def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """NOT Used"""
         excel_writer = ExportExcelReportBtn(self.ui_inp_vars, self.ui_calc_vars)
         btn_xlsx_writer = excel_writer.btn(nav_bar_frame)
         btn_xlsx_writer.grid(row=7, column=0, sticky="nsew")
 
     def __create_scenario_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """NOT Used"""
         excel_writer = ExportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
         btn_scenario_writer = excel_writer.btn(nav_bar_frame)
         btn_scenario_writer.grid(row=8, column=0, sticky="nsew")
 
     def __create_scenario_reader_btn(self, nav_bar_frame: tb.Frame) -> None:
+        """NOT Used"""
         excel_writer = ImportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
         btn_scenario_writer = excel_writer.btn(nav_bar_frame)
         btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
 
     def create_ui(self) -> None:
+        """ """
         nav_bar_frame = self.__create_vertical_navbar()
-        #: Create navbar buttons
+        #: Create vertical navbar buttons
         self.__create_home_btn(nav_bar_frame)
         self.__create_site_info_btn(nav_bar_frame)
         self.__create_map_btn(nav_bar_frame)
@@ -256,10 +260,7 @@ class RSSUI:
         self.__create_pathways_btn(nav_bar_frame)
         self.__create_receptors_btn(nav_bar_frame)
         self.__create_restore_vars(nav_bar_frame)
-        # self.__create_xlsx_writer_btn(nav_bar_frame)
-        # self.__create_scenario_writer_btn(nav_bar_frame)
-        # self.__create_scenario_reader_btn(nav_bar_frame)
-
+        #: Create pages (frames) for each main page
         self.home_page = tb.Frame(self.root)
         self.site_info_page = tb.Frame(self.root)
         self.map_page = tb.Frame(self.root)
@@ -282,17 +283,21 @@ class RSSUI:
                 relheight=1.0,
             )
 
-        home_navbar_frame, home_frame = HorizontalNavbar()(self.home_page)
-        app_home = HomeUI(
-            home_navbar_frame,
-            home_frame,
+        home_navbar_frame, home_frame = HorizontalNavbar(
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )
+        )(self.home_page)
+        app_home = HomeUI(home_navbar_frame, home_frame)
 
-        site_info_navbar_frame, site_info_frame = HorizontalNavbar()(self.site_info_page)
+        site_info_navbar_frame, site_info_frame = HorizontalNavbar(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.widgets_reconfigured,
+        )(self.site_info_page)
+
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
             site_info_frame,
@@ -312,11 +317,17 @@ class RSSUI:
             self.__source_keys,
             self.__pathway_keys,
             self.__receptor_keys,
-            self.widgets_reconfigured,
+            widgets_reconfigured=self.widgets_reconfigured,
         )
-        source_navbar_frame, source_frame = HorizontalNavbar()(self.source_page)
-        pathways_navbar_frame, pathways_frame = HorizontalNavbar()(self.pathways_page)
-        receptors_navbar_frame, receptors_frame = HorizontalNavbar()(self.receptors_page)
+        source_navbar_frame, source_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.source_page)
+        pathways_navbar_frame, pathways_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.pathways_page)
+        receptors_navbar_frame, receptors_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.receptors_page)
 
         app_home.ui()
         app_site_info.ui()

@@ -22,6 +22,25 @@ class GeneralUITemplate:
         frame_geometry_dict: dict[str, FramePlacing],
         **kwargs,
     ):
+        """
+        _summary_
+
+        Parameters
+        ----------
+        ui_settings : UISettings
+            _description_
+        ui_inp_vars : dict[str, UIInpVariable]
+            _description_
+        frame_geometry_dict : dict[str, FramePlacing]
+            _description_
+        **kwargs:
+        widgets_reconfigured : dict[tb.Frame, str]
+            This dictionary holds the pair of frame and the bootsyle
+            used in their rendering. All widgets that have a bootsyle
+            which is not defined in the CustomThemes have to be included
+            here in order to be restyled when the theme changes.
+        """
+
         self.ui_inp_vars = ui_inp_vars
         self.ui_settings = ui_settings
         self.frame_geometry_dict = frame_geometry_dict

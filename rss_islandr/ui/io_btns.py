@@ -8,7 +8,7 @@ import ttkbootstrap as tb
 import xlwings as xw
 from PIL import Image, ImageTk
 
-from rss_islandr.core.config_parser import XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
+from rss_islandr.core.config_parser import STATIC_DIR, XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 
 
@@ -151,7 +151,6 @@ class ImportScenarioBtn(IOBtns):
             with open(file_path, "r") as file_inp:
                 scenario_data = json.load(file_inp)
             for ui_inp_var in self.ui_inp_vars:
-                # print(ui_inp_var, scenario_data[ui_inp_var])
                 self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
             messagebox.showinfo("Success", "Scenario values imported!")
         except Exception as e:
@@ -166,7 +165,7 @@ class ImportScenarioBtn(IOBtns):
 class PopupImage(IOBtns):
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        self.image_path = r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\static\transport.png"  # Change to your actual image path
+        self.image_path = STATIC_DIR / "transport.png"  # Change to your actual image path
         self.original_image = Image.open(self.image_path).convert("RGBA")
 
         # Button to Open/Close Popup
@@ -175,7 +174,6 @@ class PopupImage(IOBtns):
     def __show_popup(self, frame: tb.Frame):
         """Creates a new popup window displaying the image."""
         self.popup_window = tk.Toplevel(frame)
-        # self.popup_window.title("Image Popup")
 
         # Resize Image to Fit Popup Window
         resized_image = self.original_image.resize((1800, 908), Image.LANCZOS)
@@ -183,9 +181,6 @@ class PopupImage(IOBtns):
 
         label = tk.Label(self.popup_window, image=self.photo)
         label.pack(padx=10, pady=10)
-
-        # # Close popup when clicked
-        # self.popup_window.bind("<Button-1>", lambda e: self.on_btn_click())
 
     def on_btn_click(self, frame: tb.Frame):
         """Opens or closes the popup window with the image."""
