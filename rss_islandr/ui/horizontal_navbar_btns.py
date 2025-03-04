@@ -63,7 +63,7 @@ class HorizontalNavbarBtns:
         )
 
         self.toggle_button.grid()
-        self.toggle_button.grid(row=0, column=11)
+        self.toggle_button.grid(row=0, column=23)
 
     def file_menu_btn(self, frame: tb.Frame) -> None:
         """
@@ -74,7 +74,7 @@ class HorizontalNavbarBtns:
         read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
 
         menu_btn = tb.Menubutton(frame, text="File", style="Custom.Menubutton.TMenubutton")
-        menu_btn.grid(row=0, column=0, sticky="nsw")
+        menu_btn.grid(row=0, column=0, sticky="w", padx=10)
 
         menu = Menu(menu_btn, tearoff=0)
 
@@ -90,7 +90,7 @@ class HorizontalNavbarBtns:
         popup_image = PopupImage(self.__ui_inp_vars, self.__ui_calc_vars)
 
         menu_btn = tb.Menubutton(frame, text="Documents", style="Custom.Menubutton.TMenubutton")
-        menu_btn.grid(row=0, column=1, sticky="nsw")
+        menu_btn.grid(row=0, column=1, sticky="w")
 
         menu = Menu(menu_btn, tearoff=0)
 

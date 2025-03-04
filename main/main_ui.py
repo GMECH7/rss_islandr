@@ -149,7 +149,7 @@ class RSSUI:
             nav_bar_frame,
             text="Home Page",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.home_page),
+            command=lambda: self.__show_page(self.__home_page),
         )
         btn_home.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
@@ -160,7 +160,7 @@ class RSSUI:
             nav_bar_frame,
             text="Show Map",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=self.toggle_map,
+            command=self.__toggle_map,
         )
         self.btn_map.grid(row=1, column=0, sticky="nsew")
         self.widgets_reconfigured[self.btn_map] = "ui_btn_bg_color_1"
@@ -171,7 +171,7 @@ class RSSUI:
             nav_bar_frame,
             text="Site info",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.site_info_page),
+            command=lambda: self.__show_page(self.__site_info_page),
         )
         btn_site_info.grid(row=2, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
@@ -182,7 +182,7 @@ class RSSUI:
             nav_bar_frame,
             text="Source",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.source_page),
+            command=lambda: self.__show_page(self.__source_page),
         )
         btn_source.grid(row=3, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_source] = "ui_btn_bg_color_1"
@@ -193,7 +193,7 @@ class RSSUI:
             nav_bar_frame,
             text="Pathways",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.pathways_page),
+            command=lambda: self.__show_page(self.__pathways_page),
         )
         btn_pathways.grid(row=4, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_pathways] = "ui_btn_bg_color_1"
@@ -204,7 +204,7 @@ class RSSUI:
             nav_bar_frame,
             text="Receptors",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.show_page(self.receptors_page),
+            command=lambda: self.__show_page(self.__receptors_page),
         )
         btn_receptors.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
@@ -249,6 +249,39 @@ class RSSUI:
         btn_scenario_writer = excel_writer.btn(nav_bar_frame)
         btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
 
+    def __show_page(self, page):
+        page.tkraise()
+
+    def __toggle_map(self):
+        # if self.map_open:
+        #     self.map_ui.close_map()
+        #     self.map_open = False
+        #     self.btn_map.config(text="Show Map")
+        # else:
+        #     self.map_ui.run_webview()
+        #     # self.map_ui.show_map()
+        #     self.map_open = True
+        #     self.btn_map.config(text="Show Map")
+        self.map_ui.run_webview()
+        self.btn_map.config(text="Show Map")
+        #: Start a thread to check for coordinate updates in the webview app.
+        threading.Thread(target=self.__monitor_coordinates, daemon=True).start()
+
+    def __monitor_coordinates(self):
+        """Continuously checks for new coordinates from MapUI when the map is open."""
+        while self.map_open:
+            coords = self.map_ui.get_coordinates()
+            if coords is not None:
+                lat, lng = coords
+                self.__update_coordinates(lat, lng)
+            time.sleep(1.0)  # Polling interval (s)
+
+    def __update_coordinates(self, lat, lng):
+        """Callback function to update the coordinates label."""
+        self.ui_inp_vars["map_0_00"].tk_var.set(lat)
+        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
+        # print(f"Updated Coordinates: {lat}, {lng}")
+
     def create_ui(self) -> None:
         """ """
         nav_bar_frame = self.__create_vertical_navbar()
@@ -261,20 +294,20 @@ class RSSUI:
         self.__create_receptors_btn(nav_bar_frame)
         self.__create_restore_vars(nav_bar_frame)
         #: Create pages (frames) for each main page
-        self.home_page = tb.Frame(self.root)
-        self.site_info_page = tb.Frame(self.root)
-        self.map_page = tb.Frame(self.root)
-        self.source_page = tb.Frame(self.root)
-        self.pathways_page = tb.Frame(self.root)
-        self.receptors_page = tb.Frame(self.root)
+        self.__home_page = tb.Frame(self.root)
+        self.__site_info_page = tb.Frame(self.root)
+        self.__map_page = tb.Frame(self.root)
+        self.__source_page = tb.Frame(self.root)
+        self.__pathways_page = tb.Frame(self.root)
+        self.__receptors_page = tb.Frame(self.root)
 
         for self.page in [
-            self.home_page,
-            self.site_info_page,
-            self.map_page,
-            self.source_page,
-            self.pathways_page,
-            self.receptors_page,
+            self.__home_page,
+            self.__site_info_page,
+            self.__map_page,
+            self.__source_page,
+            self.__pathways_page,
+            self.__receptors_page,
         ]:
             self.page.place(
                 relx=self.__frames_xstart,
@@ -282,13 +315,13 @@ class RSSUI:
                 relwidth=self.__frames_width,
                 relheight=1.0,
             )
-
+        #: Create horizontal navbar and rest of frame per page to be dispalyed
         home_navbar_frame, home_frame = HorizontalNavbar(
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.home_page)
+        )(self.__home_page)
         app_home = HomeUI(home_navbar_frame, home_frame)
 
         site_info_navbar_frame, site_info_frame = HorizontalNavbar(
@@ -296,7 +329,7 @@ class RSSUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.site_info_page)
+        )(self.__site_info_page)
 
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
@@ -321,59 +354,27 @@ class RSSUI:
         )
         source_navbar_frame, source_frame = HorizontalNavbar(
             self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        )(self.source_page)
+        )(self.__source_page)
         pathways_navbar_frame, pathways_frame = HorizontalNavbar(
             self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        )(self.pathways_page)
+        )(self.__pathways_page)
         receptors_navbar_frame, receptors_frame = HorizontalNavbar(
             self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        )(self.receptors_page)
+        )(self.__receptors_page)
 
+        #: Create page
         app_home.ui()
         app_site_info.ui()
         app_assesment.ui(source_navbar_frame, source_frame, "source")
         app_assesment.ui(pathways_navbar_frame, pathways_frame, "pathways")
         app_assesment.ui(receptors_navbar_frame, receptors_frame, "receptors")
 
-        self.show_page(self.home_page)
-
-    def show_page(self, page):
-        page.tkraise()
-
-    def toggle_map(self):
-        # if self.map_open:
-        #     self.map_ui.close_map()
-        #     self.map_open = False
-        #     self.btn_map.config(text="Show Map")
-        # else:
-        #     self.map_ui.run_webview()
-        #     # self.map_ui.show_map()
-        #     self.map_open = True
-        #     self.btn_map.config(text="Show Map")
-        self.map_ui.run_webview()
-        self.btn_map.config(text="Show Map")
-        #: Start a thread to check for coordinate updates in the webview app.
-        threading.Thread(target=self.monitor_coordinates, daemon=True).start()
-
-    def monitor_coordinates(self):
-        """Continuously checks for new coordinates from MapUI when the map is open."""
-        while self.map_open:
-            coords = self.map_ui.get_coordinates()
-            if coords is not None:
-                lat, lng = coords
-                self.update_coordinates(lat, lng)
-            time.sleep(1.0)  # Polling interval (s)
+        self.__show_page(self.__home_page)
 
     def on_closing(self):
         """Cleaning up resources"""
         self.root.destroy()
         sys.exit()
-
-    def update_coordinates(self, lat, lng):
-        """Callback function to update the coordinates label."""
-        self.ui_inp_vars["map_0_00"].tk_var.set(lat)
-        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        # print(f"Updated Coordinates: {lat}, {lng}")
 
 
 def main():

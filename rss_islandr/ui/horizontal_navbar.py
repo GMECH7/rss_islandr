@@ -22,9 +22,9 @@ class HorizontalNavbar:
 
     def __create_horizontal_navbar(self, parent_frame: tb.Frame) -> tb.Frame:
         """Create a horizontal navbar."""
-        nav_bar_frame = tb.Frame(parent_frame)
+        nav_bar_frame = tb.Frame(parent_frame, style="HorizontalNavBar.TFrame")
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__rel_width, relheight=self.__rel_height)
-        frame_distances(nav_bar_frame, 1, 12)
+        frame_distances(nav_bar_frame, 1, 24)
         self.__horizontal_navbar.file_menu_btn(nav_bar_frame)
         self.__horizontal_navbar.docs_menu_button(nav_bar_frame)
         self.__horizontal_navbar.toggle_skin_btn(nav_bar_frame)

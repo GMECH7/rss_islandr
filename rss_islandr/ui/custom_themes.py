@@ -81,6 +81,14 @@ class CustomThemes:
         )
 
     def custom_frame(self):
+        background_color = self.__style.colors.get("bg")
+        self.__style.configure(
+            "HorizontalNavBar.TFrame",
+            background=background_color,
+            borderwidth=1,  # Set the border width
+            relief="ridge",
+        )
+
         self.__style.configure(
             "NavbarPad.TFrame",
             background=self.__ui_bg_color_1,

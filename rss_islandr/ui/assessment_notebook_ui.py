@@ -42,11 +42,11 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         frame_geometry_dict : dict[str, FramePlacing]
             _description_
         source_keys : list[str]
-            _description_
+            Source keys eg. 'IN'.
         pathway_keys : list[str]
-            _description_
+            Pathway keys eg. 'SW'.
         receptor_keys : list[str]
-            _description_
+            Receptor keys eg. 'SW_receptor'
         """
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
