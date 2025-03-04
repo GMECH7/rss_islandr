@@ -11,7 +11,7 @@ from io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, 
 class GeneralBtnsUI:
     """Implementation of buttons that may be used anywhere in the app."""
 
-    def __init__(self, ui_settings: UISettings, ui_inp_vars, ui_calc_vars, widgets_reconfigured: dict):
+    def __init__(self, ui_settings: UISettings, ui_inp_vars, ui_calc_vars, widgets_reconfigured: dict[tb.Frame, str]):
         self.__theme_type = "dark"
         self.ui_settings = ui_settings
         self.__ui_inp_vars = ui_inp_vars

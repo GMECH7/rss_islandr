@@ -3,6 +3,8 @@ from general_ui import frame_distances
 
 
 class HorizontalNavbar:
+    """Horizontal navbar definition."""
+
     def __init__(self, rel_height: float = 0.05, rel_width: float = 1.0):
         self.__rel_height = rel_height
         self.__rel_width = rel_width

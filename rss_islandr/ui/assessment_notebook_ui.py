@@ -1,5 +1,3 @@
-from typing import Callable
-
 import ttkbootstrap as tb
 from general_btns_ui import GeneralBtnsUI
 from general_ui import GeneralUITemplate
@@ -25,13 +23,17 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         source_keys: list[str],
         pathway_keys: list[str],
         receptor_keys: list[str],
-        widgets_reconfigured,
+        widgets_reconfigured: dict[tb.Frame, str],
     ):
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
-        self.frame_geometry_dict = frame_geometry_dict
         self.meter_frames = meter_frames
+        self.frame_geometry_dict = frame_geometry_dict
+        self.__source_keys = source_keys
+        self.__pathway_keys = pathway_keys
+        self.__receptor_keys = receptor_keys
+        self.__source_pathway_keys = self.__source_keys + self.__pathway_keys
 
         self.hazard_fetcher = RisksDataFetcher(RISK_FACTORS_JSON_DIR)
         self.receptor_fetcher = ReceptorFactorsFetcher(RECEPTOR_FACTORS_JSON_DIR)
@@ -40,14 +42,8 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         self.__receptor_alias_to_key_dict = {k: v for (v, k) in self.receptor_aliases.getter().items()}
         self.__receptor_key_to_alias = self.receptor_aliases.getter()
 
-        self.__source_keys = source_keys
-        self.__pathway_keys = pathway_keys
-        self.__receptor_keys = receptor_keys
-        self.__source_pathway_keys = self.__source_keys + self.__pathway_keys
-
         self.__init__risk_selection_dict()
         self.__init__receptor_risk_selection_dict()
-
         self.__init__source_pathway_dropdown()
         self.__init__receptor_dropdown()
         self.__init__create_traces_receptors()
@@ -130,7 +126,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     excel_cell=excel_cell,
                     state="enabled",
                 )
-                # self.__local_vars.append(f"drop_{risk_factor_key}_1_0{i}")
                 self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
                 self.ui_inp_vars[f"drop_{risk_factor_key}_1_0{i}"].tk_var.trace_add(
                     "write",
@@ -141,9 +136,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             self.ui_calc_vars.update({f"{risk_factor_key}_frame": ui_calc_var})
             self.frame_geometry_dict[f"{risk_factor_key}_frame"].n_row = i + 2
 
-        return None
-
-    def __init__risk_selection_dict(self):
+    def __init__risk_selection_dict(self) -> None:
         """
         This is a method used in the __init__.
 
@@ -250,36 +243,20 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
             self.frame_geometry_dict[f"{key}_frame"].n_row = 3
 
-    def __init__create_traces_receptors(self):
-        """Receptors are dependent on sources and pathways"""
-        # TODO Here I must make it dynamic
-        # IN_frame everywhere
-        # THE OTHER frames may never be triggered
+    def __init__create_traces_receptors(self) -> None:
+        """
+        Define traces for receptors' total risk.
+
+        Receptors are dependent on sources and pathways.
+        """
         for receptor_key in self.__receptor_keys:
-            self.ui_calc_vars["IN_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            self.ui_calc_vars["SL_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            self.ui_calc_vars["GW_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            self.ui_calc_vars["SW_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            self.ui_calc_vars["AR_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            self.ui_calc_vars["SD_frame"].tk_var.trace_add(
-                "write", lambda *args, rfk=receptor_key: self.__calculate_receptor_total_risk(f"{rfk}_frame")
-            )
-            # for pathway in self.receptor_fetcher.getter(receptor_key)["available_pathways"]:
-            #     print(1111, pathway)
-            #     self.ui_calc_vars[f"{receptor_key}_frame"].tk_var.trace_add(
-            #         "write",
-            #         lambda *args, rfk=pathway: self.__calculate_receptor_total_risk(f"{rfk}_receptor_frame"),
-            #     )
+            #: Available pathways per receptor
+            available_pathways = self.receptor_fetcher.getter(receptor_key)["available_pathways"]
+            for pathway in self.__source_keys + available_pathways:
+                self.ui_calc_vars[f"{pathway}_frame"].tk_var.trace_add(
+                    "write",
+                    lambda *args, ptk=receptor_key: self.__calculate_receptor_total_risk(f"{ptk}_frame"),
+                )
 
     def __create_new_tab(
         self,
@@ -290,10 +267,9 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """ """
         tab = tb.Frame(notebook)
         notebook.add(tab, text=frame_title)
-
         self.__create_new_risk_frame(tab, frame_tag, frame_title)
 
-    def __calculate_source_pathway_risk(self, frame_tag: str):
+    def __calculate_source_pathway_risk(self, frame_tag: str) -> None:
         """
         Retrieves selected dropdown values and prints their corresponding weights.
         """
@@ -331,7 +307,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         self.__update_meter(frame_tag)
 
-    def __update_meter(self, frame_tag: str):
+    def __update_meter(self, frame_tag: str) -> None:
         """Update meter on button click"""
         risk = float(self.ui_calc_vars[frame_tag].tk_var.get())
         color_ttk = risk_color_assignment(risk)
@@ -360,7 +336,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         return frame
 
-    def __create_frame_tags_titles(self, case: str, keys: list[str]):
+    def __create_frame_tags_titles(self, case: str, keys: list[str]) -> list[tuple[str, str]]:
         """ """
         frame_tags_titles = []
         if case == "source" or case == "pathway":
@@ -375,7 +351,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title))
         return frame_tags_titles
 
-    def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str):
+    def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
         """ """
         self.gnrl_btns_ui.file_menu_btn(parent_navbar_frame)
         if case == "source":

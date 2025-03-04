@@ -109,7 +109,7 @@ class CustomThemes:
         )
 
     def custom_combobox(self):
-        """Not USED"""
+        """Not currently USED"""
         self.__style.layout(
             "Custom.TCombobox",
             [
@@ -155,16 +155,8 @@ class CustomThemes:
         )
 
     def __call__(self):
-        """
-        _summary_
-
-        Parameters
-        ----------
-        theme : str
-            Theme used in the main tb.Window()
-        """
+        """ """
         self.custom_notebook()
         self.custom_labels()
         self.custom_frame()
-        # self.custom_combobox()
         self.custom_buttons()

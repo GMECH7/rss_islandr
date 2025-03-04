@@ -13,7 +13,7 @@ class HomeUI:
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        widgets_reconfigured: dict,
+        widgets_reconfigured: dict[tb.Frame, str],
     ):
         """
         Home page

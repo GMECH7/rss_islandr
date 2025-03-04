@@ -20,7 +20,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
         frame_geometry_dict: dict[str, FramePlacing],
-        widgets_reconfigured,
+        widgets_reconfigured: dict[tb.Frame, str],
     ):
         self.__parent_navbar_frame = parent_navbar_frame
         self.__parent_frame = parent_frame
