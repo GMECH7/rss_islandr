@@ -37,8 +37,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_inputs_dates()
         self.__ui_inputs_entries()
         self.__ui_inputs_dropdown()
-
-    # self.__ui_inputs_nested_dropdown()
+        self.__ui_inputs_nested_dropdown()
 
     def __ui_inputs_dates(self):
         """
@@ -96,47 +95,21 @@ class SiteInfoUI(GeneralUITemplate):
         """
         Definition of dropdown widget inputs.
         """
-        self.activity_var = tb.StringVar()
-        self.activity_options = self.data["activity_or_industry"]
-
-        self.land_use_var = tb.StringVar()
-        self.land_use_options = self.data["land_uses"]
+        self.__activity_var = tb.StringVar()
+        self.__activity_options = self.data["activity_or_industry"]
 
         self.site_status_var = tb.StringVar()
         self.site_status_var.set("")
         self.site_status_options = self.data["site_status"]
 
-        self.soil_type_var = tb.StringVar()
-        self.soil_type_options = self.data["soil_type"]
-
         ui_var_activity = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.activity_var,
+            tk_var=self.__activity_var,
             rel_pos=3,
             text_val="Select activity/industry",
             text_descr=None,
-            drop_options=self.activity_options,
+            drop_options=self.__activity_options,
             excel_cell="H2",
-        )
-
-        ui_var_land_use = UIInpVariable(
-            frame_tag="site_info_frame",
-            tk_var=self.land_use_var,
-            rel_pos=4,
-            text_val="Select land Use",
-            text_descr=None,
-            drop_options=self.land_use_options,
-            excel_cell="H3",
-        )
-
-        ui_var_soil_type = UIInpVariable(
-            frame_tag="site_info_frame",
-            tk_var=self.soil_type_var,
-            rel_pos=5,
-            text_val="Select soil type",
-            text_descr=None,
-            drop_options=self.soil_type_options,
-            excel_cell="H4",
         )
 
         ui_var_site_status = UIInpVariable(
@@ -151,75 +124,109 @@ class SiteInfoUI(GeneralUITemplate):
 
         self.site_status_var.trace_add("write", self.update_date_widgets)
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
-        self.ui_inp_vars.update({"drop_0_01": ui_var_land_use})
-        self.ui_inp_vars.update({"drop_0_02": ui_var_site_status})
-        self.ui_inp_vars.update({"drop_0_03": ui_var_soil_type})
+        self.ui_inp_vars.update({"drop_0_01": ui_var_site_status})
 
         return None
 
     def __ui_inputs_nested_dropdown(self):
-        """Initialize the nested dropdown for soil types."""
-        # Dictionary of soil types
-        self.soil_types_dict = self.data["soil_types"]
+        """
+        Definition of nested dropdown widget inputs.
+        """
+        self.__soil_type_nested_combobox()
+        self.__land_use_nested_combobox()
 
-        # First dropdown: Select soil category
-        self.soil_type_1_var = tb.StringVar()
-        self.soil_type_1_options = list(self.soil_types_dict.keys())
-        self.soil_type_1_var.set(self.soil_type_1_options[0])  # Set default value
+    def __soil_type_nested_combobox(self):
+        """Initialize the nested dropdown for soil types."""
+        self.__soil_types_dict = self.data["soil_types"]
+        self.__soil_type_1_var = tb.StringVar()
+        self.__soil_type_2_var = tb.StringVar()
+        self.__soil_type_1_options = list(self.__soil_types_dict.keys())
+        self.__soil_type_1_var.set(self.__soil_type_1_options[0])
+
+        self.__ui_var_soil_type_1 = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.__soil_type_1_var,
+            rel_pos=4,
+            text_val="Select soil type",
+            val_default=self.__soil_type_1_options[0],
+            text_descr=None,
+            drop_options=self.__soil_type_1_options,
+            excel_cell="H4",
+        )
+
+        self.__soil_type_2_options = self.__soil_types_dict[self.__soil_type_1_var.get()]
+        self.__soil_type_2_var.set(self.__soil_type_2_options[0])  # Set default value
+
+        self.__ui_var_soil_type_2 = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=self.__soil_type_2_var,
+            rel_pos=4,
+            text_val="Select soil type",
+            val_default=self.__soil_type_2_options[0],
+            text_descr=None,
+            drop_options=self.__soil_type_2_options,
+            excel_cell="I4",
+        )
+
+        self.__soil_type_1_var.trace_add("write", self.__update_soil_options)
+        self.ui_inp_vars.update({"ndro_0_00": self.__ui_var_soil_type_1})
+        self.ui_inp_vars.update({"ndro_0_01": self.__ui_var_soil_type_2})
+
+    def __update_soil_options(self, *args):
+        """Update the soil type options in the second dropdown based on the first dropdown's selection."""
+        selected_category = self.__soil_type_1_var.get()
+        self.__soil_type_2_options = self.__soil_types_dict[selected_category]
+        self.__soil_type_2_var.set(self.__soil_type_2_options[0])
+        self.__ui_var_soil_type_2.drop_options = self.__soil_type_2_options
+        #: Update the second combobox widget (normally done in site_info_frame method)
+        self.gt_nested_combobox_widget(self.__site_info_frame, "ndro_0_00", 1)
+
+    def __land_use_nested_combobox(self):
+        """Initialize the nested dropdown for land use."""
+        self.__land_use_dict = self.data["land_use"]
+        self.__land_use_1_var = tb.StringVar()
+        self.__land_use_2_var = tb.StringVar()
+        self.__land_use_1_options = list(self.__land_use_dict.keys())
+        self.__land_use_1_var.set(self.__land_use_1_options[0])
 
         # Create the first dropdown UI element
-        ui_var_soil_type_1 = UIInpVariable(
+        self.__ui_var_land_use_1 = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.soil_type_1_var,
-            rel_pos=4,
-            text_val="Select soil type",
-            val_default=self.soil_type_1_options[0],
+            tk_var=self.__land_use_1_var,
+            rel_pos=5,
+            text_val="Select land use",
+            val_default=self.__land_use_1_options[0],
             text_descr=None,
-            drop_options=self.soil_type_1_options,
-            excel_cell="J3",
+            drop_options=self.__land_use_1_options,
+            excel_cell="H3",
         )
 
-        # Second dropdown: Select soil type (dependent on the first dropdown)
-        self.soil_type_2_var = tb.StringVar()
+        self.__land_use_2_options = self.__land_use_dict[self.__land_use_1_var.get()]
+        self.__land_use_2_var.set(self.__land_use_2_options[0])  # Set default value
 
-        # Bind the update function to the first dropdown
-        self.soil_type_1_var.trace_add("write", self.update_soil_options)
-
-        # Initialize the second dropdown options based on the first dropdown's default value
-        self.soil_type_2_options = self.soil_types_dict[self.soil_type_1_var.get()]
-        self.soil_type_2_var.set(self.soil_type_2_options[0])  # Set default value
-
-        # Create the second dropdown UI element
-        self.ui_var_soil_type_2 = UIInpVariable(
+        self.__ui_var_land_use_2 = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.soil_type_2_var,
-            rel_pos=4,
-            text_val="Select soil type",
-            val_default=self.soil_type_2_options[0],
+            tk_var=self.__land_use_2_var,
+            rel_pos=5,
+            text_val="Select land use",
+            val_default=self.__land_use_2_options[0],
             text_descr=None,
-            drop_options=self.soil_type_2_options,
-            excel_cell="J3",
+            drop_options=self.__land_use_2_options,
+            excel_cell="I3",
         )
-        print(self.ui_var_soil_type_2.drop_options)
 
-        # Add the dropdowns to the UI variables dictionary
-        self.ui_inp_vars.update({"ndro_0_00": ui_var_soil_type_1})
-        self.ui_inp_vars.update({"ndro_0_01": self.ui_var_soil_type_2})
+        self.__land_use_1_var.trace_add("write", self.__update_land_use_options)
+        self.ui_inp_vars.update({"ndro_0_02": self.__ui_var_land_use_1})
+        self.ui_inp_vars.update({"ndro_0_03": self.__ui_var_land_use_2})
 
-    def update_soil_options(self, *args):
-        """Update the options in the second dropdown based on the first dropdown's selection."""
-        selected_category = self.soil_type_1_var.get()
-
-        # Update the options for the second dropdown
-        self.soil_type_2_options = self.soil_types_dict[selected_category]
-        self.soil_type_2_var.set(self.soil_type_2_options[0])  # Set default value
-
-        # Update the dropdown options in the UI
-        self.ui_var_soil_type_2.drop_options = self.soil_type_2_options
-
-        # Update the Combobox widget's values
-        if hasattr(self.ui_var_soil_type_2, "combobox"):  # Ensure the Combobox widget exists
-            self.ui_var_soil_type_2.combobox["values"] = self.soil_type_2_options
+    def __update_land_use_options(self, *args):
+        """Update the land use options in the second dropdown based on the first dropdown's selection."""
+        selected_category = self.__land_use_1_var.get()
+        self.__land_use_2_options = self.__land_use_dict[selected_category]
+        self.__land_use_2_var.set(self.__land_use_2_options[0])  # Set default value
+        self.__ui_var_land_use_2.drop_options = self.__land_use_2_options
+        #: Update the second combobox widget (normally done in site_info_frame method)
+        self.gt_nested_combobox_widget(self.__site_info_frame, "ndro_0_02", 1)
 
     def update_date_widgets(self, *args):
         selected_option = self.site_status_var.get()
@@ -236,8 +243,7 @@ class SiteInfoUI(GeneralUITemplate):
             self.start_date_entry.grid(row=7, column=1, sticky="ew")
             self.end_date_entry.grid(row=7, column=2, sticky="ew")
         else:
-            self.start_end_oper_label.grid_remove()
-            self.start_date_entry.grid_remove()
+            self.start_end_oper_label.config(text="")
             self.end_date_entry.grid_remove()
 
     def site_info_frame(self) -> None:
@@ -249,7 +255,7 @@ class SiteInfoUI(GeneralUITemplate):
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.__parent_frame, frame_tag, frame_title)
-        self.frame = frame
+        self.__site_info_frame = frame
         for key in self.ui_inp_vars:
             if self.ui_inp_vars[key].frame_tag == frame_tag and "val" in key:
                 self.gt_entry_widget(frame, key, 2)
@@ -272,16 +278,21 @@ class SiteInfoUI(GeneralUITemplate):
         lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
         lng_entry.grid(column=2, row=1, sticky="we")
         # TODO This must become dynamic and the entry widget should be used
-        self.start_end_oper_label = tb.Label(self.frame, text="")
+        self.start_end_oper_label = tb.Label(self.__site_info_frame, text="")
+        self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
+
         self.start_date_entry = tb.DateEntry(
-            self.frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
+            self.__site_info_frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
         )
+        self.start_date_entry.grid(row=7, column=1, sticky="ew")
         self.start_date_entry.bind(
             "<FocusOut>", lambda event: self.__update_date_var(event, self.start_date_entry, "datte_0_01")
         )
         self.__widgets_reconfigured[self.start_date_entry] = "ui_bg_color_1"
 
-        self.end_date_entry = tb.DateEntry(self.frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d")
+        self.end_date_entry = tb.DateEntry(
+            self.__site_info_frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
+        )
         self.end_date_entry.bind(
             "<FocusOut>", lambda event: self.__update_date_var(event, self.end_date_entry, "datte_0_02")
         )

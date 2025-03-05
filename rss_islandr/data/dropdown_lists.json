@@ -184,57 +184,53 @@
     "Any site that has been, or could be, subject to the migration of hazardous substances from hazardous substances present in soil or water on adjacent sites.",
     "Any other storage, use or disposal of hazardous substances"
   ],
-  "land_uses": [
-    "Artificial Surfaces - Urban Fabric",
-    "Artificial Surfaces - Industrial, commercial and transport units",
-    "Artificial Surfaces - Artificial, non-agricultural vegetated areas",
-    "Artificial Surfaces - Mine, dump and construction sites",
-    "Agricultural areas - Arable Land",
-    "Agricultural areas - Permanent crops",
-    "Agricultural areas - Pastures",
-    "Agricultural areas - Heterogeneous agricultural areas",
-    "Forests and semi natural areas - Forests",
-    "Forests and semi natural areas - Scrub and/or herbaceous vegetation associations",
-    "Forests and semi natural areas - Open spaces with little or no vegetation",
-    "Wetlands - Inland wetlands",
-    "Wetlands - Maritime wetlands",
-    "Water Bodies - Inland Waters",
-    "Water Bodies - Marine Waters"
-  ],
-  "soil_type": [
-    "SILT - clayey silt",
-    "SILT - sandy silt",
-    "SILT - gravelly silt",
-    "CLAY - silty clay",
-    "CLAY - sandy clay",
-    "CLAY - gravelly clay",
-    "SAND - silty sand",
-    "SAND - clayey sand",
-    "SAND - gravelly sand",
-    "GRAVEL - silty gravel",
-    "GRAVEL - clayey gravel",
-    "GRAVEL - sandy gravel"
-  ],
+  "land_use": {
+    "Artificial surfaces": [
+      "Urban fabric",
+      "Industrial, commercial and transport units",
+      "Artificial, non-agricultural vegetated areas",
+      "Mine, dump and construction sites"
+    ],
+    "Agricultural areas": [
+      "Arable land",
+      "Permanent crops",
+      "Pastures",
+      "Heterogeneous agricultural areas"
+    ],
+    "Forests and semi natural areas": [
+      "Forests",
+      "Scrub and/or herbaceous vegetation associations",
+      "Open spaces with little or no vegetation"
+    ],
+    "Wetlands": [
+      "Inland wetlands",
+      "Maritime wetlands"
+    ],
+    "Water Bodies": [
+      "Inland waters",
+      "Marine waters"
+    ]
+  },
   "soil_types": {
-    "SILT": [
-      "SILT - clayey silt",
-      "SILT - sandy silt",
-      "SILT - gravelly silt"
+    "Silt": [
+      "Clayey silt",
+      "Sandy silt",
+      "Gravelly silt"
     ],
-    "CLAY": [
-      "CLAY - silty clay",
-      "CLAY - sandy clay",
-      "CLAY - gravelly clay"
+    "Clay": [
+      "Silty clay",
+      "Sandy clay",
+      "Gravelly clay"
     ],
-    "SAND": [
-      "SAND - silty sand",
-      "SAND - clayey sand",
-      "SAND - gravelly sand"
+    "Sand": [
+      "Silty sand",
+      "Clayey sand",
+      "Gravelly sand"
     ],
-    "GRAVEL": [
-      "GRAVEL - silty gravel",
-      "GRAVEL - clayey gravel",
-      "GRAVEL - sandy gravel"
+    "Gravel": [
+      "Silty gravel",
+      "Clayey gravel",
+      "Sandy gravel"
     ]
   },
   "site_status": [

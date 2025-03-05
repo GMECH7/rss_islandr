@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 from general_ui import frame_distances
 
+from rss_islandr.core.datatypes import TkWidgets
 from rss_islandr.ui.horizontal_navbar_btns import HorizontalNavbarBtns
 
 
@@ -12,7 +13,7 @@ class HorizontalNavbar:
         ui_settings,
         ui_inp_vars,
         ui_calc_vars,
-        widgets_reconfigured: dict[tb.Frame, str],
+        widgets_reconfigured: dict[TkWidgets, str],
         rel_height: float = 0.05,
         rel_width: float = 1.0,
     ):
