@@ -82,7 +82,7 @@ class RSSUI:
             frame_tag="site_info_frame",
             tk_var=tb.StringVar(value="0.0"),
             rel_pos=1,
-            text_val="Latitude",
+            text_val="Longtitude",
             val_default="0.0",
             text_descr=None,
             excel_cell="D4",

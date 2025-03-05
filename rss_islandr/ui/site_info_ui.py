@@ -43,46 +43,46 @@ class SiteInfoUI(GeneralUITemplate):
         """
         Definition of date widget inputs.
         """
-        self.date_assessed = tb.StringVar()
+        self.__date_assessed = tb.StringVar()
         date_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.date_assessed,
+            tk_var=self.__date_assessed,
             rel_pos=2,
             text_val="Assessment date",
             text_descr=None,
             excel_cell="C3",
         )
 
-        self.date_oper_start = tb.StringVar()
+        self.__date_oper_start = tb.StringVar()
         date_oper_start_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.date_oper_start,
+            tk_var=self.__date_oper_start,
             rel_pos=7,
             text_val="Operation start & end dates",
             text_descr=None,
             excel_cell="M3",
         )
-        self.date_oper_end = tb.StringVar()
+        self.__date_oper_end = tb.StringVar()
         date_oper_end_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.date_oper_end,
+            tk_var=self.__date_oper_end,
             rel_pos=7,
             text_val="Operation start & end dates",
             text_descr=None,
             excel_cell="M4",
         )
         self.ui_inp_vars.update({"date_0_00": date_var})
-        self.ui_inp_vars.update({"datte_0_01": date_oper_start_var})
-        self.ui_inp_vars.update({"datte_0_02": date_oper_end_var})
+        self.ui_inp_vars.update({"odat_0_00": date_oper_start_var})
+        self.ui_inp_vars.update({"odat_0_01": date_oper_end_var})
 
     def __ui_inputs_entries(self) -> None:
         """
         Definition of entry widget inputs.
         """
-        self.site_name = tb.StringVar()
+        self.__site_name = tb.StringVar()
         ui_var_site_name = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.site_name,
+            tk_var=self.__site_name,
             rel_pos=0,
             text_val="Site name",
             text_descr=None,
@@ -98,8 +98,8 @@ class SiteInfoUI(GeneralUITemplate):
         self.__activity_var = tb.StringVar()
         self.__activity_options = self.data["activity_or_industry"]
 
-        self.site_status_var = tb.StringVar()
-        self.site_status_var.set("")
+        self.__site_status_var = tb.StringVar()
+        self.__site_status_var.set("")
         self.site_status_options = self.data["site_status"]
 
         ui_var_activity = UIInpVariable(
@@ -114,7 +114,7 @@ class SiteInfoUI(GeneralUITemplate):
 
         ui_var_site_status = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.site_status_var,
+            tk_var=self.__site_status_var,
             rel_pos=6,
             text_val="Select site status",
             text_descr=None,
@@ -122,7 +122,7 @@ class SiteInfoUI(GeneralUITemplate):
             excel_cell="M2",
         )
 
-        self.site_status_var.trace_add("write", self.update_date_widgets)
+        self.__site_status_var.trace_add("write", self.update_date_widgets)
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
         self.ui_inp_vars.update({"drop_0_01": ui_var_site_status})
 
@@ -229,29 +229,27 @@ class SiteInfoUI(GeneralUITemplate):
         self.gt_nested_combobox_widget(self.__site_info_frame, "ndro_0_02", 1)
 
     def update_date_widgets(self, *args):
-        selected_option = self.site_status_var.get()
+        selected_option = self.__site_status_var.get()
 
         if selected_option == "Active" or selected_option == "Proposed":
             # Show only the start date widget
-            self.start_end_oper_label.config(text="Operation start date")
-            self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
-            self.start_date_entry.grid(row=7, column=1, sticky="ew")
-            self.end_date_entry.grid_remove()
+            self.__start_end_oper_label.config(text="Operation start date")
+            self.__start_end_oper_label.grid(row=7, column=0, sticky="ew")
+            self.__start_date_entry.grid(row=7, column=1, sticky="ew")
+            self.__end_date_entry.grid_remove()
         elif selected_option == "Legacy":
-            self.start_end_oper_label.config(text="Operation start & end dates")
-            self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
-            self.start_date_entry.grid(row=7, column=1, sticky="ew")
-            self.end_date_entry.grid(row=7, column=2, sticky="ew")
+            self.__start_end_oper_label.config(text="Operation start & end dates")
+            self.__start_end_oper_label.grid(row=7, column=0, sticky="ew")
+            self.__start_date_entry.grid(row=7, column=1, sticky="ew")
+            self.__end_date_entry.grid(row=7, column=2, sticky="ew")
         else:
-            self.start_end_oper_label.config(text="")
-            self.end_date_entry.grid_remove()
+            self.__start_end_oper_label.config(text="")
+            self.__end_date_entry.grid_remove()
 
     def site_info_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
         """
-        # TODO I will have to make dynamic the DateEntries
-        # TODO I have to check the nested comboboxes
         frame_tag = "site_info_frame"
         frame_title = "Site inputs"
         frame = self.gt_new_frame(self.__parent_frame, frame_tag, frame_title)
@@ -264,39 +262,48 @@ class SiteInfoUI(GeneralUITemplate):
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "date" in key:
                 self.gt_date_entry_widget(frame, key, 2)
             elif self.ui_inp_vars[key].frame_tag == frame_tag and "ndro" in key and float(key[-2:]) % 2 == 0:
-                print(float(key[-2:]) % 2)
                 self.gt_nested_combobox_widget(frame, key, 1)
             else:
                 pass
+        self.__lan_lng_widget()
+        self.__operation_dates_widget()
 
-        label = tb.Label(frame, text="Latitude & Longitude)")
+    def __lan_lng_widget(self):
+        """Langtitude & longtitude widget (it cannot be handled by self.gt_entry_widget)"""
+        label = tb.Label(self.__site_info_frame, text="Latitude & Longitude")
         label.grid(column=0, row=1, sticky="we")
 
-        lat_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
+        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
         lat_entry.grid(column=1, row=1, sticky="we")
 
-        lng_entry = tb.Entry(frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
+        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
         lng_entry.grid(column=2, row=1, sticky="we")
-        # TODO This must become dynamic and the entry widget should be used
-        self.start_end_oper_label = tb.Label(self.__site_info_frame, text="")
-        self.start_end_oper_label.grid(row=7, column=0, sticky="ew")
 
-        self.start_date_entry = tb.DateEntry(
+    def __operation_dates_widget(self):
+        """Operation start and end dates (it cannot be handled by self.gt_date_entry_widget)"""
+        self.__start_end_oper_label = tb.Label(self.__site_info_frame, text="")
+        self.__start_end_oper_label.grid(row=7, column=0, sticky="ew")
+
+        self.__start_date_entry = tb.DateEntry(
             self.__site_info_frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
         )
-        self.start_date_entry.grid(row=7, column=1, sticky="ew")
-        self.start_date_entry.bind(
-            "<FocusOut>", lambda event: self.__update_date_var(event, self.start_date_entry, "datte_0_01")
+        self.__start_date_entry.grid(row=7, column=1, sticky="ew")
+        self.__start_date_entry.bind(
+            "<FocusOut>",
+            lambda event: self.__update_date_var(event, self.__start_date_entry, "odat_0_00"),
         )
-        self.__widgets_reconfigured[self.start_date_entry] = "ui_bg_color_1"
+        self.__widgets_reconfigured[self.__start_date_entry] = "ui_bg_color_1"
 
-        self.end_date_entry = tb.DateEntry(
-            self.__site_info_frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
+        self.__end_date_entry = tb.DateEntry(
+            self.__site_info_frame,
+            bootstyle=self.ui_settings.ui_bg_color_1,
+            dateformat="%Y-%m-%d",
         )
-        self.end_date_entry.bind(
-            "<FocusOut>", lambda event: self.__update_date_var(event, self.end_date_entry, "datte_0_02")
+        self.__end_date_entry.bind(
+            "<FocusOut>",
+            lambda event: self.__update_date_var(event, self.__end_date_entry, "odat_0_01"),
         )
-        self.__widgets_reconfigured[self.end_date_entry] = "ui_bg_color_1"
+        self.__widgets_reconfigured[self.__end_date_entry] = "ui_bg_color_1"
 
     def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
         """ """
