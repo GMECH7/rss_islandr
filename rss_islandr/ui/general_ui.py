@@ -171,17 +171,30 @@ class GeneralUITemplate:
     def gt_date_entry_widget(self, frame: tb.Frame, date_key: str, column_span: int = 1) -> None:
         """
         Create a date entry widget doing the following:
-            1. Bind it with FocusOut.
-            2. Assign it to self.__widgets_reconfigured (change color if UI skin is altered).
+            1. Trace change in the tb.StringVal.
+            2. Bind it with FocusOut.
+            3. Assign it to self.__widgets_reconfigured (change color if UI skin is altered).
         """
         label = tb.Label(frame, text=self.ui_inp_vars[date_key].text_val)
         label.grid(row=self.ui_inp_vars[date_key].rel_pos, column=0, sticky="we")
+        date_var = self.ui_inp_vars[date_key].tk_var
         date_entry = tb.DateEntry(frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d")
         date_entry.grid(row=self.ui_inp_vars[date_key].rel_pos, column=1, columnspan=column_span, sticky="we")
-        date_entry.bind("<FocusOut>", lambda event: self.__update_date_var(event, date_entry, date_key))
+        date_entry.entry.insert(0, date_var.get())
+
+        date_var.trace_add("write", lambda *args: self.update_date_entry_trace(date_var, date_entry))
+        date_entry.bind("<FocusOut>", lambda event: self.update_date_var_bind(event, date_entry, date_key))
         self.__widgets_reconfigured[date_entry] = "ui_bg_color_1"
 
-    def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
-        """ """
+    def update_date_var_bind(self, event, date_entry: tb.DateEntry, date_key: str):
+        """update_date_var_bind_bind"""
         date = date_entry.entry.get()
         self.ui_inp_vars[date_key].tk_var.set(date)  # type: ignore
+        date_entry.entry.delete(0, "end")
+        date_entry.entry.insert(0, date)
+
+    def update_date_entry_trace(self, date_var: tb.StringVar, date_entry: tb.DateEntry):
+        """Update the DateEntry widget when the underlying tb.StringVar changes (eg. when importing scenario)."""
+        new_date = date_var.get()
+        date_entry.entry.delete(0, "end")
+        date_entry.entry.insert(0, new_date)

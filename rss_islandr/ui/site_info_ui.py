@@ -1,5 +1,6 @@
 import json
 import locale
+from datetime import datetime
 
 import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
@@ -53,19 +54,19 @@ class SiteInfoUI(GeneralUITemplate):
             excel_cell="C3",
         )
 
-        self.__date_oper_start = tb.StringVar()
+        self.__date_oper_start_var = tb.StringVar()
         date_oper_start_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.__date_oper_start,
+            tk_var=self.__date_oper_start_var,
             rel_pos=7,
             text_val="Operation start & end dates",
             text_descr=None,
             excel_cell="M3",
         )
-        self.__date_oper_end = tb.StringVar()
+        self.__date_oper_end_var = tb.StringVar()
         date_oper_end_var = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=self.__date_oper_end,
+            tk_var=self.__date_oper_end_var,
             rel_pos=7,
             text_val="Operation start & end dates",
             text_descr=None,
@@ -283,32 +284,37 @@ class SiteInfoUI(GeneralUITemplate):
         """Operation start and end dates (it cannot be handled by self.gt_date_entry_widget)"""
         self.__start_end_oper_label = tb.Label(self.__site_info_frame, text="")
         self.__start_end_oper_label.grid(row=7, column=0, sticky="ew")
-
+        #: Creation of start of operation date widget and binding and tracing
         self.__start_date_entry = tb.DateEntry(
-            self.__site_info_frame, bootstyle=self.ui_settings.ui_bg_color_1, dateformat="%Y-%m-%d"
+            self.__site_info_frame,
+            bootstyle=self.ui_settings.ui_bg_color_1,
+            dateformat="%Y-%m-%d",
+        )
+        self.__start_date_entry.entry.insert(0, self.__date_oper_start_var.get())
+        self.__date_oper_start_var.trace_add(
+            "write", lambda *args: self.update_date_entry_trace(self.__date_oper_start_var, self.__start_date_entry)
         )
         self.__start_date_entry.grid(row=7, column=1, sticky="ew")
         self.__start_date_entry.bind(
             "<FocusOut>",
-            lambda event: self.__update_date_var(event, self.__start_date_entry, "odat_0_00"),
+            lambda event: self.update_date_var_bind(event, self.__start_date_entry, "odat_0_00"),
         )
         self.__widgets_reconfigured[self.__start_date_entry] = "ui_bg_color_1"
-
+        #: Creation of end of operation date widget and binding and tracing
         self.__end_date_entry = tb.DateEntry(
             self.__site_info_frame,
             bootstyle=self.ui_settings.ui_bg_color_1,
             dateformat="%Y-%m-%d",
         )
+        self.__end_date_entry.entry.insert(0, self.__date_oper_end_var.get())
+        self.__date_oper_end_var.trace_add(
+            "write", lambda *args: self.update_date_entry_trace(self.__date_oper_end_var, self.__end_date_entry)
+        )
         self.__end_date_entry.bind(
             "<FocusOut>",
-            lambda event: self.__update_date_var(event, self.__end_date_entry, "odat_0_01"),
+            lambda event: self.update_date_var_bind(event, self.__end_date_entry, "odat_0_01"),
         )
         self.__widgets_reconfigured[self.__end_date_entry] = "ui_bg_color_1"
-
-    def __update_date_var(self, event, date_entry: tb.DateEntry, date_key: str):
-        """ """
-        date = date_entry.entry.get()
-        self.ui_inp_vars[date_key].tk_var.set(date)  # type: ignore
 
     def ui(self):
         """ """

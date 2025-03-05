@@ -74,6 +74,8 @@ class ExportExcelReportBtn(IOBtns):
             filetypes=[("XLSX files", "*.xlsx"), ("All files", "*.*")],
             title="Save Scenario As",
         )
+        if not file_path:  # User canceled the dialog
+            return
 
         shutil.copy(XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY)
         try:
