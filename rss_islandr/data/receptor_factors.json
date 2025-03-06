@@ -59,6 +59,10 @@
             "04": {
                 "alias": "Stockwater",
                 "weight": 0.5
+            },
+            "05": {
+                "alias": "Not used",
+                "weight": 0.2
             }
         }
     },
@@ -109,12 +113,16 @@
         ],
         "parameter": {
             "01": {
-                "alias": "Option 1",
-                "weight": 0.3
+                "alias": "Residential indoor air",
+                "weight": 1.0
             },
             "02": {
-                "alias": "Option 2",
-                "weight": 0.3
+                "alias": "Confined air (workplace, industrial)",
+                "weight": 0.5
+            },
+            "03": {
+                "alias": "Atmosphere",
+                "weight": 0.2
             }
         }
     },
@@ -127,12 +135,28 @@
         ],
         "parameter": {
             "01": {
-                "alias": "Option 1",
-                "weight": 0.3
+                "alias": "River and stream",
+                "weight": 1.0
             },
             "02": {
-                "alias": "Option 2",
-                "weight": 0.3
+                "alias": "Lake and ponds",
+                "weight": 1.0
+            },
+            "03": {
+                "alias": "Estuarine",
+                "weight": 1.0
+            },
+            "04": {
+                "alias": "Marine",
+                "weight": 1.0
+            },
+            "05": {
+                "alias": "Wetland",
+                "weight": 1.0
+            },
+            "06": {
+                "alias": "Harbor and port",
+                "weight": 0.2
             }
         }
     }
