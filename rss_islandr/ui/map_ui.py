@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import sys
 from pathlib import Path
@@ -10,6 +11,8 @@ import webview
 # CRNT_DIR = Path(__file__).parent
 # STATIC_DIR = CRNT_DIR.resolve().parent / "static"
 
+logging.basicConfig(level=logging.INFO)
+
 
 class Api:
     def __init__(self, map_ui_instance):
@@ -17,11 +20,11 @@ class Api:
 
     def send_coordinates(self, lat, lng):
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-        print(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+        logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
 
 class MapUI:
-    def __init__(self, map_html: Path, style: tb.Style):
+    def __init__(self, map_html: Path, style: tb.Style, map_height: int, map_width: int):
         self.__style = style
         self.map_html = map_html
         self.webview_process = None
@@ -54,7 +57,7 @@ class MapUI:
             background_color=self.__style.colors.bg,
             js_api=api_instance,  # Attach the JavaScript API
         )
-        print("Webview started. Waiting for coordinates...")
+        logging.info("Webview started. Waiting for coordinates...")
         webview.start(debug=False)
 
 

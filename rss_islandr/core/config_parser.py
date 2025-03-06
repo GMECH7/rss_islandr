@@ -20,6 +20,7 @@ ICO_DIR = STATIC_DIR / "islandr.ico"
 MAP_DIR = STATIC_DIR / "map.html"
 GEOLOGY_LEGEND_DIR = STATIC_DIR / "geology_legend.png"
 HYDRO_LEGEND_DIR = STATIC_DIR / "hydro_legend.png"
+ISLANDR_LOGO = STATIC_DIR / "islandr_logo.png"
 
 DATA_DIR = PROJECT_DIR / "data"
 TEMPLATES_DIR = PROJECT_DIR / "templates"

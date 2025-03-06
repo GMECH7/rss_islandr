@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+from PIL import Image, ImageTk
 
 
 class HomeUI:
@@ -16,6 +17,9 @@ class HomeUI:
         self.__parent_navbar_frame = parent_navbar_frame
         self.__parent_frame = parent_frame
 
-    def ui(self):
+    def ui(self, islandr_logo_img):
         """No functionality is added in the main page."""
-        pass
+
+        # Set the image as background
+        background_label = tb.Label(self.__parent_frame, image=islandr_logo_img)
+        background_label.pack(pady=160)

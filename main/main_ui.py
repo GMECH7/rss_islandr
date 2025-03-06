@@ -1,13 +1,16 @@
+import logging
 import sys
 import threading
 import time
 
 import ttkbootstrap as tb
 from main_imports import PACKAGE_DIR
+from PIL import Image, ImageTk
 from ttkbootstrap.dialogs import Messagebox
 
 from rss_islandr.core.config_parser import (
     ICO_DIR,
+    ISLANDR_LOGO,
     MAP_DIR,
     app_title,
     pathway_keys,
@@ -28,6 +31,8 @@ from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, Impo
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 
+logging.basicConfig(level=logging.INFO)
+
 
 class RSSUI:
     """Implementation of main UI"""
@@ -47,10 +52,6 @@ class RSSUI:
         self.meter_frames = {}
         self.frame_geometry_dict = {}
         self.widgets_reconfigured = {}
-
-        self.map_open = True
-        self.map_ui = MapUI(MAP_DIR, tb_style)
-
         self.__source_keys = source_keys
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
@@ -64,6 +65,13 @@ class RSSUI:
         self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
         self.__init__handle_geometry()
+
+        self.map_open = True
+        self.map_ui = MapUI(MAP_DIR, tb_style, self.__map_height, self.__map_width)
+
+        self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
+        self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
+        self.__islandr_logo_img = ImageTk.PhotoImage(self.__islandr_logo_img)
 
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map app."""
@@ -122,17 +130,17 @@ class RSSUI:
 
     def __init__handle_geometry(self):
         """ """
-        self.main_view_height = ui_heights[0]
-        self.main_view_width = ui_widths[0]
-        self.ui_height = ui_heights[1]
-        self.ui_width = ui_widths[1]
+        self.__main_view_height = ui_heights[0]
+        self.__main_view_width = ui_widths[0]
+        self.__map_height = ui_heights[1]
+        self.__map_width = ui_widths[1]
         self.__frame_n_rows = self.frame_geometry_dict["vertical_navbar_frame"].n_row
         self.__frame_n_cols = self.frame_geometry_dict["vertical_navbar_frame"].n_col
         self.__navbar_width = 0.1
         self.__navbar_padx = 0.005
         self.__frames_xstart = self.__navbar_width + self.__navbar_padx
         self.__frames_width = 1.0 - self.__navbar_padx - self.__navbar_width
-        self.root.geometry("%dx%d+%d+%d" % (self.main_view_width, self.main_view_height, 10, 10))
+        self.root.geometry("%dx%d+%d+%d" % (self.__main_view_width, self.__main_view_height, 10, 10))
 
     def __create_vertical_navbar(self) -> tb.Frame:
         """Create vertical navbar visible in all app."""
@@ -269,6 +277,7 @@ class RSSUI:
 
     def __monitor_coordinates(self):
         """Continuously checks for new coordinates from MapUI when the map is open."""
+        logging.info(f"{self.__monitor_coordinates.__name__} called")
         while self.map_open:
             coords = self.map_ui.get_coordinates()
             if coords is not None:
@@ -280,7 +289,7 @@ class RSSUI:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        # print(f"Updated Coordinates: {lat}, {lng}")
+        logging.debug(f"Updated Coordinates: {lat}, {lng}")
 
     def create_ui(self) -> None:
         """ """
@@ -363,7 +372,7 @@ class RSSUI:
         )(self.__receptors_page)
 
         #: Create page
-        app_home.ui()
+        app_home.ui(self.__islandr_logo_img)
         app_site_info.ui()
         app_assesment.ui(source_navbar_frame, source_frame, "source")
         app_assesment.ui(pathways_navbar_frame, pathways_frame, "pathways")

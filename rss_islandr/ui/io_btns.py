@@ -167,7 +167,7 @@ class ImportScenarioBtn(IOBtns):
 class PopupImage(IOBtns):
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        self.image_path = STATIC_DIR / "transport.png"  # Change to your actual image path
+        self.image_path = STATIC_DIR / "csm.png"  # Change to your actual image path
         self.original_image = Image.open(self.image_path).convert("RGBA")
 
         # Button to Open/Close Popup
