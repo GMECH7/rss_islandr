@@ -305,7 +305,7 @@
                 }
             },
             "04": {
-                "alias": "Distance to user",
+                "alias": "Aquifer/distance to user",
                 "description": "Description for distance to user",
                 "severity": {
                     "00": {
