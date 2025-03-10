@@ -153,18 +153,19 @@ class GeneralUITemplate:
 
     def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
         """Create a meter widget and place it in a frame"""
-        rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
         meter_widget = tb.Meter(
             frame,
             amountused=0,
+            amounttotal=100,
             metertype="full",
             subtext="Risk Level",
+            textright="%",
             interactive=False,
+            arcoffset=None,
+            arcrange=None,
         )
 
-        frame.place(relx=rel_x, rely=rel_y, relwidth=rel_w, relheight=rel_h)
-        frame_distances(frame, n_rows, n_cols)
-        meter_widget.grid(row=0, column=0, sticky="nsew")
+        meter_widget.grid(row=0, column=0, sticky="ew")
 
         return meter_widget
 

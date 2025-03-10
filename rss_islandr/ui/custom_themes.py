@@ -95,7 +95,7 @@ class CustomThemes:
         )
         self.__style.configure(
             "Custom.TFrame",
-            background=self.__ui_bg_color_1,
+            background=background_color,
             foreground=self.__ui_font_color_1,
         )
 
