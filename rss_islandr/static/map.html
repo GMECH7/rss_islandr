@@ -14,11 +14,21 @@
         .legend {
             position: absolute;
             top: 10px;
-            right: 10px;
+            right: 75px;
             z-index: 1000;
             display: none; /* Initially hidden */
             width: 300px;
             height: 400px;
+        }
+
+        /* Added CSS for zoomable effect */
+        .zoomable {
+            transition: transform 0.2s; /* Smooth zoom effect */
+        }
+
+        .zoomable:hover {
+            transform: scale(1.5); /* Zoom level (1.5x) */
+            cursor: zoom-in; /* Change cursor to indicate zoom */
         }
     </style>
 </head>
@@ -42,8 +52,9 @@
     </div>
     <div id="info" style="color: white;">Click on a layer to get more information.</div>
 
-    <img id="geologyLegend" class="legend" src="geology_legend.svg" alt="Geology Legend">
-    <img id="hydroLegend" class="legend" src="hydro_legend.svg" alt="Hydrogeological Legend">
+    <!-- Added zoomable class to both legends -->
+    <img id="geologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+    <img id="hydroLegend" class="legend zoomable" src="hydro_legend.svg" alt="Hydrogeological Legend">
 
     <script>
         // Initialize the map
@@ -155,7 +166,5 @@
         });
     
     </script>
-    
-    
 </body>
 </html>
