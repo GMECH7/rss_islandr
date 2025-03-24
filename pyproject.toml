@@ -1,10 +1,13 @@
 [tool.poetry]
 name = "rss-islandr"
 version = "1.11.0"
-release_version = "1.0.1"
 description = ""
 authors = ["Giorgos <gm7.gavroleon@gmail.com>"]
 readme = "README.md"
+
+# Custom tool section for release version
+[tool.islandr]
+release_version = "1.10.1" # Release version for clients
 
 [tool.poetry.dependencies]
 python = "^3.12"
