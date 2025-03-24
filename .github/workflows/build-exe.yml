@@ -1,0 +1,69 @@
+# .github/workflows/build_exe.yml
+name: Build EXE
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest # Windows required for PyInstaller
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller toml
+          poetry install
+
+      - name: Generate version info
+        run: |
+          # Read release_version (or fall back to version)
+          RELEASE_VERSION=$(grep -Po '(?<=release_version = ")[^"]+' pyproject.toml || grep -Po '(?<=version = ")[^"]+' pyproject.toml)
+          echo "Using version: $RELEASE_VERSION"
+
+          # Generate version_info.txt
+          cat <<EOF > version_info.txt
+          VSVersionInfo(
+            ffi=FixedFileInfo(
+              filevers=(${RELEASE_VERSION//./, }, 0),
+              prodvers=(${RELEASE_VERSION//./, }, 0),
+              mask=0x3f,
+              flags=0x0,
+              OS=0x40004,
+              fileType=0x1,
+              subtype=0x0,
+              date=(0, 0)
+            ),
+            kids=[
+              StringFileInfo([StringTable(
+                '040904B0',
+                [
+                  StringStruct('CompanyName', 'CERTH'),
+                  StringStruct('FileVersion', '$RELEASE_VERSION'),
+                  StringStruct('ProductVersion', '$RELEASE_VERSION'),
+                ])
+              ]),
+              VarFileInfo([VarStruct('Translation', [0x409, 1200])])
+            ]
+          )
+          EOF
+
+      - name: Build EXE
+        run: |
+          pyinstaller --name=islandr --onefile --clean \
+                     --icon=rss_islandr/static/islandr.ico \
+                     --version-file=version_info.txt \
+                     ./main/main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: islandr-exe
+          path: dist/islandr.exe
