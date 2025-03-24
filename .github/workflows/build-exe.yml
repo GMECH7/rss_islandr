@@ -34,7 +34,7 @@ jobs:
           pyinstaller --name=islandr --onefile --clean `
                      --icon=rss_islandr/static/islandr.ico `
                      --version-file=version_info.txt `
-                     ./main/main.py
+                     ./main/main_ui.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
