@@ -22,19 +22,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Install only what's needed for building
           pip install pyinstaller==6.12.0 toml
           pip install -e .
 
       - name: Generate version info
         run: python generate_version.py
 
-      - name: Build EXE
-        run: |
-          pyinstaller --name=islandr --onefile --clean `
-                     --icon=rss_islandr/static/islandr.ico `
-                     --version-file=version_info.txt `
-                     ./main/main_ui.py
+      - name: Build EXE using spec file
+        run: pyinstaller --clean --noconfirm islandr.spec
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

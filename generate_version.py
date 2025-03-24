@@ -1,5 +1,6 @@
-import toml
 from pathlib import Path
+
+import toml
 
 
 def main():
@@ -7,7 +8,8 @@ def main():
 
     # Get release version if exists, otherwise fall back to dev version
     release_version = (
-        pyproject.get("tool", {}).get("islandr", {}).get("release_version") or pyproject["tool"]["poetry"]["version"]
+        pyproject.get("tool", {}).get("islandr", {}).get("release_version")
+        or pyproject["tool"]["poetry"]["release_version"]
     )
 
     version_info = f"""# UTF-8

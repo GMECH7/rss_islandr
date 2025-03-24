@@ -7,7 +7,7 @@ readme = "README.md"
 
 # Custom tool section for release version
 [tool.islandr]
-release_version = "1.10.1" # Release version for clients
+release_version = "1.0.1" # Release version for clients
 
 [tool.poetry.dependencies]
 python = "^3.12"
