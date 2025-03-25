@@ -33,7 +33,7 @@ from rss_islandr.ui.site_info_ui import SiteInfoUI
 logging.basicConfig(level=logging.INFO)
 
 
-class RSSUI:
+class MainAppUI:
     """Implementation of main UI"""
 
     def __init__(self, root: tb.Window):
@@ -383,20 +383,3 @@ class RSSUI:
         """Cleaning up resources"""
         self.root.destroy()
         sys.exit()
-
-
-def main():
-    ui_settings = read_skin_details(settings, "dark")
-    theme = ui_settings.ui_ttkbootstrap_theme  # always start with the dark theme
-    root = tb.Window(themename=theme)
-    root.minsize(800, 800)
-    root.title(app_title)
-    root.iconbitmap(ICO_DIR)
-    main = RSSUI(root)
-    main.create_ui()
-    root.protocol("WM_DELETE_WINDOW", main.on_closing)
-    root.mainloop()
-
-
-if __name__ == "__main__":
-    main()

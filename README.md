@@ -53,10 +53,17 @@ Follow these steps to set up the virtual environment:
        source islandr_env/bin/activate
        ```
 
-4. **Install the required dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+4a. **Install the required dependencies (using pip)**:
+
+```bash
+pip install -r requirements.txt
+```
+
+4b. **Install the required dependencies (using poetry)**:
+
+```bash
+poetry install
+```
 
 ## References
 

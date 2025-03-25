@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['main\\main_ui.py'],
+    ['main.py'],
     pathex=['.'],  # Ensure project directory is included
     hiddenimports=[
         'pywebview',
