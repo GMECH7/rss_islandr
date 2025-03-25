@@ -24,7 +24,9 @@ To download the repository locally, use the following command:
 git clone https://github.com/GMECH7/rss_islandr.git
 ```
 
-### Setting Up a Virtual Environment
+### Installing dependencies and execution
+
+#### Using pip
 
 It is highly recommended to use a virtual environment to manage dependencies for this project. A `requirements.txt` file is provided to simplify the setup process.
 
@@ -57,6 +59,40 @@ Follow these steps to set up the virtual environment:
    ```bash
    pip install -r requirements.txt
    ```
+
+5. **Update the requirements**:
+   ```bash
+   pip freeze > requirements.txt
+   ```
+
+#### Using poetry
+
+The option of installing dependencies using poetry also exist, but there are some advantages and disadvantages.
+
+### ✅ Advantages
+- **Reproducible environments**:  
+  `poetry.lock` guarantees exact dependency versions used in development
+- **Dependency resolution**: Handles complex dependency graphs better than pip
+- **All-in-one tool**: Manages virtualenvs, packaging, and publishing
+
+### ⚠️ Disadvantages
+- **Environment conflicts**: Potential confusion with Anaconda/manual virtualenvs
+- **Learning curve**: Different workflow from standard pip/virtualenv
+
+
+1. **Steps to follow (Windows-VSC):**
+   - Use `Windows powershell` (not `Anaconda powershell`) to open VSC.
+
+2. **Follow steps 1-3 of the pip installation instructions**
+
+3. **Check local environments**
+   - Make sure that poetry "sees" the rss_islandr environment. For that make use of the `poetry env info`
+
+4. **Install the required dependencies**:
+   - If the local virtual environment is being used then use `poetry install` to install dependencies based on the `poetry.lock` file.
+
+5. **Update the requirements**:
+   - The installation is being made in editable mode. Also if packages have been added or removed form the installation the user has to use `poetry lock update` to update the lock file.
 
 ## References
 
