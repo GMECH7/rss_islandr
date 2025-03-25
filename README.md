@@ -77,26 +77,31 @@ poetry install
 The option of installing dependencies using poetry also exist, but there are some advantages and disadvantages.
 
 ### ✅ Advantages
+
 - **Reproducible environments**:  
   `poetry.lock` guarantees exact dependency versions used in development
 - **Dependency resolution**: Handles complex dependency graphs better than pip
 - **All-in-one tool**: Manages virtualenvs, packaging, and publishing
 
 ### ⚠️ Disadvantages
+
 - **Environment conflicts**: Potential confusion with Anaconda/manual virtualenvs
 - **Learning curve**: Different workflow from standard pip/virtualenv
 
-
 1. **Steps to follow (Windows-VSC):**
+
    - Use `Windows powershell` (not `Anaconda powershell`) to open VSC.
 
 2. **Follow steps 1-3 of the pip installation instructions**
 
 3. **Check local environments**
-   - Make sure that poetry "sees" the rss_islandr environment. For that make use of the `poetry env info`
+
+   - Make sure that poetry "sees" the rss_islandr environment. For that make use of the `poetry env info` command.
 
 4. **Install the required dependencies**:
+
    - If the local virtual environment is being used then use `poetry install` to install dependencies based on the `poetry.lock` file.
+   - The package itself will not be shown after executing `poetry show` since this command visualizes only the dependencies of the `pyproject.toml` file. Instead the `poetry version` command should return the installed version of the package. Also the validation of the installation can be done by typing `pip list show` command, which should return all packages installed in the virtual environment.
 
 5. **Update the requirements**:
    - The installation is being made in editable mode. Also if packages have been added or removed form the installation the user has to use `poetry lock update` to update the lock file.
