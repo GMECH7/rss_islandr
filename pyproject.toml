@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rss-islandr"
+name = "rss_islandr"
 version = "1.11.0"
 description = ""
 authors = ["Giorgos <gm7.gavroleon@gmail.com>"]
@@ -10,13 +10,35 @@ readme = "README.md"
 release_version = "1.0.1" # Release version for clients
 
 [tool.poetry.dependencies]
-python = "^3.12"
-pywin32 = "308"
-xlwings = "0.33.7"
-ttkbootstrap = "1.10.1"
-pywebview = "5.4"
+python = ">=3.12,<3.14"
 
+# Core dependencies
+altgraph = "0.17.4"
+babel = "2.17.0"
+bottle = "0.13.2"
+cffi = "1.17.1"
+colour = "0.1.5"
+packaging = "24.2"
+toml = "0.10.2"
+typing-extensions = "4.12.2"
+
+# Windows-specific dependencies
+clr-loader = { version = "0.2.7.post0", markers = "sys_platform == 'win32'" }
+pefile = { version = "2023.2.7", markers = "sys_platform == 'win32'" }
+pyinstaller = { version = "6.12.0", markers = "sys_platform == 'win32'" }
+pyinstaller-hooks-contrib = { version = "2025.1", markers = "sys_platform == 'win32'" }
+pythonnet = { version = "3.0.5", markers = "sys_platform == 'win32'" }
+pywin32 = { version = "308", markers = "sys_platform == 'win32'" }
+pywin32-ctypes = { version = "0.2.3", markers = "sys_platform == 'win32'" }
+xlwings = { version = "0.33.9", markers = "sys_platform == 'win32'" }
+
+# GUI dependencies
+pillow = "11.1.0"
+proxy-tools = "0.1.0"
+pywebview = "5.4"
+tkcalendar = "1.6.1"
+ttkbootstrap = "1.10.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

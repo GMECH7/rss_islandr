@@ -4,7 +4,6 @@ import threading
 import time
 
 import ttkbootstrap as tb
-from main_imports import PACKAGE_DIR
 from PIL import Image, ImageTk
 from ttkbootstrap.dialogs import Messagebox
 
