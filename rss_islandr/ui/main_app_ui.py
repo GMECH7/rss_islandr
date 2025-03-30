@@ -55,10 +55,14 @@ class MainAppUI:
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
         self.__all_keys = self.__source_keys + self.__pathway_keys + self.__receptor_keys
         self.__frame_families = {
-            "source_frame": [f"{inp}_frame" for inp in self.__source_keys],
-            "pathway_frames": [f"{inp}_frame" for inp in self.__pathway_keys],
-            "receptor_frames": [f"{inp}_frame" for inp in self.__receptor_keys],
-            "risk_frames": [f"{inp}_frame_risk" for inp in self.__all_keys],
+            "source_frame": [f"{inp}_{scenario_id}_frame" for inp in self.__source_keys for scenario_id in [1, 2, 3]],
+            "pathway_frames": [
+                f"{inp}_{scenario_id}_frame" for inp in self.__pathway_keys for scenario_id in [1, 2, 3]
+            ],
+            "receptor_frames": [
+                f"{inp}_{scenario_id}_frame" for inp in self.__receptor_keys for scenario_id in [1, 2, 3]
+            ],
+            "risk_frames": [f"{inp}_{scenario_id}_frame_risk" for inp in self.__all_keys for scenario_id in [1, 2, 3]],
         }
         self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
@@ -418,26 +422,47 @@ class MainAppUI:
             self.widgets_reconfigured,
         )
 
-        # app_navbar_frame_2, app_frame_2 = HorizontalNavbar(
-        #     self.ui_settings,
-        #     self.ui_inp_vars,
-        #     self.ui_calc_vars,
-        #     self.widgets_reconfigured,
-        # )(self.__site_to_off_site_page)
+        app_navbar_frame_2, app_frame_2 = HorizontalNavbar(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.widgets_reconfigured,
+        )(self.__site_to_off_site_page)
 
-        # app_app_2 = AppUI(
-        #     app_navbar_frame_2,
-        #     app_frame_2,
-        #     self.ui_settings,
-        #     self.ui_inp_vars,
-        #     self.ui_calc_vars,
-        #     self.meter_frames,
-        #     self.frame_geometry_dict,
-        #     self.__source_keys,
-        #     self.__pathway_keys,
-        #     self.__receptor_keys,
-        #     self.widgets_reconfigured,
-        # )
+        app_app_2 = AppUI(
+            app_navbar_frame_2,
+            app_frame_2,
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.meter_frames,
+            self.frame_geometry_dict,
+            self.__source_keys,
+            self.__pathway_keys,
+            self.__receptor_keys,
+            self.widgets_reconfigured,
+        )
+
+        app_navbar_frame_3, app_frame_3 = HorizontalNavbar(
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.widgets_reconfigured,
+        )(self.__off_site_to_site_page)
+
+        app_app_3 = AppUI(
+            app_navbar_frame_3,
+            app_frame_3,
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.meter_frames,
+            self.frame_geometry_dict,
+            self.__source_keys,
+            self.__pathway_keys,
+            self.__receptor_keys,
+            self.widgets_reconfigured,
+        )
 
         # app_assesment = AssessmentNoteBookUI(
         #     self.ui_settings,
@@ -467,6 +492,8 @@ class MainAppUI:
         app_home.ui(self.__islandr_logo_img)
         app_site_info.ui()
         app_app.ui(self.root)
+        app_app_2.ui_2(self.root)
+        app_app_3.ui_3(self.root)
         # app_app_2.ui(self.root)
         # app_assesment.ui(source_navbar_frame, source_frame, "source")
         # app_assesment.ui(pathways_navbar_frame, pathways_frame, "pathways")

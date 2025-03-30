@@ -46,6 +46,98 @@ class AppUI:
         self.__receptor_keys = receptor_keys
         self.widgets_reconfigured = widgets_reconfigured
 
+    def ui_3(self, root):
+        self.__source_page_3 = tb.Frame(root)
+        self.__pathways_page_3 = tb.Frame(root)
+        self.__receptors_page_3 = tb.Frame(root)
+
+        self.__create_source_btn(self.__parent_navbar_frame, self.__source_page_3)
+        self.__create_pathways_btn(self.__parent_navbar_frame, self.__pathways_page_3)
+        self.__create_receptors_btn(self.__parent_navbar_frame, self.__receptors_page_3)
+
+        app_assesment_3 = AssessmentNoteBookUI(
+            3,
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.meter_frames,
+            self.frame_geometry_dict,
+            self.__source_keys,
+            self.__pathway_keys,
+            self.__receptor_keys,
+            widgets_reconfigured=self.widgets_reconfigured,
+        )
+
+        for self.page in [self.__source_page_3, self.__pathways_page_3, self.__receptors_page_3]:
+            self.page.place(
+                relx=self.__frames_xstart,
+                rely=0,
+                relwidth=self.__frames_width,
+                relheight=1.0,
+            )
+
+        source_navbar_frame, source_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__source_page_3)
+
+        pathways_navbar_frame, pathways_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__pathways_page_3)
+
+        receptors_navbar_frame, receptors_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__receptors_page_3)
+
+        app_assesment_3.ui(source_navbar_frame, source_frame, "source")
+        app_assesment_3.ui(pathways_navbar_frame, pathways_frame, "pathways")
+        app_assesment_3.ui(receptors_navbar_frame, receptors_frame, "receptors")
+
+    def ui_2(self, root):
+        self.__source_page_2 = tb.Frame(root)
+        self.__pathways_page_2 = tb.Frame(root)
+        self.__receptors_page_2 = tb.Frame(root)
+
+        self.__create_source_btn(self.__parent_navbar_frame, self.__source_page_2)
+        self.__create_pathways_btn(self.__parent_navbar_frame, self.__pathways_page_2)
+        self.__create_receptors_btn(self.__parent_navbar_frame, self.__receptors_page_2)
+
+        app_assesment_2 = AssessmentNoteBookUI(
+            2,
+            self.ui_settings,
+            self.ui_inp_vars,
+            self.ui_calc_vars,
+            self.meter_frames,
+            self.frame_geometry_dict,
+            self.__source_keys,
+            self.__pathway_keys,
+            self.__receptor_keys,
+            widgets_reconfigured=self.widgets_reconfigured,
+        )
+
+        for self.page in [self.__source_page_2, self.__pathways_page_2, self.__receptors_page_2]:
+            self.page.place(
+                relx=self.__frames_xstart,
+                rely=0,
+                relwidth=self.__frames_width,
+                relheight=1.0,
+            )
+
+        source_navbar_frame, source_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__source_page_2)
+
+        pathways_navbar_frame, pathways_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__pathways_page_2)
+
+        receptors_navbar_frame, receptors_frame = HorizontalNavbar(
+            self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
+        )(self.__receptors_page_2)
+
+        app_assesment_2.ui(source_navbar_frame, source_frame, "source")
+        app_assesment_2.ui(pathways_navbar_frame, pathways_frame, "pathways")
+        app_assesment_2.ui(receptors_navbar_frame, receptors_frame, "receptors")
+
     def ui(self, root):
         """No functionality is added in the main page."""
 
@@ -53,19 +145,12 @@ class AppUI:
         self.__pathways_page_1 = tb.Frame(root)
         self.__receptors_page_1 = tb.Frame(root)
 
-        # self.__source_page_2 = tb.Frame(root)
-        # self.__pathways_page_2 = tb.Frame(root)
-        # self.__receptors_page_2 = tb.Frame(root)
-
         self.__create_source_btn(self.__parent_navbar_frame, self.__source_page_1)
         self.__create_pathways_btn(self.__parent_navbar_frame, self.__pathways_page_1)
         self.__create_receptors_btn(self.__parent_navbar_frame, self.__receptors_page_1)
 
-        # self.__create_source_btn(self.__parent_navbar_frame, self.__source_page_2)
-        # self.__create_pathways_btn(self.__parent_navbar_frame, self.__pathways_page_2)
-        # self.__create_receptors_btn(self.__parent_navbar_frame, self.__receptors_page_2)
-
         app_assesment_1 = AssessmentNoteBookUI(
+            1,
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
@@ -77,26 +162,7 @@ class AppUI:
             widgets_reconfigured=self.widgets_reconfigured,
         )
 
-        app_assesment_2 = AssessmentNoteBookUI(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.meter_frames,
-            self.frame_geometry_dict,
-            self.__source_keys,
-            self.__pathway_keys,
-            self.__receptor_keys,
-            widgets_reconfigured=self.widgets_reconfigured,
-        )
-
-        for self.page in [
-            self.__source_page_1,
-            self.__pathways_page_1,
-            self.__receptors_page_1,
-            # self.__source_page_2,
-            # self.__pathways_page_2,
-            # self.__receptors_page_2,
-        ]:
+        for self.page in [self.__source_page_1, self.__pathways_page_1, self.__receptors_page_1]:
             self.page.place(
                 relx=self.__frames_xstart,
                 rely=0,
@@ -118,22 +184,6 @@ class AppUI:
         app_assesment_1.ui(source_navbar_frame, source_frame, "source")
         app_assesment_1.ui(pathways_navbar_frame, pathways_frame, "pathways")
         app_assesment_1.ui(receptors_navbar_frame, receptors_frame, "receptors")
-
-        # source_navbar_frame, source_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__source_page_1)
-
-        # pathways_navbar_frame, pathways_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__pathways_page_1)
-
-        # receptors_navbar_frame, receptors_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__receptors_page_1)
-
-        # app_assesment_2.ui(source_navbar_frame, source_frame, "source")
-        # app_assesment_2.ui(pathways_navbar_frame, pathways_frame, "pathways")
-        # app_assesment_2.ui(receptors_navbar_frame, receptors_frame, "receptors")
 
     def __create_source_btn(self, nav_bar_frame: tb.Frame, page) -> None:
         """ """

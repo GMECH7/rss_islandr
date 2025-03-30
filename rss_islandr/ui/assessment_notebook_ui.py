@@ -14,6 +14,7 @@ Image.CUBIC = Image.BICUBIC
 class AssessmentNoteBookUI(GeneralUITemplate):
     def __init__(
         self,
+        scenario_id: int,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
@@ -48,6 +49,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         receptor_keys : list[str]
             Receptor keys eg. 'SW_receptor'
         """
+        self.scenario_id = scenario_id
         self.ui_settings = ui_settings
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
@@ -134,12 +136,12 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 var.set(dropdown_severity[0])
 
                 # Store weight mapping for later use
-                self.__risk_selection[f"{risk_factor_key}_frame"].update(
+                self.__risk_selection[f"{risk_factor_key}_{self.scenario_id}_frame"].update(
                     {mechanism_alias: {"var": var, "weights": alias_to_weight}}
                 )
 
                 ui_var = UIInpVariable(
-                    frame_tag=f"{risk_factor_key}_frame",
+                    frame_tag=f"{risk_factor_key}_{self.scenario_id}_frame",
                     tk_var=var,
                     rel_pos=i,
                     text_val=mechanism_alias,
@@ -149,15 +151,17 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     excel_cell=excel_cell,
                     state="enabled",
                 )
-                self.ui_inp_vars.update({f"drop_{risk_factor_key}_1_0{i}": ui_var})
-                self.ui_inp_vars[f"drop_{risk_factor_key}_1_0{i}"].tk_var.trace_add(
+                self.ui_inp_vars.update({f"drop_{self.scenario_id}_{risk_factor_key}_1_0{i}": ui_var})
+                self.ui_inp_vars[f"drop_{self.scenario_id}_{risk_factor_key}_1_0{i}"].tk_var.trace_add(
                     "write",
-                    lambda *args, rfk=risk_factor_key, idx=i: self.__calculate_source_pathway_risk(f"{rfk}_frame"),
+                    lambda *args, rfk=risk_factor_key, idx=i: self.__calculate_source_pathway_risk(
+                        f"{rfk}_{self.scenario_id}_frame"
+                    ),
                 )
 
             ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
-            self.ui_calc_vars.update({f"{risk_factor_key}_frame": ui_calc_var})
-            self.frame_geometry_dict[f"{risk_factor_key}_frame"].n_row = i + 2
+            self.ui_calc_vars.update({f"{risk_factor_key}_{self.scenario_id}_frame": ui_calc_var})
+            self.frame_geometry_dict[f"{risk_factor_key}_{self.scenario_id}_frame"].n_row = i + 2
 
     def __init__risk_selection_dict(self) -> None:
         """
@@ -171,7 +175,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """
         self.__risk_selection = {}
         for key in self.__source_pathway_keys:
-            self.__risk_selection.update({f"{key}_frame": {}})
+            self.__risk_selection.update({f"{key}_{self.scenario_id}_frame": {}})
 
     def __init__receptor_risk_selection_dict(self):
         """
@@ -179,7 +183,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """
         self.__receptor_risk_selection = {}
         for key in self.__receptor_keys:
-            self.__receptor_risk_selection.update({f"{key}_frame": {}})
+            self.__receptor_risk_selection.update({f"{key}_{self.scenario_id}_frame": {}})
 
     def __init__receptor_dropdown(self) -> None:
         """
@@ -215,9 +219,9 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             receptor_param.set(dropdown_receptor_param[0])
 
             # Store weight mapping for later use
-            self.__receptor_risk_selection[f"{key}_frame"].update(
+            self.__receptor_risk_selection[f"{key}_{self.scenario_id}_frame"].update(
                 {
-                    f"{key}_frame": {
+                    f"{key}_{self.scenario_id}_frame": {
                         "pathway": pathway_var,
                         "var": receptor_param,
                         "weights": param_alias_to_weight,
@@ -226,7 +230,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             )
 
             ui_var_pathway = UIInpVariable(
-                frame_tag=f"{key}_frame",
+                frame_tag=f"{key}_{self.scenario_id}_frame",
                 tk_var=pathway_var,
                 rel_pos=0,
                 text_val="Pathway",
@@ -238,7 +242,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             )
 
             ui_var_receptor_param = UIInpVariable(
-                frame_tag=f"{key}_frame",
+                frame_tag=f"{key}_{self.scenario_id}_frame",
                 tk_var=receptor_param,
                 rel_pos=1,
                 text_val="Parameter",
@@ -248,23 +252,23 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 excel_cell=f"{parent_excel_col}{parent_excel_row + 1}",
                 state="enabled",
             )
-            self.ui_inp_vars.update({f"drop_{key}_1_0": ui_var_pathway})
-            self.ui_inp_vars.update({f"drop_{key}_1_1": ui_var_receptor_param})
-            self.ui_inp_vars[f"drop_{key}_1_0"].tk_var.trace_add(
+            self.ui_inp_vars.update({f"drop_{key}_{self.scenario_id}_1_0": ui_var_pathway})
+            self.ui_inp_vars.update({f"drop_{key}_{self.scenario_id}_1_1": ui_var_receptor_param})
+            self.ui_inp_vars[f"drop_{key}_{self.scenario_id}_1_0"].tk_var.trace_add(
                 "write",
-                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_frame"),
+                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_{self.scenario_id}_frame"),
             )
-            self.ui_inp_vars[f"drop_{key}_1_1"].tk_var.trace_add(
+            self.ui_inp_vars[f"drop_{key}_{self.scenario_id}_1_1"].tk_var.trace_add(
                 "write",
-                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_frame"),
+                lambda *args, rfk=key: self.__calculate_receptor_total_risk(f"{rfk}_{self.scenario_id}_frame"),
             )
 
             # always two rows in receptor dropdown
             excel_cell_risk = f"{parent_excel_col}{parent_excel_row + 2}"
             ui_calc_var = UICalcVariable(tb.StringVar(value="0.0"), excel_cell_risk)
-            self.ui_calc_vars.update({f"{key}_frame": ui_calc_var})
+            self.ui_calc_vars.update({f"{key}_{self.scenario_id}_frame": ui_calc_var})
 
-            self.frame_geometry_dict[f"{key}_frame"].n_row = 3
+            self.frame_geometry_dict[f"{key}_{self.scenario_id}_frame"].n_row = 3
 
     def __init__create_traces_receptors(self) -> None:
         """
@@ -276,9 +280,11 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             #: Available pathways per receptor
             available_pathways = self.receptor_fetcher.getter(receptor_key)["available_pathways"]
             for pathway in self.__source_keys + available_pathways:
-                self.ui_calc_vars[f"{pathway}_frame"].tk_var.trace_add(
+                self.ui_calc_vars[f"{pathway}_{self.scenario_id}_frame"].tk_var.trace_add(
                     "write",
-                    lambda *args, ptk=receptor_key: self.__calculate_receptor_total_risk(f"{ptk}_frame"),
+                    lambda *args, ptk=receptor_key: self.__calculate_receptor_total_risk(
+                        f"{ptk}_{self.scenario_id}_frame"
+                    ),
                 )
 
     def __create_new_tab(self, notebook: tb.Notebook, frame_tag: str, frame_title: str, meter_widget_text: str) -> None:
@@ -314,8 +320,8 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         receptor_alias = data["var"].get()
         receptor_weight = data["weights"].get(receptor_alias, 0.0)
 
-        source_risk = float(self.ui_calc_vars["IN_frame"].tk_var.get())
-        pathway_risk = float(self.ui_calc_vars[f"{pathway_key}_frame"].tk_var.get())
+        source_risk = float(self.ui_calc_vars[f"IN_{self.scenario_id}_frame"].tk_var.get())
+        pathway_risk = float(self.ui_calc_vars[f"{pathway_key}_{self.scenario_id}_frame"].tk_var.get())
 
         receptor_risk = risk_calc([source_risk, pathway_risk, receptor_weight])
 
@@ -357,13 +363,13 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         frame_tags_titles = []
         if case == "source" or case == "pathways":
             for risk_factor_key in keys:
-                frame_tag = f"{risk_factor_key}_frame"
+                frame_tag = f"{risk_factor_key}_{self.scenario_id}_frame"
                 frame_title = f"{self.hazard_fetcher.getter(risk_factor_key)['alias']}"
                 meter_widget_text = "Hazard potential" if case == "source" else "Pathway risk"
                 frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         else:
             for risk_factor_key in keys:
-                frame_tag = f"{risk_factor_key}_frame"
+                frame_tag = f"{risk_factor_key}_{self.scenario_id}_frame"
                 frame_title = f"{self.__receptor_key_to_alias[risk_factor_key[:2]]}"
                 meter_widget_text = "Risk"
                 frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
@@ -372,7 +378,6 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
-            print(111111)
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
