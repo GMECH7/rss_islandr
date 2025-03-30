@@ -70,6 +70,14 @@
 				"n_row": 7,
 				"n_col": 1
 			},
+			"vertical_navbar_assessment_frames": {
+				"x_l": 0.0,
+				"x_r": 0.1,
+				"y_u": 0.0,
+				"y_d": 1.0,
+				"n_row": 3,
+				"n_col": 1
+			},
 			"site_info_frame": {
 				"x_l": 0.20,
 				"x_r": 0.80,

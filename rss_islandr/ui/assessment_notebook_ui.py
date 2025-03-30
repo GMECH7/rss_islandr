@@ -375,7 +375,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         return frame_tags_titles
 
-    def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
+    def ui(self, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)

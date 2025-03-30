@@ -19,8 +19,6 @@ from rss_islandr.core.config_parser import (
 )
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
-from rss_islandr.ui.app_ui import AppUI
-from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.general_ui import frame_distances
 from rss_islandr.ui.home_ui import HomeUI
@@ -28,6 +26,7 @@ from rss_islandr.ui.horizontal_navbar import HorizontalNavbar
 from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
+from rss_islandr.ui.site_to_site_assessment_ui import SiteToSiteAssessmentUI
 
 logging.basicConfig(level=logging.INFO)
 
@@ -190,7 +189,7 @@ class MainAppUI:
         """ """
         btn_site_to_site = tb.Button(
             nav_bar_frame,
-            text="Site to site Assessment",
+            text="On-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__show_page(self.__site_to_site_page),
         )
@@ -201,7 +200,7 @@ class MainAppUI:
         """ """
         btn_site_to_site = tb.Button(
             nav_bar_frame,
-            text="Site to off site assessment",
+            text="On-site to off-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__show_page(self.__site_to_off_site_page),
         )
@@ -212,45 +211,12 @@ class MainAppUI:
         """ """
         btn_site_to_site = tb.Button(
             nav_bar_frame,
-            text="Off site to site assessment",
+            text="Off-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__show_page(self.__off_site_to_site_page),
         )
         btn_site_to_site.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_site_to_site] = "ui_btn_bg_color_1"
-
-    # def __create_source_btn(self, nav_bar_frame: tb.Frame) -> None:
-    #     """ """
-    #     btn_source = tb.Button(
-    #         nav_bar_frame,
-    #         text="Source",
-    #         style=self.ui_settings.ui_btn_bg_color_1,
-    #         command=lambda: self.__show_page(self.__source_page),
-    #     )
-    #     btn_source.grid(row=4, column=0, sticky="nsew")
-    #     self.widgets_reconfigured[btn_source] = "ui_btn_bg_color_1"
-
-    # def __create_pathways_btn(self, nav_bar_frame: tb.Frame) -> None:
-    #     """ """
-    #     btn_pathways = tb.Button(
-    #         nav_bar_frame,
-    #         text="Pathways",
-    #         style=self.ui_settings.ui_btn_bg_color_1,
-    #         command=lambda: self.__show_page(self.__pathways_page),
-    #     )
-    #     btn_pathways.grid(row=5, column=0, sticky="nsew")
-    #     self.widgets_reconfigured[btn_pathways] = "ui_btn_bg_color_1"
-
-    # def __create_receptors_btn(self, nav_bar_frame: tb.Frame) -> None:
-    #     """ """
-    #     btn_receptors = tb.Button(
-    #         nav_bar_frame,
-    #         text="Receptors",
-    #         style=self.ui_settings.ui_btn_bg_color_1,
-    #         command=lambda: self.__show_page(self.__receptors_page),
-    #     )
-    #     btn_receptors.grid(row=6, column=0, sticky="nsew")
-    #     self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
 
     def __create_restore_vars_btn(self, frame: tb.Frame) -> tb.Button:
         """Restore to default button"""
@@ -320,27 +286,57 @@ class MainAppUI:
                 self.__update_coordinates(lat, lng)
             time.sleep(1.0)  # Polling interval (s)
 
-    def __update_coordinates(self, lat, lng):
+    def __update_coordinates(self, lat, lng) -> None:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
         logging.debug(f"Updated Coordinates: {lat}, {lng}")
 
     def __create_vertical_navbar_buttons(self) -> None:
-        """ """
-
+        """
+        Create vertical navbar buttons
+        """
         nav_bar_frame = self.__create_vertical_navbar()
-        #: Create vertical navbar buttons
         self.__create_home_btn(nav_bar_frame)
         self.__create_map_btn(nav_bar_frame)
         self.__create_site_info_btn(nav_bar_frame)
         self.__create_site_to_site_btn(nav_bar_frame)
         self.__create_site_to_off_site_btn(nav_bar_frame)
         self.__create_off_site_to_site_btn(nav_bar_frame)
-        # self.__create_source_btn(nav_bar_frame)
-        # self.__create_pathways_btn(nav_bar_frame)
-        # self.__create_receptors_btn(nav_bar_frame)
         self.__create_restore_vars_btn(nav_bar_frame)
+
+    def __create_assessment_apps(self) -> list[SiteToSiteAssessmentUI]:
+        """
+        Create contamination assessment objects that handle the following 3 cases.
+            1. On-site to on-site
+            2. On-site to off-site
+            3. Off-site to on-site
+        """
+        site_to_site_apps = []
+        for page in [self.__site_to_site_page, self.__site_to_off_site_page, self.__off_site_to_site_page]:
+            app_navbar_frame, app_frame = HorizontalNavbar(
+                self.ui_settings,
+                self.ui_inp_vars,
+                self.ui_calc_vars,
+                self.widgets_reconfigured,
+            )(page)
+
+            site_to_site_app = SiteToSiteAssessmentUI(
+                app_navbar_frame,
+                app_frame,
+                self.ui_settings,
+                self.ui_inp_vars,
+                self.ui_calc_vars,
+                self.meter_frames,
+                self.frame_geometry_dict,
+                self.__source_keys,
+                self.__pathway_keys,
+                self.__receptor_keys,
+                self.widgets_reconfigured,
+            )
+            site_to_site_apps.append(site_to_site_app)
+
+        return site_to_site_apps
 
     def create_ui(self) -> None:
         """ """
@@ -354,10 +350,6 @@ class MainAppUI:
         self.__site_to_off_site_page = tb.Frame(self.root)
         self.__off_site_to_site_page = tb.Frame(self.root)
 
-        # self.__source_page = tb.Frame(self.root)
-        # self.__pathways_page = tb.Frame(self.root)
-        # self.__receptors_page = tb.Frame(self.root)
-
         for self.page in [
             self.__map_page,
             self.__home_page,
@@ -365,9 +357,6 @@ class MainAppUI:
             self.__site_to_site_page,
             self.__site_to_off_site_page,
             self.__off_site_to_site_page,
-            # self.__source_page,
-            # self.__pathways_page,
-            # self.__receptors_page,
         ]:
             self.page.place(
                 relx=self.__frames_xstart,
@@ -375,7 +364,8 @@ class MainAppUI:
                 relwidth=self.__frames_width,
                 relheight=1.0,
             )
-        #: Create horizontal navbar and rest of frame per page to be dispalyed
+
+        #: Home app Create horizontal navbar and rest of frame per page to be displayed
         home_navbar_frame, home_frame = HorizontalNavbar(
             self.ui_settings,
             self.ui_inp_vars,
@@ -384,13 +374,13 @@ class MainAppUI:
         )(self.__home_page)
         app_home = HomeUI(home_navbar_frame, home_frame)
 
+        #: Site info app Create horizontal navbar and rest of frame per page to be displayed
         site_info_navbar_frame, site_info_frame = HorizontalNavbar(
             self.ui_settings,
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
         )(self.__site_info_page)
-
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
             site_info_frame,
@@ -400,104 +390,14 @@ class MainAppUI:
             self.frame_geometry_dict,
             self.widgets_reconfigured,
         )
+        #: Site to site contamination assessment apps.
+        site_to_site_apps = self.__create_assessment_apps()
 
-        app_navbar_frame, app_frame = HorizontalNavbar(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.widgets_reconfigured,
-        )(self.__site_to_site_page)
-
-        app_app = AppUI(
-            app_navbar_frame,
-            app_frame,
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.meter_frames,
-            self.frame_geometry_dict,
-            self.__source_keys,
-            self.__pathway_keys,
-            self.__receptor_keys,
-            self.widgets_reconfigured,
-        )
-
-        app_navbar_frame_2, app_frame_2 = HorizontalNavbar(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.widgets_reconfigured,
-        )(self.__site_to_off_site_page)
-
-        app_app_2 = AppUI(
-            app_navbar_frame_2,
-            app_frame_2,
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.meter_frames,
-            self.frame_geometry_dict,
-            self.__source_keys,
-            self.__pathway_keys,
-            self.__receptor_keys,
-            self.widgets_reconfigured,
-        )
-
-        app_navbar_frame_3, app_frame_3 = HorizontalNavbar(
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.widgets_reconfigured,
-        )(self.__off_site_to_site_page)
-
-        app_app_3 = AppUI(
-            app_navbar_frame_3,
-            app_frame_3,
-            self.ui_settings,
-            self.ui_inp_vars,
-            self.ui_calc_vars,
-            self.meter_frames,
-            self.frame_geometry_dict,
-            self.__source_keys,
-            self.__pathway_keys,
-            self.__receptor_keys,
-            self.widgets_reconfigured,
-        )
-
-        # app_assesment = AssessmentNoteBookUI(
-        #     self.ui_settings,
-        #     self.ui_inp_vars,
-        #     self.ui_calc_vars,
-        #     self.meter_frames,
-        #     self.frame_geometry_dict,
-        #     self.__source_keys,
-        #     self.__pathway_keys,
-        #     self.__receptor_keys,
-        #     widgets_reconfigured=self.widgets_reconfigured,
-        # )
-
-        # source_navbar_frame, source_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__source_page)
-
-        # pathways_navbar_frame, pathways_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__pathways_page)
-
-        # receptors_navbar_frame, receptors_frame = HorizontalNavbar(
-        #     self.ui_settings, self.ui_inp_vars, self.ui_calc_vars, self.widgets_reconfigured
-        # )(self.__receptors_page)
-
-        #: Create page
+        #: Call ui method of created apps
         app_home.ui(self.__islandr_logo_img)
         app_site_info.ui()
-        app_app.ui(self.root)
-        app_app_2.ui_2(self.root)
-        app_app_3.ui_3(self.root)
-        # app_app_2.ui(self.root)
-        # app_assesment.ui(source_navbar_frame, source_frame, "source")
-        # app_assesment.ui(pathways_navbar_frame, pathways_frame, "pathways")
-        # app_assesment.ui(receptors_navbar_frame, receptors_frame, "receptors")
+        for i, site_to_site_app in enumerate(site_to_site_apps):
+            site_to_site_app.ui(self.root, i + 1)
 
         self.__show_page(self.__home_page)
 

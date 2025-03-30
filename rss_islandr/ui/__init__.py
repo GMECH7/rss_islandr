@@ -9,6 +9,7 @@ from .io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn,
 from .main_app_ui import MainAppUI
 from .map_ui import MapUI
 from .site_info_ui import SiteInfoUI
+from .site_to_site_assessment_ui import SiteToSiteAssessmentUI
 
 __all__ = [
     "IOBtns",
@@ -26,4 +27,5 @@ __all__ = [
     "HorizontalNavbarBtns",
     "PopupImage",
     "MainAppUI",
+    "SiteToSiteAssessmentUI",
 ]
