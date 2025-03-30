@@ -372,6 +372,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
+            print(111111)
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
