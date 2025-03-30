@@ -87,28 +87,6 @@
                         "weight": 0.4
                     }
                 }
-            },
-            "03": {
-                "alias": "Mobility",
-                "description": "The ability of a hazardous material to be transported along a pathway once released from containment",
-                "severity": {
-                    "00": {
-                        "alias": "Value Not Known",
-                        "weight": 0.0
-                    },
-                    "01": {
-                        "alias": "High",
-                        "weight": 1.0
-                    },
-                    "02": {
-                        "alias": "Medium",
-                        "weight": 0.7
-                    },
-                    "03": {
-                        "alias": "Low",
-                        "weight": 0.3
-                    }
-                }
             }
         }
     },

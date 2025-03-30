@@ -281,16 +281,11 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     lambda *args, ptk=receptor_key: self.__calculate_receptor_total_risk(f"{ptk}_frame"),
                 )
 
-    def __create_new_tab(
-        self,
-        notebook: tb.Notebook,
-        frame_tag: str,
-        frame_title: str,
-    ) -> None:
+    def __create_new_tab(self, notebook: tb.Notebook, frame_tag: str, frame_title: str, meter_widget_text: str) -> None:
         """ """
         tab = tb.Frame(notebook)
         notebook.add(tab, text=frame_title)
-        self.__create_new_risk_frame(tab, frame_tag, frame_title)
+        self.__create_new_risk_frame(tab, frame_tag, frame_title, meter_widget_text)
 
     def __calculate_source_pathway_risk(self, frame_tag: str) -> None:
         """
@@ -341,7 +336,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             boot_style = color_ttk
         self.meter_frames[f"{frame_tag}_risk"].configure(amountused=risk_formatted, bootstyle=boot_style)
 
-    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str) -> tb.Frame:
+    def __create_new_risk_frame(self, frame, frame_tag: str, frame_title: str, meter_widget_text: str) -> tb.Frame:
         """ """
         #: Create frame that will hold the entries, dropdowns etc.
         frame_form = self.gt_new_frame(frame, frame_tag, frame_title)
@@ -352,24 +347,26 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             if self.ui_inp_vars[dropdown_key].frame_tag == frame_tag:
                 self.gt_combobox_widget(frame_form, dropdown_key)
 
-        meter = self.gt_meter_widget(frame_risk_meter, f"{frame_tag}_risk")
+        meter = self.gt_meter_widget(frame_risk_meter, meter_widget_text)
         self.meter_frames[f"{frame_tag}_risk"] = meter
 
         return frame
 
-    def __create_frame_tags_titles(self, case: str, keys: list[str]) -> list[tuple[str, str]]:
+    def __create_frame_tags_titles(self, case: str, keys: list[str]) -> list[tuple[str, str, str]]:
         """ """
         frame_tags_titles = []
-        if case == "source" or case == "pathway":
+        if case == "source" or case == "pathways":
             for risk_factor_key in keys:
                 frame_tag = f"{risk_factor_key}_frame"
                 frame_title = f"{self.hazard_fetcher.getter(risk_factor_key)['alias']}"
-                frame_tags_titles.append((frame_tag, frame_title))
+                meter_widget_text = "Hazard potential" if case == "source" else "Pathway risk"
+                frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         else:
             for risk_factor_key in keys:
                 frame_tag = f"{risk_factor_key}_frame"
                 frame_title = f"{self.__receptor_key_to_alias[risk_factor_key[:2]]}"
-                frame_tags_titles.append((frame_tag, frame_title))
+                meter_widget_text = "Risk"
+                frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         return frame_tags_titles
 
     def ui(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame, case: str) -> None:
@@ -389,5 +386,5 @@ class AssessmentNoteBookUI(GeneralUITemplate):
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
-        for frame_tag, frame_title in frame_tags_titles:
-            self.__create_new_tab(notebook, frame_tag, frame_title)
+        for frame_tag, frame_title, meter_widget_text in frame_tags_titles:
+            self.__create_new_tab(notebook, frame_tag, frame_title, meter_widget_text)

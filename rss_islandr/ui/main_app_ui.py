@@ -8,10 +8,8 @@ from PIL import Image, ImageTk
 from ttkbootstrap.dialogs import Messagebox
 
 from rss_islandr.core.config_parser import (
-    ICO_DIR,
     ISLANDR_LOGO,
     MAP_DIR,
-    app_title,
     pathway_keys,
     settings,
     source_keys,

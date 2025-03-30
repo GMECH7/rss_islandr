@@ -151,14 +151,14 @@ class GeneralUITemplate:
 
         combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=2, columnspan=column_span, sticky="we")
 
-    def gt_meter_widget(self, frame: tb.Frame, frame_tag: str) -> tb.Meter:
+    def gt_meter_widget(self, frame: tb.Frame, meter_widget_text: str) -> tb.Meter:
         """Create a meter widget and place it in a frame"""
         meter_widget = tb.Meter(
             frame,
             amountused=0,
             amounttotal=100,
             metertype="full",
-            subtext="Risk Level",
+            subtext=meter_widget_text,
             textright="%",
             interactive=False,
             arcoffset=None,
