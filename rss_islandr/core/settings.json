@@ -31,7 +31,7 @@
 			"ui_font_color_1": "light",
 			"ui_font_color_2": "dark",
 			"ui_btn_bg_color_1": "light-outline",
-			"ui_btn_bg_color_2": "bg-flat",
+			"ui_btn_bg_color_2": "light-solid",
 			"ui_btn_font_color_1": "light",
 			"ui_btn_font_color_2": "dark"
 		},
@@ -83,7 +83,7 @@
 				"x_r": 0.80,
 				"y_u": 0.10,
 				"y_d": 0.50,
-				"n_row": 8,
+				"n_row": 9,
 				"n_col": 3
 			},
 			"risk_frames": {

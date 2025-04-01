@@ -1,8 +1,8 @@
 import ttkbootstrap as tb
 
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
+from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.general_ui import frame_distances
-from rss_islandr.ui.horizontal_navbar import HorizontalNavbar
 
 
 class SiteToSiteAssessmentUI:
@@ -39,7 +39,8 @@ class SiteToSiteAssessmentUI:
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = receptor_keys
         self.widgets_reconfigured = widgets_reconfigured
-
+        # Store references to navigation buttons - used for restyling buttons when pressed
+        self.__nav_buttons_references = {}
         self.__init__handle_geometry()
 
     def __init__handle_geometry(self):
@@ -51,38 +52,41 @@ class SiteToSiteAssessmentUI:
         self.__frame_n_rows = self.frame_geometry_dict["vertical_navbar_assessment_frames"].n_row
         self.__frame_n_cols = self.frame_geometry_dict["vertical_navbar_assessment_frames"].n_col
 
-    def __create_source_btn(self, nav_bar_frame: tb.Frame, page) -> None:
+    def __create_source_btn(self, nav_bar_frame: tb.Frame, page) -> tb.Button:
         """ """
         btn_source = tb.Button(
             nav_bar_frame,
             text="Source",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(page),
+            command=lambda: self.__btns_cc.show_page(page, "source"),
         )
         btn_source.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_source] = "ui_btn_bg_color_1"
+        return btn_source
 
-    def __create_pathways_btn(self, nav_bar_frame: tb.Frame, page) -> None:
+    def __create_pathways_btn(self, nav_bar_frame: tb.Frame, page) -> tb.Button:
         """ """
         btn_pathways = tb.Button(
             nav_bar_frame,
             text="Pathways",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(page),
+            command=lambda: self.__btns_cc.show_page(page, "pathways"),
         )
         btn_pathways.grid(row=1, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_pathways] = "ui_btn_bg_color_1"
+        return btn_pathways
 
-    def __create_receptors_btn(self, nav_bar_frame: tb.Frame, page_frame: tb.Frame) -> None:
+    def __create_receptors_btn(self, nav_bar_frame: tb.Frame, page_frame: tb.Frame) -> tb.Button:
         """ """
         btn_receptors = tb.Button(
             nav_bar_frame,
             text="Receptors",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(page_frame),
+            command=lambda: self.__btns_cc.show_page(page_frame, "receptors"),
         )
         btn_receptors.grid(row=2, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
+        return btn_receptors
 
     def __create_vertical_navbar(self, root) -> tb.Frame:
         """Create vertical navbar visible in all app."""
@@ -98,14 +102,11 @@ class SiteToSiteAssessmentUI:
         Create vertical navbar buttons
         """
         nav_bar_frame = self.__create_vertical_navbar(root)
-        self.__create_source_btn(nav_bar_frame, pages[0])
-        self.__create_pathways_btn(nav_bar_frame, pages[1])
-        self.__create_receptors_btn(nav_bar_frame, pages[2])
+        self.__nav_buttons_references["source"] = self.__create_source_btn(nav_bar_frame, pages[0])
+        self.__nav_buttons_references["pathways"] = self.__create_pathways_btn(nav_bar_frame, pages[1])
+        self.__nav_buttons_references["receptors"] = self.__create_receptors_btn(nav_bar_frame, pages[2])
 
-    def __show_page(self, page):
-        page.tkraise()
-
-    def ui(self, root, scenario_id: int):
+    def ui(self, scenario_id: int):
         """ """
         self.__source_frame = tb.Frame(self.__parent_frame)
         self.__pathways_frame = tb.Frame(self.__parent_frame)
@@ -113,6 +114,7 @@ class SiteToSiteAssessmentUI:
         self.__create_vertical_navbar_buttons(
             self.__parent_frame, [self.__source_frame, self.__pathways_frame, self.__receptors_frame]
         )
+        self.__btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
 
         app_assesment = AssessmentNoteBookUI(
             scenario_id,

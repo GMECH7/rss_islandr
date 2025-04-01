@@ -42,17 +42,16 @@ class CustomThemes:
 
     def custom_notebook(self):
         """Custom styles for Notebook widgets"""
+        background_color = self.__style.colors.get("bg")
         self.__style.configure("Custom.TNotebook", background=self.__ui_bg_color_1, borderwidth=0.0)
 
         #: Style for inactive tabs
-        self.__style.configure(
-            "Custom.TNotebook.Tab", background=self.__ui_bg_color_2, foreground=self.__ui_font_color_2
-        )
+        self.__style.configure("Custom.TNotebook.Tab", background=background_color, foreground=self.__ui_font_color_1)
         #: Style for active tab
         self.__style.map(
             "Custom.TNotebook.Tab",
-            background=[("selected", self.__ui_bg_color_1)],
-            foreground=[("selected", self.__ui_font_color_1)],
+            background=[("selected", self.__ui_bg_color_2)],
+            foreground=[("selected", self.__ui_font_color_2)],
         )
 
     def custom_labels(self):

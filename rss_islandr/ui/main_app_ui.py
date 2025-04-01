@@ -2,6 +2,7 @@ import logging
 import sys
 import threading
 import time
+from tkinter import messagebox
 
 import ttkbootstrap as tb
 from PIL import Image, ImageTk
@@ -19,11 +20,11 @@ from rss_islandr.core.config_parser import (
 )
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
+from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.general_ui import frame_distances
 from rss_islandr.ui.home_ui import HomeUI
 from rss_islandr.ui.horizontal_navbar import HorizontalNavbar
-from rss_islandr.ui.io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 from rss_islandr.ui.site_to_site_assessment_ui import SiteToSiteAssessmentUI
@@ -73,6 +74,9 @@ class MainAppUI:
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
         self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
         self.__islandr_logo_img = ImageTk.PhotoImage(self.__islandr_logo_img)
+
+        # Store references to navigation buttons - used for restyling buttons when pressed
+        self.__nav_buttons_references = {}
 
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map app."""
@@ -152,16 +156,18 @@ class MainAppUI:
         nav_bar_pad_frame.place(relx=self.__navbar_width, rely=0, relwidth=self.__navbar_padx, relheight=1.0)
         return nav_bar_frame
 
-    def __create_home_btn(self, nav_bar_frame: tb.Frame):
+    def __create_home_btn(self, nav_bar_frame: tb.Frame) -> tb.Button:
         """ """
         btn_home = tb.Button(
             nav_bar_frame,
             text="Home Page",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(self.__home_page),
+            command=lambda: self.btns_cc.show_page(self.__home_page, "home"),
         )
         btn_home.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
+
+        return btn_home
 
     def __create_map_btn(self, nav_bar_frame: tb.Frame) -> None:
         """ """
@@ -174,49 +180,57 @@ class MainAppUI:
         self.btn_map.grid(row=1, column=0, sticky="nsew")
         self.widgets_reconfigured[self.btn_map] = "ui_btn_bg_color_1"
 
-    def __create_site_info_btn(self, nav_bar_frame: tb.Frame):
+    def __create_site_info_btn(self, nav_bar_frame: tb.Frame) -> tb.Button:
         """ """
         btn_site_info = tb.Button(
             nav_bar_frame,
             text="Site info",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(self.__site_info_page),
+            command=lambda: self.btns_cc.show_page(self.__site_info_page, "site_info"),
         )
         btn_site_info.grid(row=2, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
 
-    def __create_site_to_site_btn(self, nav_bar_frame: tb.Frame):
+        return btn_site_info
+
+    def __create_on_site_on_site_btn(self, nav_bar_frame: tb.Frame) -> tb.Button:
         """ """
-        btn_site_to_site = tb.Button(
+        btn_on_site_on_site = tb.Button(
             nav_bar_frame,
             text="On-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(self.__site_to_site_page),
+            command=lambda: self.btns_cc.show_page(self.__site_to_site_page, "on_site_on_site"),
         )
-        btn_site_to_site.grid(row=3, column=0, sticky="nsew")
-        self.widgets_reconfigured[btn_site_to_site] = "ui_btn_bg_color_1"
+        btn_on_site_on_site.grid(row=3, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_on_site_on_site] = "ui_btn_bg_color_1"
 
-    def __create_site_to_off_site_btn(self, nav_bar_frame: tb.Frame):
+        return btn_on_site_on_site
+
+    def __create_on_site_off_site_btn(self, nav_bar_frame: tb.Frame) -> tb.Button:
         """ """
-        btn_site_to_site = tb.Button(
+        btn_on_site_off_site = tb.Button(
             nav_bar_frame,
             text="On-site to off-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(self.__site_to_off_site_page),
+            command=lambda: self.btns_cc.show_page(self.__site_to_off_site_page, "on_site_off_site"),
         )
-        btn_site_to_site.grid(row=4, column=0, sticky="nsew")
-        self.widgets_reconfigured[btn_site_to_site] = "ui_btn_bg_color_1"
+        btn_on_site_off_site.grid(row=4, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_on_site_off_site] = "ui_btn_bg_color_1"
 
-    def __create_off_site_to_site_btn(self, nav_bar_frame: tb.Frame):
+        return btn_on_site_off_site
+
+    def __create_off_site_on_site_btn(self, nav_bar_frame: tb.Frame) -> tb.Button:
         """ """
-        btn_site_to_site = tb.Button(
+        btn_off_site_on_site = tb.Button(
             nav_bar_frame,
             text="Off-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__show_page(self.__off_site_to_site_page),
+            command=lambda: self.btns_cc.show_page(self.__off_site_to_site_page, "off_site_on_site"),
         )
-        btn_site_to_site.grid(row=5, column=0, sticky="nsew")
-        self.widgets_reconfigured[btn_site_to_site] = "ui_btn_bg_color_1"
+        btn_off_site_on_site.grid(row=5, column=0, sticky="nsew")
+        self.widgets_reconfigured[btn_off_site_on_site] = "ui_btn_bg_color_1"
+
+        return btn_off_site_on_site
 
     def __create_restore_vars_btn(self, frame: tb.Frame) -> tb.Button:
         """Restore to default button"""
@@ -237,29 +251,24 @@ class MainAppUI:
             for tk_var_tag in self.ui_inp_vars:
                 val_default = self.ui_inp_vars[tk_var_tag].val_default
                 self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
+            messagebox.showinfo("Success", "Values restored!")
         else:
             pass
 
-    def __create_xlsx_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
-        """NOT Used"""
-        excel_writer = ExportExcelReportBtn(self.ui_inp_vars, self.ui_calc_vars)
-        btn_xlsx_writer = excel_writer.btn(nav_bar_frame)
-        btn_xlsx_writer.grid(row=7, column=0, sticky="nsew")
+    # def __show_page(self, page: tb.Frame, button_name: str):
+    #     """Show the selected page and update button states"""
+    #     self.__reset_all_buttons()
+    #     self.__set_button_active(button_name)
+    #     page.tkraise()
 
-    def __create_scenario_writer_btn(self, nav_bar_frame: tb.Frame) -> None:
-        """NOT Used"""
-        excel_writer = ExportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
-        btn_scenario_writer = excel_writer.btn(nav_bar_frame)
-        btn_scenario_writer.grid(row=8, column=0, sticky="nsew")
+    # def __reset_all_buttons(self):
+    #     """Reset all navigation buttons to inactive style"""
+    #     for btn in self.__nav_buttons_references.values():
+    #         btn.configure(bootstyle=self.ui_settings.ui_btn_bg_color_1)
 
-    def __create_scenario_reader_btn(self, nav_bar_frame: tb.Frame) -> None:
-        """NOT Used"""
-        excel_writer = ImportScenarioBtn(self.ui_inp_vars, self.ui_calc_vars)
-        btn_scenario_writer = excel_writer.btn(nav_bar_frame)
-        btn_scenario_writer.grid(row=9, column=0, sticky="nsew")
-
-    def __show_page(self, page):
-        page.tkraise()
+    # def __set_button_active(self, button_name: str):
+    #     """Set the specified button to active style"""
+    #     self.__nav_buttons_references[button_name].configure(bootstyle=self.ui_settings.ui_btn_bg_color_2)
 
     def __toggle_map(self):
         # if self.map_open:
@@ -297,12 +306,12 @@ class MainAppUI:
         Create vertical navbar buttons
         """
         nav_bar_frame = self.__create_vertical_navbar()
-        self.__create_home_btn(nav_bar_frame)
+        self.__nav_buttons_references["home"] = self.__create_home_btn(nav_bar_frame)
         self.__create_map_btn(nav_bar_frame)
-        self.__create_site_info_btn(nav_bar_frame)
-        self.__create_site_to_site_btn(nav_bar_frame)
-        self.__create_site_to_off_site_btn(nav_bar_frame)
-        self.__create_off_site_to_site_btn(nav_bar_frame)
+        self.__nav_buttons_references["site_info"] = self.__create_site_info_btn(nav_bar_frame)
+        self.__nav_buttons_references["on_site_on_site"] = self.__create_on_site_on_site_btn(nav_bar_frame)
+        self.__nav_buttons_references["on_site_off_site"] = self.__create_on_site_off_site_btn(nav_bar_frame)
+        self.__nav_buttons_references["off_site_on_site"] = self.__create_off_site_on_site_btn(nav_bar_frame)
         self.__create_restore_vars_btn(nav_bar_frame)
 
     def __create_assessment_apps(self) -> list[SiteToSiteAssessmentUI]:
@@ -341,6 +350,7 @@ class MainAppUI:
     def create_ui(self) -> None:
         """ """
         self.__create_vertical_navbar_buttons()
+        self.btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
 
         #: Create pages (frames) for each main page
         self.__map_page = tb.Frame(self.root)
@@ -397,9 +407,9 @@ class MainAppUI:
         app_home.ui(self.__islandr_logo_img)
         app_site_info.ui()
         for i, site_to_site_app in enumerate(site_to_site_apps):
-            site_to_site_app.ui(self.root, i + 1)
+            site_to_site_app.ui(i + 1)
 
-        self.__show_page(self.__home_page)
+        self.btns_cc.show_page(self.__home_page, "home")
 
     def on_closing(self):
         """Cleaning up resources"""
