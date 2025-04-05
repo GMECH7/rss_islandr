@@ -1,4 +1,5 @@
 import json
+import logging
 import shutil
 import tkinter as tk
 from abc import ABC, abstractmethod
@@ -11,6 +12,8 @@ from PIL import Image, ImageTk
 from rss_islandr.core.config_parser import STATIC_DIR, XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 
+logging.basicConfig(level=logging.INFO)
+
 
 class IOBtns(ABC):
     """
@@ -20,33 +23,36 @@ class IOBtns(ABC):
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         self.ui_inp_vars = ui_inp_vars
         self.ui_calc_vars = ui_calc_vars
+        self.saved_scenario = {}
+        self.xlsx_sheet_pos_vals = {"on-on": [], "on-off": [], "off-on": []}
+
+    def __access_vars_loop(self, key: str, vars_dict):
+        """ """
+        try:
+            position = vars_dict[key].excel_cell
+            value = vars_dict[key].tk_var.get()
+            if "on-on" in key:
+                self.xlsx_sheet_pos_vals["on-on"].append((position, value))
+            elif "on-off" in key:
+                self.xlsx_sheet_pos_vals["on-off"].append((position, value))
+            elif "off-on" in key:
+                self.xlsx_sheet_pos_vals["off-on"].append((position, value))
+            else:
+                self.xlsx_sheet_pos_vals["on-on"].append((position, value))
+                self.xlsx_sheet_pos_vals["on-off"].append((position, value))
+                self.xlsx_sheet_pos_vals["off-on"].append((position, value))
+            self.saved_scenario[key] = value
+        except Exception as ex:
+            logging.debug(f"Error accessing {key}: {ex}")
 
     def access_vars(self):
         """Access all input and calculated UI-variables"""
-        self.saved_scenario = {}
-        self.xlsx_pos, self.xlsx_vals = [], []
-
         #: Access input variables
         for key in self.ui_inp_vars:
-            try:
-                position = self.ui_inp_vars[key].excel_cell
-                value = self.ui_inp_vars[key].tk_var.get()
-                self.xlsx_pos.append(position)
-                self.xlsx_vals.append(value)
-                self.saved_scenario[key] = value
-            except Exception:
-                pass
-
+            self.__access_vars_loop(key, self.ui_inp_vars)
         #: Access calculated variables
         for key in self.ui_calc_vars:
-            try:
-                position = self.ui_calc_vars[key].excel_cell
-                value = self.ui_calc_vars[key].tk_var.get()
-                self.xlsx_pos.append(position)
-                self.xlsx_vals.append(f"{value}")
-                self.saved_scenario[key] = f"{value}"
-            except Exception:
-                pass
+            self.__access_vars_loop(key, self.ui_calc_vars)
 
     @abstractmethod
     def on_btn_click(self, *args):
@@ -85,10 +91,18 @@ class ExportExcelReportBtn(IOBtns):
             except FileNotFoundError:
                 workbook = xw.Book()
 
-            sheet = workbook.sheets[0]
-            for value, position in zip(self.xlsx_vals, self.xlsx_pos):
-                if position is not None:
-                    sheet.range(position).value = value
+            for sheet_name_key in self.xlsx_sheet_pos_vals:
+                if sheet_name_key == "on-on":
+                    sheet = workbook.sheets[0]
+                elif sheet_name_key == "on-off":
+                    sheet = workbook.sheets[1]
+                elif sheet_name_key == "off-on":
+                    sheet = workbook.sheets[2]
+
+                for position, value in self.xlsx_sheet_pos_vals[sheet_name_key]:
+                    logging.debug(f"Writing {value} to {sheet} {position}")
+                    if position is not None:
+                        sheet.range(position).value = value
 
             workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
@@ -96,7 +110,7 @@ class ExportExcelReportBtn(IOBtns):
             shutil.copy(XLSX_TEMPLATE_FILE_COPY, file_path)
             messagebox.showinfo("Success", "Values written to Excel successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            messagebox.showerror("Error", f"An erroree occurred: {e}")
 
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """

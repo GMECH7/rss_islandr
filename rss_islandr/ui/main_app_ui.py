@@ -54,15 +54,20 @@ class MainAppUI:
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
         self.__all_keys = self.__source_keys + self.__pathway_keys + self.__receptor_keys
+        self.__scenario_ids = ["on-on", "on-off", "off-on"]
         self.__frame_families = {
-            "source_frame": [f"{inp}_{scenario_id}_frame" for inp in self.__source_keys for scenario_id in [1, 2, 3]],
+            "source_frame": [
+                f"{inp}_{scenario_id}_frame" for inp in self.__source_keys for scenario_id in self.__scenario_ids
+            ],
             "pathway_frames": [
-                f"{inp}_{scenario_id}_frame" for inp in self.__pathway_keys for scenario_id in [1, 2, 3]
+                f"{inp}_{scenario_id}_frame" for inp in self.__pathway_keys for scenario_id in self.__scenario_ids
             ],
             "receptor_frames": [
-                f"{inp}_{scenario_id}_frame" for inp in self.__receptor_keys for scenario_id in [1, 2, 3]
+                f"{inp}_{scenario_id}_frame" for inp in self.__receptor_keys for scenario_id in self.__scenario_ids
             ],
-            "risk_frames": [f"{inp}_{scenario_id}_frame_risk" for inp in self.__all_keys for scenario_id in [1, 2, 3]],
+            "risk_frames": [
+                f"{inp}_{scenario_id}_frame_risk" for inp in self.__all_keys for scenario_id in self.__scenario_ids
+            ],
         }
         self.__init__lat_lng_vars()
         self.__init__populate_frame_infos_dict()
@@ -162,7 +167,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Home Page",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.btns_cc.show_page(self.__home_page, "home"),
+            command=lambda: self.__btns_cc.show_page(self.__home_page, "home"),
         )
         btn_home.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
@@ -186,7 +191,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Site info",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.btns_cc.show_page(self.__site_info_page, "site_info"),
+            command=lambda: self.__btns_cc.show_page(self.__site_info_page, "site_info"),
         )
         btn_site_info.grid(row=2, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
@@ -199,7 +204,7 @@ class MainAppUI:
             nav_bar_frame,
             text="On-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.btns_cc.show_page(self.__site_to_site_page, "on_site_on_site"),
+            command=lambda: self.__btns_cc.show_page(self.__site_to_site_page, "on_site_on_site"),
         )
         btn_on_site_on_site.grid(row=3, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_on_site_on_site] = "ui_btn_bg_color_1"
@@ -212,7 +217,7 @@ class MainAppUI:
             nav_bar_frame,
             text="On-site to off-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.btns_cc.show_page(self.__site_to_off_site_page, "on_site_off_site"),
+            command=lambda: self.__btns_cc.show_page(self.__site_to_off_site_page, "on_site_off_site"),
         )
         btn_on_site_off_site.grid(row=4, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_on_site_off_site] = "ui_btn_bg_color_1"
@@ -225,7 +230,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Off-site to on-site assessment",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.btns_cc.show_page(self.__off_site_to_site_page, "off_site_on_site"),
+            command=lambda: self.__btns_cc.show_page(self.__off_site_to_site_page, "off_site_on_site"),
         )
         btn_off_site_on_site.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_off_site_on_site] = "ui_btn_bg_color_1"
@@ -350,7 +355,7 @@ class MainAppUI:
     def create_ui(self) -> None:
         """ """
         self.__create_vertical_navbar_buttons()
-        self.btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
+        self.__btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
 
         #: Create pages (frames) for each main page
         self.__map_page = tb.Frame(self.root)
@@ -406,10 +411,10 @@ class MainAppUI:
         #: Call ui method of created apps
         app_home.ui(self.__islandr_logo_img)
         app_site_info.ui()
-        for i, site_to_site_app in enumerate(site_to_site_apps):
-            site_to_site_app.ui(i + 1)
+        for scenario_id, site_to_site_app in zip(self.__scenario_ids, site_to_site_apps):
+            site_to_site_app.ui(scenario_id)
 
-        self.btns_cc.show_page(self.__home_page, "home")
+        self.__btns_cc.show_page(self.__home_page, "home")
 
     def on_closing(self):
         """Cleaning up resources"""

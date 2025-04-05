@@ -1,5 +1,6 @@
 import ttkbootstrap as tb
 
+from rss_islandr.core.datatypes import FramePlacing, TkWidgets, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.general_ui import frame_distances
@@ -7,7 +8,8 @@ from rss_islandr.ui.general_ui import frame_distances
 
 class SiteToSiteAssessmentUI:
     """
-    Implementation of UI for visualizing a site to site assessment
+    Implementation of UI for visualizing a site to site assessment.
+
     1. On-site to on-site
     2. On-site to off-site
     3. Off-site to on-site
@@ -17,15 +19,15 @@ class SiteToSiteAssessmentUI:
         self,
         parent_navbar_frame: tb.Frame,
         parent_frame: tb.Frame,
-        ui_settings,
-        ui_inp_vars,
-        ui_calc_vars,
-        meter_frames,
-        frame_geometry_dict,
-        source_keys,
-        pathway_keys,
-        receptor_keys,
-        widgets_reconfigured,
+        ui_settings: UISettings,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
+        meter_frames: dict[str, tb.Meter],
+        frame_geometry_dict: dict[str, FramePlacing],
+        source_keys: list[str],
+        pathway_keys: list[str],
+        receptor_keys: list[str],
+        widgets_reconfigured: dict[TkWidgets, str],
     ):
         self.__parent_navbar_frame = parent_navbar_frame
         self.__parent_frame = parent_frame
@@ -88,32 +90,30 @@ class SiteToSiteAssessmentUI:
         self.widgets_reconfigured[btn_receptors] = "ui_btn_bg_color_1"
         return btn_receptors
 
-    def __create_vertical_navbar(self, root) -> tb.Frame:
+    def __create_vertical_navbar(self) -> tb.Frame:
         """Create vertical navbar visible in all app."""
-        nav_bar_frame = tb.Frame(root)
+        nav_bar_frame = tb.Frame(self.__parent_frame)
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__navbar_width, relheight=1.0)
         frame_distances(nav_bar_frame, self.__frame_n_rows, self.__frame_n_cols)
-        nav_bar_pad_frame = tb.Frame(root, style="NavbarPad.TFrame")
+        nav_bar_pad_frame = tb.Frame(self.__parent_frame, style="NavbarPad.TFrame")
         nav_bar_pad_frame.place(relx=self.__navbar_width, rely=0, relwidth=self.__navbar_padx, relheight=1.0)
         return nav_bar_frame
 
-    def __create_vertical_navbar_buttons(self, root, pages: list[tb.Frame]) -> None:
+    def __create_vertical_navbar_buttons(self, pages: list[tb.Frame]) -> None:
         """
-        Create vertical navbar buttons
+        Create vertical navbar buttons.
         """
-        nav_bar_frame = self.__create_vertical_navbar(root)
+        nav_bar_frame = self.__create_vertical_navbar()
         self.__nav_buttons_references["source"] = self.__create_source_btn(nav_bar_frame, pages[0])
         self.__nav_buttons_references["pathways"] = self.__create_pathways_btn(nav_bar_frame, pages[1])
         self.__nav_buttons_references["receptors"] = self.__create_receptors_btn(nav_bar_frame, pages[2])
 
-    def ui(self, scenario_id: int):
+    def ui(self, scenario_id: str) -> None:
         """ """
         self.__source_frame = tb.Frame(self.__parent_frame)
         self.__pathways_frame = tb.Frame(self.__parent_frame)
         self.__receptors_frame = tb.Frame(self.__parent_frame)
-        self.__create_vertical_navbar_buttons(
-            self.__parent_frame, [self.__source_frame, self.__pathways_frame, self.__receptors_frame]
-        )
+        self.__create_vertical_navbar_buttons([self.__source_frame, self.__pathways_frame, self.__receptors_frame])
         self.__btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
 
         app_assesment = AssessmentNoteBookUI(
@@ -140,3 +140,5 @@ class SiteToSiteAssessmentUI:
         app_assesment.ui(self.__source_frame, "source")
         app_assesment.ui(self.__pathways_frame, "pathways")
         app_assesment.ui(self.__receptors_frame, "receptors")
+
+        self.__btns_cc.show_page(self.__source_frame, "source")

@@ -14,7 +14,7 @@ Image.CUBIC = Image.BICUBIC
 class AssessmentNoteBookUI(GeneralUITemplate):
     def __init__(
         self,
-        scenario_id: int,
+        scenario_id: str,
         ui_settings: UISettings,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
