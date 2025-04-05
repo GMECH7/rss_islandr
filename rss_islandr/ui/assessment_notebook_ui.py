@@ -12,6 +12,11 @@ Image.CUBIC = Image.BICUBIC
 
 
 class AssessmentNoteBookUI(GeneralUITemplate):
+    """
+    This class creates a notebook with tabs for the contamination assessment.
+    Each tab contains a frame with a dropdown list and a meter widget.
+    """
+
     def __init__(
         self,
         scenario_id: str,
@@ -26,22 +31,24 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         **kwargs,
     ):
         """
-        _summary_
-
         Parameters
         ----------
+        scenario_id : str
+            The scenario id is used to identify the scenario in the UI.
+            Options are "on-on", "on-off", "off-on".
         ui_settings : UISettings
             This is a dataclass that holds the ui settings.
             It is always initialized using the dark theme option,
             but gets updated when the toggle button is pressed.
         ui_inp_vars : dict[str, UIInpVariable]
-            All UI input variables are stored and updated here.
+            Dictionary that maps the input variables aliases to UI input variables.
         ui_calc_vars : dict[str, UICalcVariable]
-            All UI calculated variables are stored and updated here.
+            Dictionary that maps the calculated variables aliases to UI calculated variables.
         meter_frames : dict[str, tb.Meter]
-            _description_
+            Dictionary that maps the frame tags to meter frames.
         frame_geometry_dict : dict[str, FramePlacing]
-            _description_
+            Dictionary that maps the frame tags to their geometry as
+            defined in the settings.json file.
         source_keys : list[str]
             Source keys eg. 'IN'.
         pathway_keys : list[str]

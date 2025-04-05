@@ -54,6 +54,24 @@ class MainAppUI:
         self.__pathway_keys = pathway_keys
         self.__receptor_keys = [f"{pathway}_receptor" for pathway in self.__pathway_keys]
         self.__all_keys = self.__source_keys + self.__pathway_keys + self.__receptor_keys
+
+        self.__init__frame_families()
+        self.__init__lat_lng_vars()
+        self.__init__populate_frame_infos_dict()
+        self.__init__handle_geometry()
+
+        self.map_open = True
+        self.map_ui = MapUI(MAP_DIR, tb_style, self.__map_height, self.__map_width)
+
+        self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
+        self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
+        self.__islandr_logo_img = ImageTk.PhotoImage(self.__islandr_logo_img)
+
+        # Store references to navigation buttons - used for restyling buttons when pressed
+        self.__nav_buttons_references = {}
+
+    def __init__frame_families(self):
+        """Definition of frame aliases"""
         self.__scenario_ids = ["on-on", "on-off", "off-on"]
         self.__frame_families = {
             "source_frame": [
@@ -69,19 +87,6 @@ class MainAppUI:
                 f"{inp}_{scenario_id}_frame_risk" for inp in self.__all_keys for scenario_id in self.__scenario_ids
             ],
         }
-        self.__init__lat_lng_vars()
-        self.__init__populate_frame_infos_dict()
-        self.__init__handle_geometry()
-
-        self.map_open = True
-        self.map_ui = MapUI(MAP_DIR, tb_style, self.__map_height, self.__map_width)
-
-        self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
-        self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
-        self.__islandr_logo_img = ImageTk.PhotoImage(self.__islandr_logo_img)
-
-        # Store references to navigation buttons - used for restyling buttons when pressed
-        self.__nav_buttons_references = {}
 
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map app."""
@@ -202,7 +207,7 @@ class MainAppUI:
         """ """
         btn_on_site_on_site = tb.Button(
             nav_bar_frame,
-            text="On-site to on-site assessment",
+            text="On-site to on-site",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__btns_cc.show_page(self.__site_to_site_page, "on_site_on_site"),
         )
@@ -215,7 +220,7 @@ class MainAppUI:
         """ """
         btn_on_site_off_site = tb.Button(
             nav_bar_frame,
-            text="On-site to off-site assessment",
+            text="On-site to off-site",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__btns_cc.show_page(self.__site_to_off_site_page, "on_site_off_site"),
         )
@@ -228,7 +233,7 @@ class MainAppUI:
         """ """
         btn_off_site_on_site = tb.Button(
             nav_bar_frame,
-            text="Off-site to on-site assessment",
+            text="Off-site to on-site",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=lambda: self.__btns_cc.show_page(self.__off_site_to_site_page, "off_site_on_site"),
         )

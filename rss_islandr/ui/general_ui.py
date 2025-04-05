@@ -23,19 +23,20 @@ class GeneralUITemplate:
         **kwargs,
     ):
         """
-        _summary_
-
         Parameters
         ----------
         ui_settings : UISettings
-            _description_
+            This is a dataclass that holds the ui settings.
+            It is always initialized using the dark theme option,
+            but gets updated when the toggle button is pressed.
         ui_inp_vars : dict[str, UIInpVariable]
-            _description_
+            Dictionary that maps the input variables aliases to UI input variables.
         frame_geometry_dict : dict[str, FramePlacing]
-            _description_
+            Dictionary that maps the frame tags to their geometry as
+            defined in the settings.json file.
         **kwargs:
-        widgets_reconfigured : dict[tb.Frame, str]
-            This dictionary holds the pair of frame and the bootsyle
+        widgets_reconfigured : dict[TkWidgets, str]
+            This dictionary maps the widget to the bootsyle (as a string)
             used in their rendering. All widgets that have a bootsyle
             which is not defined in the CustomThemes have to be included
             here in order to be restyled when the theme changes.

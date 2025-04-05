@@ -56,10 +56,11 @@ class CustomThemes:
 
     def custom_labels(self):
         """Custom styles for label widgets"""
+        background_color = self.__style.colors.get("bg")
         self.__style.configure(
             "Title.TLabel",
-            background=self.__ui_bg_color_1,  # Background color
-            foreground=self.__ui_font_color_1,  # Font color
+            background=background_color,  # Background color
+            # foreground=self.__ui_font_color_1,  # Font color
             font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),  # Font type
             relief="flat",
         )
