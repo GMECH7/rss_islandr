@@ -15,7 +15,6 @@ a = Analysis(
         'rss_islandr.ui.site_info_ui',
     ],
     datas=[
-    ('rss_islandr\\core\\settings.json', 'core'),
     ('rss_islandr\\data', 'data'),
     ('rss_islandr\\static', 'static')
     ],

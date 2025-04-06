@@ -3,8 +3,6 @@ import json
 import sys
 from pathlib import Path
 
-from .datatypes import UISettings
-
 # Define the base directory
 if getattr(sys, "frozen", False):  # noqa: SIM108
     # Running in a PyInstaller bundle
@@ -26,7 +24,7 @@ DATA_DIR = PROJECT_DIR / "data"
 TEMPLATES_DIR = PROJECT_DIR / "templates"
 REPORTS_DIR = PROJECT_DIR / "reports"
 
-SETTINGS_JSON_DIR = PROJECT_DIR / "core" / "settings.json"
+SETTINGS_JSON_DIR = DATA_DIR / "settings.json"
 RECEPTOR_FACTORS_JSON_DIR = DATA_DIR / "receptor_factors.json"
 RISK_FACTORS_JSON_DIR = DATA_DIR / "risk_factors.json"
 DROPDOWN_LISTS_JSON_DIR = DATA_DIR / "dropdown_lists.json"

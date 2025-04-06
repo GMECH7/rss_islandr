@@ -1,21 +1,17 @@
 from core.config_parser import risk_limits_color
 
 
-def risk_calc(weight_values: list) -> float:
+def risk_calc(weight_values: list[float]) -> float:
     """
-    _summary_
+    Calculates the risk value based on the provided weight values.
 
     Parameters
     ----------
-    weight_values : list
-        _description_
-    roundoff : int, optional
-        _description_, by default 3
-
+    weight_values : list[float]
+        List of weight values to be multiplied together.
     Returns
     -------
     float
-        _description_
     """
     risk_value = 1.0
     for val in weight_values:
@@ -25,7 +21,9 @@ def risk_calc(weight_values: list) -> float:
 
 
 def risk_color_assignment(value: float) -> str:
-    """ """
+    """
+    Assigns a color based on the risk value.
+    """
     for color in risk_limits_color:
         limit_1 = risk_limits_color[color][0]
         limit_2 = risk_limits_color[color][1]
