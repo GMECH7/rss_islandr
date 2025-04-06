@@ -7,6 +7,10 @@ a = Analysis(
     hiddenimports=[
         'pywebview',
         'bottle',
+        'xlwings',
+        'xlwings.utils',
+        'xlwings._xlmac',
+        'xlwings._xlwindows',
         'rss_islandr.core.config_parser',
         'rss_islandr.core.datatypes',
         'rss_islandr.ui.assessment_ui',
@@ -15,6 +19,7 @@ a = Analysis(
         'rss_islandr.ui.site_info_ui',
     ],
     datas=[
+    ('rss_islandr\\templates\\report_template.xlsx', 'templates'),
     ('rss_islandr\\data', 'data'),
     ('rss_islandr\\static', 'static')
     ],

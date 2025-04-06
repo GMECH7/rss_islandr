@@ -110,7 +110,7 @@ class ExportExcelReportBtn(IOBtns):
             shutil.copy(XLSX_TEMPLATE_FILE_COPY, file_path)
             messagebox.showinfo("Success", "Values written to Excel successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"An erroree occurred: {e}")
+            messagebox.showerror("Error", f"An error occurred: {e}")
 
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """
