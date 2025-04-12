@@ -14,8 +14,9 @@ else:
 
 # Access files in the 'static' folder
 STATIC_DIR = PROJECT_DIR / "static"
+MAPS_DIR = PROJECT_DIR / "maps"
 ICO_DIR = STATIC_DIR / "islandr.ico"
-MAP_DIR = STATIC_DIR / "map.html"
+MAP_DIR = MAPS_DIR / "index.html"
 GEOLOGY_LEGEND_DIR = STATIC_DIR / "geology_legend.png"
 HYDRO_LEGEND_DIR = STATIC_DIR / "hydro_legend.png"
 ISLANDR_LOGO = STATIC_DIR / "islandr_logo.png"

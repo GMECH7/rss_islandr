@@ -110,3 +110,105 @@ The option of installing dependencies using poetry also exist, but there are som
 
 - **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
 - **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
+
+# 🗺️ Maps Viewer - Geology, Mines & Hydrogeology
+
+The map viewer option of this app is built using [Leaflet.js](https://leafletjs.com/) and displays various geospatial layers using WMS (Web Map Service).
+
+---
+
+## 🌐 Map Services Used
+
+### 1. **Surface Geology**
+
+- **Service URL:** `https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms`
+- **Layer Name:** `gsmlp:GeologicUnitView_Lithology`
+
+### 2. **Mines**
+
+- **Service URL:** `https://data.geus.dk/egdi/wms/`
+- **Layer Name:** `egdi_mines`
+
+### 3. **Hydrogeological Map**
+
+- **Service URL:** `https://services.bgr.de/wms/grundwasser/ihme1500/`
+- **Layer Names:** `0,1,2`
+
+### 4. Links
+
+https://services.bgr.de/uebersicht/kurzlinks
+
+## ➕ How to Add New Map Layers
+
+To add additional WMS layers:
+
+1. Open the `script.js` file.
+2. Add a new WMS layer using the following format:
+
+```js
+var newLayer = L.tileLayer.wms("YOUR_WMS_SERVICE_URL", {
+  layers: "YOUR_LAYER_NAME",
+  format: "image/png",
+  transparent: true,
+  version: "1.3.0",
+});
+```
+
+3. Add a checkbox in `index.html` to allow toggling:
+
+```html
+<div>
+  <input
+    type="checkbox"
+    id="toggleNewLayer"
+    onclick="toggleLayer(this, newLayer)"
+  />
+  <label for="toggleNewLayer">Your Layer Name</label>
+</div>
+```
+
+4. If you want a legend, add an image like this:
+
+```html
+<img
+  id="newLayerLegend"
+  class="legend zoomable"
+  src="your_legend_image.svg"
+  alt="New Layer Legend"
+/>
+```
+
+5. Optionally, modify the `toggleLayer()` function in `script.js` to show/hide the legend for your new layer.
+
+## 🔍 How to Find Available Map Layers (WMS)
+
+Follow these steps to discover what layers are available in any WMS service:
+
+### 1. 🧭 Get the GetCapabilities URL
+
+Every WMS service provides a `GetCapabilities` endpoint that returns an XML file describing all available layers.
+
+**Format:**
+https://your-wms-server-url?service=WMS&request=GetCapabilities
+
+**Examples:**
+
+- [Geology WMS](https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms?service=WMS&request=GetCapabilities)
+- [Mines WMS](https://data.geus.dk/egdi/wms/?service=WMS&request=GetCapabilities)
+- [Hydrogeology WMS](https://services.bgr.de/wms/grundwasser/ihme1500/?service=WMS&request=GetCapabilities)
+
+### 2. 🔎 Open the URL in Your Browser
+
+Opening the URL shows an **XML document** with many `<Layer>` entries. Look for:
+
+```xml
+<Layer>
+  <Name>your_layer_name</Name>
+  <Title>Human-readable title</Title>
+</Layer>
+```
+
+```html
+- Use the <Name> value in your WMS layer config
+- <Title> helps identify what the layer represents
+```

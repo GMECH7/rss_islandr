@@ -61,6 +61,7 @@ class MainAppUI:
         self.__init__handle_geometry()
 
         self.map_open = True
+        print(MAP_DIR)
         self.map_ui = MapUI(MAP_DIR, tb_style, self.__map_height, self.__map_width)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)

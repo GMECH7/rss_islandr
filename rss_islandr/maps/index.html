@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geology, Mines, and Hydrogeological Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preload" as="image" href="geology_legend.png">
+    <link rel="preload" as="image" href="hydro_legend.png">
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="controls">
+        <input type="text" id="lat" placeholder="Latitude">
+        <input type="text" id="lng" placeholder="Longitude">
+        <button onclick="updateMarker()">Update Map</button>
+
+        <div>
+            <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)">
+            <label for="toggleGeology">Surface Geology</label>
+        </div>
+        <div>
+            <input type="checkbox" id="toggleMines" onclick="toggleLayer(this, wmsMinesLayer)">
+            <label for="toggleMines">Mines</label>
+        </div>
+        <div>
+            <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
+            <label for="toggleHydroMap">Hydrogeological Map</label>
+        </div>
+    </div>
+
+    <div id="info">Click on a layer to get more information.</div>
+
+    <img id="geologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+    <img id="hydroLegend" class="legend zoomable" src="hydro_legend.svg" alt="Hydrogeological Legend">
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
