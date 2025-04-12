@@ -50,7 +50,7 @@ class MapUI:
         """Run the webview window (to be called in a separate process)."""
         api_instance = Api(self)  # Create API instance linked to MapUI
         webview.create_window(
-            "Embedded Map",
+            "Maps Viewer",
             str(self.map_html),
             width=1600,
             height=900,

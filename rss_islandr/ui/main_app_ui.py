@@ -184,7 +184,7 @@ class MainAppUI:
         """ """
         self.btn_map = tb.Button(
             nav_bar_frame,
-            text="Show Map",
+            text="Maps Viewer",
             style=self.ui_settings.ui_btn_bg_color_1,
             command=self.__toggle_map,
         )
@@ -285,14 +285,14 @@ class MainAppUI:
         # if self.map_open:
         #     self.map_ui.close_map()
         #     self.map_open = False
-        #     self.btn_map.config(text="Show Map")
+        #     self.btn_map.config(text="Maps Viewer")
         # else:
         #     self.map_ui.run_webview()
         #     # self.map_ui.show_map()
         #     self.map_open = True
-        #     self.btn_map.config(text="Show Map")
+        #     self.btn_map.config(text="Maps Viewer")
         self.map_ui.run_webview()
-        self.btn_map.config(text="Show Map")
+        self.btn_map.config(text="Maps Viewer")
         #: Start a thread to check for coordinate updates in the webview app.
         threading.Thread(target=self.__monitor_coordinates, daemon=True).start()
 

@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="style.css">
     
-    <link rel="preload" as="image" href="geology_legend.png">
-    <link rel="preload" as="image" href="hydro_legend.png">
 </head>
 <body>
     <div id="map"></div>
@@ -31,12 +29,18 @@
             <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
             <label for="toggleHydroMap">Hydrogeological Map</label>
         </div>
+        <div>
+            <input type="checkbox" id="toggleHydroMapGlobal" onclick="toggleLayer(this, wmsHydroLayerGlobal)">
+            <label for="toggleHydroMapGlobal">Hydrogeological Map Global</label>
+        </div>
     </div>
 
     <div id="info">Click on a layer to get more information.</div>
 
     <img id="geologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+    <img id="minesLegend" class="legend zoomable" src="mines_legend.png" alt="Mines Legend">
     <img id="hydroLegend" class="legend zoomable" src="hydro_legend.svg" alt="Hydrogeological Legend">
+    <img id="hydroLegendGlobal" class="legend zoomable" src="hydro_legend_global.png" alt="Hydrogeological Legend">
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>

@@ -28,21 +28,36 @@ var wmsHydroLayer = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/ihm
     version: '1.3.0'
 });
 
+var wmsHydroLayerGlobal = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/whymap_gwr/', {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    version: '1.3.0'
+});
+
 // Handle toggle layer
 function toggleLayer(checkbox, layer) {
     if (checkbox.checked) {
         layer.addTo(map);
         if (layer === wmsGeologyLayer) {
             document.getElementById('geologyLegend').style.display = 'block';
+        } else if (layer === wmsMinesLayer) {
+            document.getElementById('minesLegend').style.display = 'block';
         } else if (layer === wmsHydroLayer) {
             document.getElementById('hydroLegend').style.display = 'block';
+        } else if (layer === wmsHydroLayerGlobal) {
+            document.getElementById('hydroLegendGlobal').style.display = 'block';
         }
     } else {
         map.removeLayer(layer);
         if (layer === wmsGeologyLayer) {
             document.getElementById('geologyLegend').style.display = 'none';
+        } else if (layer === wmsMinesLayer) {
+            document.getElementById('minesLegend').style.display = 'none';
         } else if (layer === wmsHydroLayer) {
             document.getElementById('hydroLegend').style.display = 'none';
+        } else if (layer === wmsHydroLayerGlobal) {
+            document.getElementById('hydroLegendGlobal').style.display = 'none';
         }
     }
 }
