@@ -3,12 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.vba
+
 # C extensions
 *.so
-islandr_env/
-islandr_env39/
-minimal.py
-minimal2.py
+
 vertical_navbar_ui.py
 /results/
 report_template__COPY.xlsx
@@ -137,6 +135,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+islandr_venv/
 .env
 .venv
 env/
