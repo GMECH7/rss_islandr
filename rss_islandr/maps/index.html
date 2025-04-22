@@ -26,12 +26,20 @@
             <label for="toggleMines">Mines</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroLayer)">
+            <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroEuropeLayer)">
             <label for="toggleHydroMap">Hydrogeological Map</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleHydroMapGlobal" onclick="toggleLayer(this, wmsHydroLayerGlobal)">
+            <input type="checkbox" id="toggleHydroMapGlobal" onclick="toggleLayer(this, wmsHydroGlobalLayer)">
             <label for="toggleHydroMapGlobal">Hydrogeological Map Global</label>
+        </div>
+        <div>
+            <input type="checkbox" id="toggleSoilMapEurope" onclick="toggleLayer(this, wmsSoilEuropeLayer)">
+            <label for="toggleSoilMapEurope">Soil Map Europe</label>
+        </div>
+        <div>
+            <input type="checkbox" id="toggleCopernicusHydroRiver" onclick="toggleLayer(this, wmsEUHydroRiverLayer)">
+            <label for="toggleCopernicusHydroRiver">EU-Hydro River Network</label>
         </div>
     </div>
 
@@ -41,6 +49,7 @@
     <img id="minesLegend" class="legend zoomable" src="mines_legend.png" alt="Mines Legend">
     <img id="hydroLegend" class="legend zoomable" src="hydro_legend.svg" alt="Hydrogeological Legend">
     <img id="hydroLegendGlobal" class="legend zoomable" src="hydro_legend_global.png" alt="Hydrogeological Legend">
+    <img id="soilLegendEurope" class="legend zoomable" src="hydro_legend_global.png" alt="Soil Legend">
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>

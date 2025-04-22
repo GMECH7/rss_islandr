@@ -21,18 +21,34 @@ var wmsMinesLayer = L.tileLayer.wms('https://data.geus.dk/egdi/wms/', {
     version: '1.1.1'
 });
 
-var wmsHydroLayer = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/ihme1500/', {
+var wmsHydroEuropeLayer = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/ihme1500/', {
     layers: '0,1,2',
     format: 'image/png',
     transparent: true,
     version: '1.3.0'
 });
 
-var wmsHydroLayerGlobal = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/whymap_gwr/', {
+var wmsHydroGlobalLayer = L.tileLayer.wms('https://services.bgr.de/wms/grundwasser/whymap_gwr/', {
     layers: '0',
     format: 'image/png',
     transparent: true,
     version: '1.3.0'
+});
+
+var wmsSoilEuropeLayer = L.tileLayer.wms('https://services.bgr.de/wms/boden/eusr5000/', {
+    layers: '0,1,2',
+    format: 'image/png',
+    transparent: true,
+    version: '1.3.0'
+});
+
+
+wmsEUHydroRiverLayer = L.tileLayer.wms('https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer?', {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    version: '1.3.0',
+    attribution: 'EEA EUHydro River Network'
 });
 
 // Handle toggle layer
@@ -43,10 +59,14 @@ function toggleLayer(checkbox, layer) {
             document.getElementById('geologyLegend').style.display = 'block';
         } else if (layer === wmsMinesLayer) {
             document.getElementById('minesLegend').style.display = 'block';
-        } else if (layer === wmsHydroLayer) {
+        } else if (layer === wmsHydroEuropeLayer) {
             document.getElementById('hydroLegend').style.display = 'block';
-        } else if (layer === wmsHydroLayerGlobal) {
+        } else if (layer === wmsHydroGlobalLayer) {
             document.getElementById('hydroLegendGlobal').style.display = 'block';
+        } else if (layer === wmsSoilEuropeLayer) {
+            document.getElementById('soilLegendEurope').style.display = 'block';
+        } else if (layer === wmsEUHydroRiverLayer) {
+            document.getElementById('soilLegendEurope').style.display = 'block';
         }
     } else {
         map.removeLayer(layer);
@@ -54,10 +74,14 @@ function toggleLayer(checkbox, layer) {
             document.getElementById('geologyLegend').style.display = 'none';
         } else if (layer === wmsMinesLayer) {
             document.getElementById('minesLegend').style.display = 'none';
-        } else if (layer === wmsHydroLayer) {
+        } else if (layer === wmsHydroEuropeLayer) {
             document.getElementById('hydroLegend').style.display = 'none';
-        } else if (layer === wmsHydroLayerGlobal) {
+        } else if (layer === wmsHydroGlobalLayer) {
             document.getElementById('hydroLegendGlobal').style.display = 'none';
+        } else if (layer === wmsSoilEuropeLayer) {
+            document.getElementById('soilLegendEurope').style.display = 'none';
+        } else if (layer === wmsEUHydroRiverLayer) {
+            document.getElementById('soilLegendEurope').style.display = 'none';
         }
     }
 }
@@ -106,5 +130,5 @@ document.addEventListener("pywebviewready", function() {
     toggleLayer(document.getElementById("toggleGeology"), wmsGeologyLayer);
 
     document.getElementById("toggleHydroMap").checked = true;
-    toggleLayer(document.getElementById("toggleHydroMap"), wmsHydroLayer);
+    toggleLayer(document.getElementById("toggleHydroMap"), wmsHydroEuropeLayer);
 });

@@ -26,55 +26,66 @@ git clone https://github.com/GMECH7/rss_islandr.git
 
 ### Installing dependencies and execution
 
-#### Using pip
-
-It is highly recommended to use a virtual environment to manage dependencies for this project. A `requirements.txt` file is provided to simplify the setup process.
+#### 1. Setup virtual environment
 
 Follow these steps to set up the virtual environment:
 
-1. **Navigate to the project directory**:
-   ```bash
-   cd <local-project-directory>
-   ```
-2. **Create a virtual environment**:
+a. **Navigate to the project directory**:
 
-   ```bash
-   python -m venv islandr_env
-   ```
+```bash
+cd <local-project-directory>
+```
 
-3. **Activate the Virtual Environment**:
+b. **Create a virtual environment**:
 
-   - If you are using **Visual Studio Code (VSC)**, the virtual environment should activate automatically due to the presence of the `.vscode/settings.json` file.
-   - Otherwise, activate the environment manually:
-     - On **Windows**:
-       ```bash
-       islandr_env\Scripts\activate
-       ```
-     - On **macOS/Linux**:
-       ```bash
-       source islandr_env/bin/activate
-       ```
+```bash
+python -m venv islandr_venv
+```
 
-4a. **Install the required dependencies (using pip)**:
+c. **Activate the Virtual Environment**:
+
+- If you are using **Visual Studio Code (VSC)**, the virtual environment should activate automatically due to the presence of the `.vscode/settings.json` file.
+- Otherwise, activate the environment manually:
+  - On **Windows**:
+    ```bash
+    islandr_venv\Scripts\activate
+    ```
+  - On **macOS/Linux**:
+    ```bash
+    source islandr_venv/bin/activate
+    ```
+
+d. Choose over **2a** and **2b** to install locally all dependencies (**2b** recommended)
+
+#### 2a. Install dependencies using pip (depends on `requirements.txt`)
+
+- **Install the required dependencies**:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4b. **Install the required dependencies (using poetry)**:
+- **Update requirements.txt**:
+
+```bash
+pip freeze > requirements.txt
+```
+
+#### 2b. Install dependencies using poetry (depends on `poetry.lock`)
+
+- **Install the required dependencies**:
 
 ```bash
 poetry install
 ```
 
-5. **Update the requirements**:
-   ```bash
-   pip freeze > requirements.txt
-   ```
+- **Update poetry.lock**:
 
-#### Using poetry
+```bash
+poetry lock
+```
 
-The option of installing dependencies using poetry also exist, but there are some advantages and disadvantages.
+#### Advantages & disadvantages of poetry over pip
 
 ### ✅ Advantages
 
@@ -88,23 +99,32 @@ The option of installing dependencies using poetry also exist, but there are som
 - **Environment conflicts**: Potential confusion with Anaconda/manual virtualenvs
 - **Learning curve**: Different workflow from standard pip/virtualenv
 
-1. **Steps to follow (Windows-VSC):**
+#### Useful notes
+
+1. **Regarding Windows & VSC integration:**
 
    - Use `Windows powershell` (not `Anaconda powershell`) to open VSC.
+   - If VSC is opened through `Anaconda powershell` there may be difficulties in activating the virtual environment.
 
-2. **Follow steps 1-3 of the pip installation instructions**
-
-3. **Check local environments**
+2. **Checking local environments:**
 
    - Make sure that poetry "sees" the rss_islandr environment. For that make use of the `poetry env info` command.
 
-4. **Install the required dependencies**:
+3. **More on poetry & pip**:
 
-   - If the local virtual environment is being used then use `poetry install` to install dependencies based on the `poetry.lock` file.
-   - The package itself will not be shown after executing `poetry show` since this command visualizes only the dependencies of the `pyproject.toml` file. Instead the `poetry version` command should return the installed version of the package. Also the validation of the installation can be done by typing `pip list show` command, which should return all packages installed in the virtual environment.
+   - The package itself will not be shown after executing `poetry show` since this command visualizes only the dependencies of the `pyproject.toml` file. Instead the `poetry version` command should return the installed version of the package. Also the validation of the installation can be done by typing `pip list` command, which should return all packages installed in the virtual environment.
 
-5. **Update the requirements**:
-   - The installation is being made in editable mode. Also if packages have been added or removed form the installation the user has to use `poetry lock update` to update the lock file.
+   - The installation of package through `poetry`is being made in editable mode.
+
+   - If a new package is needed then the following commands are to be used:
+     ```bash
+     poetry add <package name> --dry-run # checks installation for conflicts
+     poetry add <package name> # Adds the new dependency to .toml while installing in venv
+     poetry remove <package name>
+     or
+     pip uninstall <package name>
+     poetry show --tree # shows dependencies relationships
+     ```
 
 ## References
 
