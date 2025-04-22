@@ -15,30 +15,30 @@
     <div class="controls">
         <input type="text" id="lat" placeholder="Latitude">
         <input type="text" id="lng" placeholder="Longitude">
-        <button onclick="updateMarker()">Update Map</button>
+        <button id="updateMarkerBtn">Update Map</button>
 
         <div>
-            <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)">
+            <input type="checkbox" id="toggleGeology">
             <label for="toggleGeology">Surface Geology</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleMines" onclick="toggleLayer(this, wmsMinesLayer)">
+            <input type="checkbox" id="toggleMines">
             <label for="toggleMines">Mines</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroEuropeLayer)">
+            <input type="checkbox" id="toggleHydroMap">
             <label for="toggleHydroMap">Hydrogeological Map</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleHydroMapGlobal" onclick="toggleLayer(this, wmsHydroGlobalLayer)">
+            <input type="checkbox" id="toggleHydroMapGlobal>
             <label for="toggleHydroMapGlobal">Hydrogeological Map Global</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleSoilMapEurope" onclick="toggleLayer(this, wmsSoilEuropeLayer)">
+            <input type="checkbox" id="toggleSoilMapEurope">
             <label for="toggleSoilMapEurope">Soil Map Europe</label>
         </div>
         <div>
-            <input type="checkbox" id="toggleCopernicusHydroRiver" onclick="toggleLayer(this, wmsEUHydroRiverLayer)">
+            <input type="checkbox" id="toggleCopernicusHydroRiver">
             <label for="toggleCopernicusHydroRiver">EU-Hydro River Network</label>
         </div>
     </div>
