@@ -4,7 +4,7 @@ const MAP_CONFIG = {
     zoom: 4,
     baseLayer: {
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: 'Map data © OpenStreetMap contributors'
+      //attribution: 'Map data © OpenStreetMap contributors'
     }
   };
   
@@ -19,7 +19,8 @@ const MAP_CONFIG = {
         transparent: true,
         version: '1.3.0'
       },
-      legendId: 'geologyLegend',
+      attribution: 'Geological Survey of Slovenia (GeoZS)',
+      legendId: 'GeologyLegend',
       defaultOn: false
     },
     mines: {
@@ -29,13 +30,14 @@ const MAP_CONFIG = {
         layers: 'egdi_mines',
         format: 'image/png',
         transparent: true,
-        version: '1.1.1'
+        version: '1.3.0'
       },
-      legendId: 'minesLegend',
+      attribution:'<a href="https://maps.europe-geology.eu/?mapname=egdi_geoera_mintell4eu#baslay=baseMapGEUS&extent=302590,950050,8202390,5515330&layers=egdi_mines&filter_0=commodity.part%3D%26status.multi%3D%26miningactivity.multi%3D" target="_blank">Mintell4EU Project</a>',
+      legendId: 'MinesLegend',
       defaultOn: false
     },
     hydroEurope: {
-      name: 'Hydro Europe',
+      name: 'HydroEurope',
       url: 'https://services.bgr.de/wms/grundwasser/ihme1500/',
       params: {
         layers: '0,1,2',
@@ -43,11 +45,12 @@ const MAP_CONFIG = {
         transparent: true,
         version: '1.3.0'
       },
-      legendId: 'hydroLegend',
+      attribution: 'BGR & UNESCO (eds.) (2019): International Hydrogeological Map of Europe 1:1,500,000 (IHME1500)',
+      legendId: 'HydroEuropeLegend',
       defaultOn: false
     },
     hydroGlobal: {
-      name: 'Hydro Global',
+      name: 'HydroGlobal',
       url: 'https://services.bgr.de/wms/grundwasser/whymap_gwr/',
       params: {
         layers: '0',
@@ -55,11 +58,12 @@ const MAP_CONFIG = {
         transparent: true,
         version: '1.3.0'
       },
-      legendId: 'hydroLegendGlobal',
+      attribution:'BGR: Groundwater Resources of the World (WHYMAP GWR) (WMS)',
+      legendId: 'HydroGlobalLegend',
       defaultOn: false
     },
     soilEurope: {
-      name: 'Soil Europe',
+      name: 'SoilEurope',
       url: 'https://services.bgr.de/wms/boden/eusr5000/',
       params: {
         layers: '0,1,2',
@@ -67,20 +71,21 @@ const MAP_CONFIG = {
         transparent: true,
         version: '1.3.0'
       },
-      legendId: 'soilLegendEurope',
+      attribution:'BGR: Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (WMS)',
+      legendId: 'SoilEuropeLegend',
       defaultOn: false
     },
     riverNetwork: {
-      name: 'River Network',
+      name: 'RiverNetwork',
       url: 'https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer',
       params: {
-        layers: '0',
+        layers: '0,1,2,3,4,5',
         format: 'image/png',
         transparent: true,
         version: '1.3.0'
       },
-      attribution: 'EEA EUHydro River Network',
-      legendId: 'riverLegend',
+      attribution: 'Generated using European Union\'s Copernicus Land Monitoring Service information',
+      legendId: 'RiverNetworkLegend',
       defaultOn: false
     }
   };
@@ -212,6 +217,11 @@ const MAP_CONFIG = {
       }
     }
   }
+
+  document.getElementById('togglePanelBtn').addEventListener('click', function () {
+    const panel = document.getElementById('controlsPanel');
+    panel.classList.toggle('hidden');
+});
   
   // Initialize the map when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {

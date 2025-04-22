@@ -209,12 +209,12 @@ Follow these steps to discover what layers are available in any WMS service:
 Every WMS service provides a `GetCapabilities` endpoint that returns an XML file describing all available layers.
 
 **Format:**
-https://your-wms-server-url?service=WMS&request=GetCapabilities
+`your-wms-server-url` `?service=WMS&request=GetCapabilities`
 
 **Examples:**
 
-- [Geology WMS](https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms?service=WMS&request=GetCapabilities)
-- [Mines WMS](https://data.geus.dk/egdi/wms/?service=WMS&request=GetCapabilities)
+- [Geological Survey of Slovenia (GeoZS)](https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms?service=WMS&request=GetCapabilities)
+- [Mintell4EU Project](https://data.geus.dk/egdi/wms/?service=WMS&request=GetCapabilities)
 - [Hydrogeology WMS](https://services.bgr.de/wms/grundwasser/ihme1500/?service=WMS&request=GetCapabilities)
 
 ### 2. 🔎 Open the URL in Your Browser
