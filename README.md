@@ -131,28 +131,43 @@ poetry lock
 - **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
 - **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
 
+---
+
 # 🗺️ Maps Viewer - Geology, Mines & Hydrogeology
 
 The map viewer option of this app is built using [Leaflet.js](https://leafletjs.com/) and displays various geospatial layers using WMS (Web Map Service).
 
----
-
 ## 🌐 Map Services Used
 
-### 1. **Surface Geology**
+##### 1. **Surface Geology (GeoZS)**
 
 - **Service URL:** `https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms`
 - **Layer Name:** `gsmlp:GeologicUnitView_Lithology`
 
-### 2. **Mines**
+##### 2. **Mines**
 
 - **Service URL:** `https://data.geus.dk/egdi/wms/`
 - **Layer Name:** `egdi_mines`
 
-### 3. **Hydrogeological Map**
+##### 3. **International Hydrogeological Map of Europe 1:1,500,000 (IHME1500) (BGR)**
 
 - **Service URL:** `https://services.bgr.de/wms/grundwasser/ihme1500/`
 - **Layer Names:** `0,1,2`
+
+##### 4. **Groundwater Resources of the World (BGR)**
+
+- **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_gwr/`
+- **Layer Names:** `0`
+
+##### 5. **Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (BGR)**
+
+- **Service URL:** `https://services.bgr.de/wms/boden/eusr5000/`
+- **Layer Names:** `1,3,5`
+
+##### 6. **River Network (Copernicus Land Monitoring Service information)**
+
+- **Service URL:** `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer`
+- **Layer Names:** `0,1,2,3,4,5`
 
 ### 4. Links
 
@@ -163,42 +178,8 @@ https://services.bgr.de/uebersicht/kurzlinks
 To add additional WMS layers:
 
 1. Open the `script.js` file.
-2. Add a new WMS layer using the following format:
 
-```js
-var newLayer = L.tileLayer.wms("YOUR_WMS_SERVICE_URL", {
-  layers: "YOUR_LAYER_NAME",
-  format: "image/png",
-  transparent: true,
-  version: "1.3.0",
-});
-```
-
-3. Add a checkbox in `index.html` to allow toggling:
-
-```html
-<div>
-  <input
-    type="checkbox"
-    id="toggleNewLayer"
-    onclick="toggleLayer(this, newLayer)"
-  />
-  <label for="toggleNewLayer">Your Layer Name</label>
-</div>
-```
-
-4. If you want a legend, add an image like this:
-
-```html
-<img
-  id="newLayerLegend"
-  class="legend zoomable"
-  src="your_legend_image.svg"
-  alt="New Layer Legend"
-/>
-```
-
-5. Optionally, modify the `toggleLayer()` function in `script.js` to show/hide the legend for your new layer.
+2. Add a new WMS layer in the `const WMS_LAYERS` following the implemented structure.
 
 ## 🔍 How to Find Available Map Layers (WMS)
 
