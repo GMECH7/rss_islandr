@@ -66,7 +66,7 @@ const MAP_CONFIG = {
       name: 'SoilEurope',
       url: 'https://services.bgr.de/wms/boden/eusr5000/',
       params: {
-        layers: '0,1,2',
+        layers: '1,3,5',
         format: 'image/png',
         transparent: true,
         version: '1.3.0'
