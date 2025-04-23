@@ -1,8 +1,8 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #1a1a1a;
-    color: white;
+    background-color: #000000;
+    color: rgb(0, 0, 0);
 }
 
 #map {
@@ -10,14 +10,89 @@ body {
     width: 100%;
 }
 
+/* Controls Panel */
 .controls {
+    position: absolute;
+    top: 140px;
+    left: 10px;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    max-width: 850px;
     padding: 10px;
 }
 
-input, button, label {
-    margin: 5px;
+/* Checkbox Container */
+.controls div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
 }
 
+/* Label Styling (left side) */
+.controls label {
+    order: 1;
+    margin-right: 10px;
+    cursor: pointer;
+    flex-grow: 1; /* Allows label to take available space */
+}
+
+/* Checkbox Styling (right side) */
+.controls input[type="checkbox"] {
+    order: 2;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 3px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px; /* Space between label and checkbox */
+}
+
+.controls input[type="checkbox"]:checked {
+    background-color: #0000002d;
+}
+
+.controls input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: rgb(0, 0, 0);
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+/* Input Fields */
+.controls input[type="text"] {
+    padding: 6px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+    width: 100px;
+    margin: 6px 0;
+}
+
+/* Toggle Button */
+.toggle-btn {
+    position: absolute;
+    top: 90px;
+    left: 10px;
+    z-index: 1001;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Transparent Legend */
 .legend {
     position: absolute;
     top: 10px;
@@ -26,8 +101,12 @@ input, button, label {
     display: none;
     width: 300px;
     height: 400px;
+    background: transparent;
+    border-radius: 4px;
+    padding: 10px;
 }
 
+/* Zoomable Elements */
 .zoomable {
     transition: transform 0.2s;
 }
@@ -37,34 +116,7 @@ input, button, label {
     cursor: zoom-in;
 }
 
-/* Toggle Button */
-.toggle-btn {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1001;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-/* Controls Panel */
-.controls {
-    position: absolute;
-    top: 50px;
-    left: 10px;
-    z-index: 1000;
-    background-color: rgba(112, 7, 7, 0.95);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    max-width: 250px;
-}
-
-/* Hide element */
+/* Utility Class */
 .hidden {
     display: none;
 }
