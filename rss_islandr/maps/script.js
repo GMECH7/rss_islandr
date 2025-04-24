@@ -218,6 +218,12 @@ const MAP_CONFIG = {
     }
   }
 
+  function toggleLegend(button) {
+    const legend = button.parentElement;
+    legend.classList.toggle('collapsed');
+    button.textContent = legend.classList.contains('collapsed') ? '+' : '–';
+}
+
   document.getElementById('togglePanelBtn').addEventListener('click', function () {
     const panel = document.getElementById('controlsPanel');
     panel.classList.toggle('hidden');
@@ -227,3 +233,21 @@ const MAP_CONFIG = {
   document.addEventListener('DOMContentLoaded', () => {
     window.mapManager = new MapManager();
   });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const headers = document.querySelectorAll('.map-group-header');
+    
+    headers.forEach(header => {
+        header.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+            const icon = this.querySelector('.toggle-icon');
+            
+            // Toggle active class
+            content.classList.toggle('active');
+            this.classList.toggle('active');
+            
+            // Update icon
+            icon.textContent = content.classList.contains('active') ? '-' : '+';
+        });
+    });
+});

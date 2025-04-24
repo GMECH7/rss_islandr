@@ -1,13 +1,18 @@
+/* Base Styles */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #000000;
-    color: rgb(0, 0, 0);
+    background-color: #000;
+    color: #000;
 }
 
+/* Map Container */
 #map {
-    height: 100vh;
+    position: absolute;
+    top: 0;
+    bottom: 0;
     width: 100%;
+    height: 100vh;
 }
 
 /* Controls Panel */
@@ -21,27 +26,75 @@ body {
     border-radius: 8px;
     max-width: 850px;
     padding: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
-/* Checkbox Container */
-.controls div {
+/* Coordinates Input */
+.coordinates {
+    margin-bottom: 15px;
+}
+
+.coordinates input {
+    width: 100px;
+    padding: 6px;
+    margin: 6px 0;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+}
+
+/* Map Group Styles */
+.map-group {
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.map-group-header {
+    padding: 8px 12px;
+    background-color: rgba(245, 245, 245, 0.9);
+    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 8px 0;
 }
 
-/* Label Styling (left side) */
-.controls label {
-    order: 1;
-    margin-right: 10px;
+.map-group-header:hover {
+    background-color: rgba(233, 233, 233, 0.9);
+}
+
+.map-group-header.active {
+    border-bottom: 1px solid #ccc;
+}
+
+.toggle-icon {
+    font-weight: bold;
+}
+
+.map-group-content {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.map-group-content.active {
+    padding: 8px 12px;
+    max-height: 100px;
+}
+
+.map-group-content label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
-    flex-grow: 1; /* Allows label to take available space */
+    padding: 5px 0;
 }
 
-/* Checkbox Styling (right side) */
-.controls input[type="checkbox"] {
-    order: 2;
+/* Checkbox Styling */
+.map-group-content input[type="checkbox"] {
     appearance: none;
     width: 18px;
     height: 18px;
@@ -50,32 +103,22 @@ body {
     background: transparent;
     cursor: pointer;
     position: relative;
-    margin-left: 10px; /* Space between label and checkbox */
+    margin-left: 10px;
 }
 
-.controls input[type="checkbox"]:checked {
+.map-group-content input[type="checkbox"]:checked {
     background-color: #0000002d;
 }
 
-.controls input[type="checkbox"]:checked::after {
+.map-group-content input[type="checkbox"]:checked::after {
     content: "✓";
-    color: rgb(0, 0, 0);
+    color: #000;
     font-size: 14px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     pointer-events: none;
-}
-
-/* Input Fields */
-.controls input[type="text"] {
-    padding: 6px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background: transparent;
-    width: 100px;
-    margin: 6px 0;
 }
 
 /* Toggle Button */
@@ -90,21 +133,74 @@ body {
     cursor: pointer;
     border-radius: 4px;
     font-size: 16px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
-/* Transparent Legend */
+/* Legend Styles */
 .legend {
     position: absolute;
     top: 10px;
-    right: 75px;
-    z-index: 1000;
-    display: none;
+    right: 10px; /* <<<<< CHANGED from right: 80px */
+    z-index: 1000; 
+    display: none; /* Initially hidden */
     width: 300px;
     height: 400px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 10px;
+    transition: width 0.3s ease, height 0.3s ease;
 }
+
+/*This ensures anything embedded inside the legend (like SVG, PDFs, etc. using <object>) stretches to fill it.*/
+.legend object { 
+    width: 100%;
+    height: 100%;
+}
+
+/* Minimize Button inside the legend */
+.minimize-btn {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 10;
+}
+
+/* Collapsed Legend override the default .legend styles*/
+.legend.collapsed {
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    background-color:transparent;
+    border: none;
+    overflow: hidden; /* hides anything overflowing outside this tiny box. */
+}
+
+
+.legend.collapsed .legend-content,
+.legend.collapsed object,
+.legend.collapsed img {
+    display: none;
+}
+
+.legend.collapsed .minimize-btn {
+    width: auto;
+    height: auto;
+    font-size: 16px;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 
 /* Zoomable Elements */
 .zoomable {
@@ -116,7 +212,7 @@ body {
     cursor: zoom-in;
 }
 
-/* Utility Class */
+/* Utility */
 .hidden {
     display: none;
 }

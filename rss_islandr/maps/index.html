@@ -2,55 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Geology, Mines, and Hydrogeological Map</title>
+    <title>Geology Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-    
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Map Container -->
     <div id="map"></div>
-
-    <!-- Toggle Button -->
     <button id="togglePanelBtn" class="toggle-btn">☰</button>
 
-    <!-- Controls Panel -->
-    <div id="controlsPanel" class="controls hidden">
-        <input type="text" id="lat" placeholder="Latitude">
-        <input type="text" id="lng" placeholder="Longitude">
+    <div id="controlsPanel" class="controls">
+        <div class="coordinates">
+            <input type="text" id="lat" placeholder="Latitude">
+            <input type="text" id="lng" placeholder="Longitude">
+        </div>
         
-        <div><label for="toggleGeology">Surface Geology</label><input type="checkbox" id="toggleGeology"></div>
-        <div><label for="toggleMines">Mines</label><input type="checkbox" id="toggleMines"></div>
-        <div><label for="toggleHydroEurope">Hydrogeological Map</label><input type="checkbox" id="toggleHydroEurope"></div>
-        <div><label for="toggleHydroGlobal">Hydrogeological Map Global</label><input type="checkbox" id="toggleHydroGlobal"></div>
-        <div><label for="toggleSoilEurope">Soil Map Europe</label><input type="checkbox" id="toggleSoilEurope"></div>
-        <div><label for="toggleRiverNetwork">EU-Hydro River Network</label><input type="checkbox" id="toggleRiverNetwork"></div>
+
+        <!-- Geological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Geological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label>Europe <input type="checkbox" id="toggleGeology"></label>
+            </div>
+        </div>
+        
+        <!-- Minerals maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Minerals maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label>Europe<input type="checkbox" id="toggleMines"></label>
+            </div>
+        </div>
+        
+        <!-- Hydrogeological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Hydrogeological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleHydroEurope">Europe<input type="checkbox" id="toggleHydroEurope"></label>
+                <label for="toggleHydroGlobal">Global<input type="checkbox" id="toggleHydroGlobal"></label>
+            </div>
+        </div>
+        
+        <!-- Soil maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Soil maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleSoilEurope">Europe<input type="checkbox" id="toggleSoilEurope"></label>
+            </div>
+        </div>
+        
+        <!-- Hydrological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Hydrological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleRiverNetwork">EU hydro river network<input type="checkbox" id="toggleRiverNetwork"></label>
+                
+            </div>
+        </div>
     </div>
 
-    <!-- Legends (Optional) -->
+    <!-- Legends -->
     <img id="GeologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
-    <!-- <img id="MinesLegend" class="legend zoomable" src="mines_legend.png" alt="Mines Legend"> -->
-    <div id="MinesLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
-        <object type="text/html" data="mines_legend.html" style="width:100%; height:100%; border:none;"></object>
-    </div>
-    <div id="HydroEuropeLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
-        <object type="text/html" data="bgr_hydro_europe_legend.html" style="width:100%; height:100%; border:none;"></object>
-    </div>
-    <div id="HydroGlobalLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
-        <object type="text/html" data="bgr_hydro_global_legend.html" style="width:100%; height:100%; border:none;"></object>
-    </div>
-    <div id="SoilEuropeLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
-        <object type="text/html" data="bgr_soil_legend.html" style="width:100%; height:100%; border:none;"></object>
+    <div id="MinesLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <div class="legend-content">
+            <object type="text/html" data="mines_legend.html"></object>
+        </div>
     </div>
 
-    <!-- Leaflet JS -->
+    <div id="HydroEuropeLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_hydro_europe_legend.html"></object>
+    </div>
+
+    <div id="HydroGlobalLegend" class="legend">
+        <object type="text/html" data="bgr_hydro_global_legend.html"></object>
+    </div>
+    <div id="SoilEuropeLegend" class="legend">
+        <object type="text/html" data="bgr_soil_legend.html"></object>
+    </div>
+    <!-- <div id="SoilEuropeLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
+        <object type="text/html" data="bgr_soil_legend.html" style="width:20%; height:100%; border:none;"></object>
+    </div> -->
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    
-    <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
 </html>
