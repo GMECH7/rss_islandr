@@ -24,7 +24,7 @@ body {
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid #ccc;
     border-radius: 8px;
-    max-width: 850px;
+    max-width: 800px;
     padding: 10px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
@@ -140,7 +140,7 @@ body {
 .legend {
     position: absolute;
     top: 10px;
-    right: 10px; /* <<<<< CHANGED from right: 80px */
+    right: 10px;
     z-index: 1000; 
     display: none; /* Initially hidden */
     width: 300px;

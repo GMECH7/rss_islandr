@@ -23,6 +23,32 @@ const MAP_CONFIG = {
       legendId: 'GeologyLegend',
       defaultOn: false
     },
+    geologyBGR: {
+      name: 'GeologyBGR',
+      url: 'https://services.bgr.de/wms/geologie/igk1500/',
+      params: {
+        layers: '0,1,2',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution: 'BGR: International Geological Map of Europe and the Mediteranean Regions 1:1,500,000',
+      legendId: 'GeologyBGRLegend',
+      defaultOn: false
+    },
+    geologyIGE2500BGR: {
+      name: 'GeologyIGE2500BGR',
+      url: 'https://services.bgr.de/wms/geologie/iqe2500/',
+      params: {
+        layers: '0,1',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution: 'BGR: International Quaternary Map of Europe 1:2,500,000',
+      legendId: 'GeologyIGE2500BGRLegend',
+      defaultOn: false
+    },
     mines: {
       name: 'Mines',
       url: 'https://data.geus.dk/egdi/wms/',

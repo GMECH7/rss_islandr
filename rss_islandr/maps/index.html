@@ -25,7 +25,9 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label>Europe <input type="checkbox" id="toggleGeology"></label>
+                <label for="toggleGeology">Europe<input type="checkbox" id="toggleGeology"></label>
+                <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediteranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
+                <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input type="checkbox" id="toggleGeologyIGE2500BGR"></label>
             </div>
         </div>
         
@@ -47,8 +49,8 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleHydroEurope">Europe<input type="checkbox" id="toggleHydroEurope"></label>
-                <label for="toggleHydroGlobal">Global<input type="checkbox" id="toggleHydroGlobal"></label>
+                <label for="toggleHydroEurope">International Hydrogeological Map of Europe 1:1,500,000<input type="checkbox" id="toggleHydroEurope"></label>
+                <label for="toggleHydroGlobal">Groundwater Resources of the World<input type="checkbox" id="toggleHydroGlobal"></label>
             </div>
         </div>
         
@@ -59,7 +61,7 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleSoilEurope">Europe<input type="checkbox" id="toggleSoilEurope"></label>
+                <label for="toggleSoilEurope">Soil Regions of the European Union and Adjacent Countries 1:5,000,000<input type="checkbox" id="toggleSoilEurope"></label>
             </div>
         </div>
         
@@ -77,12 +79,25 @@
     </div>
 
     <!-- Legends -->
-    <img id="GeologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+
+    <div id="GeologyLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <img id="GeologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+    </div>
+    
+    <div id="GeologyBGRLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_geology_europe_legend.html"></object>
+    </div>
+
+    <div id="GeologyIGE2500BGRLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_geology_quaternary_legend.html"></object>
+    </div>
+
     <div id="MinesLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <div class="legend-content">
-            <object type="text/html" data="mines_legend.html"></object>
-        </div>
+        <object type="text/html" data="mines_legend.html"></object>
     </div>
 
     <div id="HydroEuropeLegend" class="legend">
@@ -91,16 +106,18 @@
     </div>
 
     <div id="HydroGlobalLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="bgr_hydro_global_legend.html"></object>
     </div>
+
     <div id="SoilEuropeLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="bgr_soil_legend.html"></object>
     </div>
-    <!-- <div id="SoilEuropeLegend" class="legend" style="background: rgba(255, 255, 255, 0.5); padding: 10px;">
-        <object type="text/html" data="bgr_soil_legend.html" style="width:20%; height:100%; border:none;"></object>
-    </div> -->
+
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
