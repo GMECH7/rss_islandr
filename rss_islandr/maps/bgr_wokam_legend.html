@@ -1,111 +1,96 @@
-<div id="my_dynamic_legend" class="esri-legend">
-    <div class="esri-legend__service">
-        <h3 class="esri-widget__heading esri-legend__service-label">World Karst Aquifer Map</h3>
-        <div class="esri-legend__layer">
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Karst springs</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Spring with low flow discharge ≥ 2 m³/s"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABPklEQVQ4je3Tv0vUcRgH8NdwKeIPSkEcPDDUTdAlBwe9WUdbEwzhDpxUEA4JcjAIwYY4RAdRUNT+AMEllyBDDFpSEUG4BrnhwOFA7euPQRENT79HbfYen/fn85qeJ+IfJ/IfzJc6lGIfub8Be/C2QtXzEmUy0sfnzj5hGAeFgu9qNSaHTGsRA1kHxSkDrz5biqENv8KCbU9VJ1O+qlB1PaxU441FTxRHV81NoSssGO81egu7mX4frFnuPHEURToM2NSsPU9FuWcatPhpvSksGAR+5wXhqg/+nOcDv61baa3XfGeZkbbnR4DNsODHeWPxDi+LajXeKk4FxvU5FcwgGxbcPZJ7nfBiNu59pF23EmW2bZg0ZNvGFwze9fG+PVzIOdyakBiZkIi5vJQdzCKFk0JB+I7uB94UBBacRwheACuIUQRlGeCVAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Spring with low flow
-                            discharge ≥ 2 m³/s</div>
-                    </div>
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Spring with low flow discharge < 2 m³/s"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA1klEQVQ4je3TMUoDURQF0PNgiE0aCYgbSK2NrWYI4gJ0CRa24ga0sLBKb2cV3YAgCoNYKKRyDWlsLQQhYb6NRQhMmBGxCF74zbv8U72X+eVk/+DfgA9SJ2g/MT4V5Y/BR6lbcoke7PBWSMe5uG4M3klrJc/ozIzXMSyklVxcNQJbnM1hsxkU0k0uPmuDwXaqKlnFJl5qg4lJtVfdLwJvg42Kehy8NgInnLc4QHeumpYc9sW0EbgnPu6lrYwL7KONUXDSF6Oqfwv3cFe84+j71cqS3PJygV8VMjEE7m8hWAAAAABJRU5ErkJggg=="
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Spring with low flow
-                            discharge &lt; 2 m³/s</div>
-                    </div>
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Submarine spring"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABM0lEQVQ4je3SsUsCYRjH8e9rh9bQGDU0RC6NGS0tQRSB0h1NIUcNQkNLBE79Fw0F7RmnNUQoXUSLBFFTRZtCa0VTKIHie/c2SIFexsnV5m99nufz8MCj8cfReuA/gvHDUURYYq+8BgP13CK4+8A4SNCtewitU0jedQ8uZefBvWjriYF7jZGZJL9W6g4Uaq9DXz+q7ww9t0l1+JLinPyuGNlpGk6Z89VKKxg/HgI58cvyKLg2gy/P6NYBSjyAmkKpLUR4DGgDIx8NnEhnTlFHcAUsANsI9VUpIWtV78mnqXd06waY+REUnFAwTZZzURw3AWIEocpU6kcUUzUv2BzaQHELDLRxbzhaurk4+QTsdjqkFcybjxiZGCq0A2IWkICNo6X9/qP3D5uvkfAz7A8MmB4YPJ+RWV7+P4QKjQAAAABJRU5ErkJggg=="
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Submarine spring</div>
-                    </div>
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img alt="Thermal spring"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABg0lEQVQ4je3QMWyNURQA4O/8fUQXiwWTlS4qiEG1r2kkEpuxC40YCJMwiBisLA1ioLoYxIhFtH+bdhAdKhEGUxMDi0gYKtr+x6BPHn36aAwGZ7r33HO+m3Nq/nLU/oM/RClrQU/FdnyueDogXq0JLOVhDCdzBbMVnTXOl/INjtfF3G+DpRzEpYIjvWK2kU8ZEwwFk6XsbYWuAEu5ORiuONArXja/hUjcLiXcwkBbMBnCnf5lbEzuKriYvF3HhR7xoY+RSc49kTt+3ukKMNhbcaNx7+BBsjWw8C11MkSOy7GCfVgdxPoO5pfHryWbmj7b0jgXzFdsaDsyXmMnpupisZRncSV4v8TlptV0FzxsCwZ3k/vTcnS/+FQX10p5s08sNmomZXfFtmSqLdgnZsbl40VGp+XRZfQ7Ni67Ku4lp/ub8quNbCOnPnJ9gRcT8iqeL9FZcDA4lpzpF49a9bYEd4sFnJiQe5JBHCr4kjxDV128a9X3S7B5fMysVvNH4Fri3we/AjHPgyChGOBMAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Thermal spring</div>
-                    </div>
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Water abstraction structure in karst aquifer"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAmElEQVQ4je3SsQ3CMBBA0X8oI6QNq6CbgSIzpMsE2SA1LQOwgymQaFJkgIxAwQRxmhQUln0WUQrEbyxLvidLdsHGFX8Qh6+Byjh/V2SIgkADPIBXAjutaxIEuCoyxTSHD87v/ygOf/vYPhXpvwKBs+FMFpjV/qAisimYWxCc4bj+s1gl8LaA4wE644UuSVCR1ogF+4Fvk9sCukAWAtegcYkAAAAASUVORK5CYII="
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Water abstraction structure
-                            in karst aquifer</div>
-                    </div>
-                </div>
+<link rel="stylesheet" href="css/legend.css">
+<div id="my_dynamic_legend" class="legend">
+    <div class="legend-title">World Karst Aquifer Map</div>
+
+    <div class="legend-group">
+        <div class="legend-caption">Karst springs</div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Spring with low flow discharge ≥ 2 m³/s"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABPklEQVQ4je3Tv0vUcRgH8NdwKeIPSkEcPDDUTdAlBwe9WUdbEwzhDpxUEA4JcjAIwYY4RAdRUNT+AMEllyBDDFpSEUG4BrnhwOFA7euPQRENT79HbfYen/fn85qeJ+IfJ/IfzJc6lGIfub8Be/C2QtXzEmUy0sfnzj5hGAeFgu9qNSaHTGsRA1kHxSkDrz5biqENv8KCbU9VJ1O+qlB1PaxU441FTxRHV81NoSssGO81egu7mX4frFnuPHEURToM2NSsPU9FuWcatPhpvSksGAR+5wXhqg/+nOcDv61baa3XfGeZkbbnR4DNsODHeWPxDi+LajXeKk4FxvU5FcwgGxbcPZJ7nfBiNu59pF23EmW2bZg0ZNvGFwze9fG+PVzIOdyakBiZkIi5vJQdzCKFk0JB+I7uB94UBBacRwheACuIUQRlGeCVAAAAAElFTkSuQmCC"
+                    border="0" width="20" height="20" class="esri-legend__symbol">
             </div>
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Cave systems</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img alt="Cave systems"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABJklEQVQ4je3PMUvUcRzH8ddPD3SqODCHhKag4aYeQA06Orom2BDoaATnUPyODnoCThI+AkfRQSIfgY4OKt4UCnJx0CLe/74NeiB41f2lzT7b9/OBN+9vxT9O5T9wYD6JZwVPRjn7IB3cGZjFC6wX1PC9YDKLwxFef5T2SwGb4mmXXXwd51Vd6mRRxZceO1nUsnQ6NLBLHZdjvKlLnSvj1M5iHi28w/syL89ge0X6cbPM0s8sNq/3W/kTcBLHg4bESTBbFtjGg0FD8Ph6LwX8hpe3YZEaTGOrLPAz9rKYy9JGv2ywgEdjNIYGZlEZpeixGKxmUc3SWhZv0UwsXvAwi06WesMYThUc3biXsIZlTAR94wmcD2GYWkgD+ue/Efir4Z1zD4G/AOAjU8M3YpOTAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Cave systems</div>
-                    </div>
-                </div>
+            <div class="legend-label">Spring with low flow discharge ≥ 2 m³/s</div>
+        </div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Spring with low flow discharge < 2 m³/s"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA1klEQVQ4je3TMUoDURQF0PNgiE0aCYgbSK2NrWYI4gJ0CRa24ga0sLBKb2cV3YAgCoNYKKRyDWlsLQQhYb6NRQhMmBGxCF74zbv8U72X+eVk/+DfgA9SJ2g/MT4V5Y/BR6lbcoke7PBWSMe5uG4M3klrJc/ozIzXMSyklVxcNQJbnM1hsxkU0k0uPmuDwXaqKlnFJl5qg4lJtVfdLwJvg42Kehy8NgInnLc4QHeumpYc9sW0EbgnPu6lrYwL7KONUXDSF6Oqfwv3cFe84+j71cqS3PJygV8VMjEE7m8hWAAAAABJRU5ErkJggg=="
+                    border="0" width="20" height="20" class="esri-legend__symbol">
             </div>
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Border between exposed and non-exposed karstifiable rocks</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Border between exposed and non-exposed karstifiable rocks"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAApUlEQVQ4je3RMQ4BURAG4O8lQqVTWC2tKIlGo5ddh9A4gRO4jU6pcwg3EYk8jWKLJdndVyhMNW8m+d6fTEfi6vzByooE9AL3JCAWGOKUCiyQpQRzDCLdwKMVGJlh/H6ucW6bMC/1RQqwKPWbyC7wbARGJpiWRgOscGmasKiYbduAedUssg/EWmBkhHnFKsMS17oJ+zh82NU/SuCG45cP64FN6/fBF+YjGZdWt1kSAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Border between exposed and
-                            non-exposed karstifiable rocks</div>
-                    </div>
-                </div>
+            <div class="legend-label">Spring with low flow discharge &lt; 2 m³/s</div>
+        </div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Submarine spring"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABM0lEQVQ4je3SsUsCYRjH8e9rh9bQGDU0RC6NGS0tQRSB0h1NIUcNQkNLBE79Fw0F7RmnNUQoXUSLBFFTRZtCa0VTKIHie/c2SIFexsnV5m99nufz8MCj8cfReuA/gvHDUURYYq+8BgP13CK4+8A4SNCtewitU0jedQ8uZefBvWjriYF7jZGZJL9W6g4Uaq9DXz+q7ww9t0l1+JLinPyuGNlpGk6Z89VKKxg/HgI58cvyKLg2gy/P6NYBSjyAmkKpLUR4DGgDIx8NnEhnTlFHcAUsANsI9VUpIWtV78mnqXd06waY+REUnFAwTZZzURw3AWIEocpU6kcUUzUv2BzaQHELDLRxbzhaurk4+QTsdjqkFcybjxiZGCq0A2IWkICNo6X9/qP3D5uvkfAz7A8MmB4YPJ+RWV7+P4QKjQAAAABJRU5ErkJggg=="
+                    border="0" width="20" height="20" class="esri-legend__symbol">
             </div>
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Selected city, partly dependent on groundwater</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Selected city, partly dependent on groundwater"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA+UlEQVQ4je3SQStEURQA4M9rkiKzn42yFJGFrDETa42dspJfYDM7NRsbe/kFU7KcQrIjCyWSX2CNqNeoNxbvSU3vTW+mseLWrXPPufe799YpGPAo/IO/DhaxgSl84CKZfYGrRZrjmMU7rqmFnCWXvPQCTg/TrGIbQZJ8xi7lJxqo5AZXuP/ETke+hP34eeWQJSnfTwVvsJfx9BIWcdkLGGIsA/RTG02rpYKTuMVcSi3CXRw+5gbXcYBlTHTUDvEWh43cYJ2gQrSJLcyL2+YEV2ixhtfcINqnBDWiYxxhBAsxNoOHjHNdG7tdZ+h70cJ5l815wL7GHwS/ADl6MY0TMPxwAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Selected city, partly
-                            dependent on groundwater</div>
-                    </div>
-                </div>
+            <div class="legend-label">Submarine spring</div>
+        </div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Thermal spring"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABg0lEQVQ4je3QMWyNURQA4O/8fUQXiwWTlS4qiEG1r2kkEpuxC40YCJMwiBisLA1ioLoYxIhFtH+bdhAdKhEGUxMDi0gYKtr+x6BPHn36aAwGZ7r33HO+m3Nq/nLU/oM/RClrQU/FdnyueDogXq0JLOVhDCdzBbMVnTXOl/INjtfF3G+DpRzEpYIjvWK2kU8ZEwwFk6XsbYWuAEu5ORiuONArXja/hUjcLiXcwkBbMBnCnf5lbEzuKriYvF3HhR7xoY+RSc49kTt+3ukKMNhbcaNx7+BBsjWw8C11MkSOy7GCfVgdxPoO5pfHryWbmj7b0jgXzFdsaDsyXmMnpupisZRncSV4v8TlptV0FzxsCwZ3k/vTcnS/+FQX10p5s08sNmomZXfFtmSqLdgnZsbl40VGp+XRZfQ7Ni67Ku4lp/ub8quNbCOnPnJ9gRcT8iqeL9FZcDA4lpzpF49a9bYEd4sFnJiQe5JBHCr4kjxDV128a9X3S7B5fMysVvNH4Fri3we/AjHPgyChGOBMAAAAAElFTkSuQmCC"
+                    border="0" width="20" height="20" class="esri-legend__symbol">
             </div>
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Boundary of continuous permafrost</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Boundary of continuous permafrost"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAP0lEQVQ4jWNhoDJgGTVwRBp4huE/AwMDA4MJAyN1DKQQQAyEuQoZYBMjBEwYGGnkQjLDC7eBVASjBo4aSAYAAJ9wBlGarYgFAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Boundary of continuous
-                            permafrost</div>
-                    </div>
-                </div>
+            <div class="legend-label">Thermal spring</div>
+        </div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Water abstraction structure in karst aquifer"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAmElEQVQ4je3SsQ3CMBBA0X8oI6QNq6CbgSIzpMsE2SA1LQOwgymQaFJkgIxAwQRxmhQUln0WUQrEbyxLvidLdsHGFX8Qh6+Byjh/V2SIgkADPIBXAjutaxIEuCoyxTSHD87v/ygOf/vYPhXpvwKBs+FMFpjV/qAisimYWxCc4bj+s1gl8LaA4wE644UuSVCR1ogF+4Fvk9sCukAWAtegcYkAAAAASUVORK5CYII="
+                    border="0" width="20" height="20" class="esri-legend__symbol">
             </div>
-            <div class="esri-legend__layer-table esri-legend__layer-table--size-ramp">
-                <div class="esri-legend__layer-caption">Surface water</div>
-                <div class="esri-legend__layer-body">
-                    <div class="esri-legend__layer-row">
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--symbols"><img
-                                alt="Continuous ice sheet"
-                                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVQ4jWPZcu3pfwYqAhYGBgYGGyluqhh25NlXiIHUBKMGjho4auCogaMGIhl45NlXqhkIALwtCV4w3FzbAAAAAElFTkSuQmCC"
-                                border="0" width="20" height="20" class="esri-legend__symbol" style="opacity: 1;"></div>
-                        <div class="esri-legend__layer-cell esri-legend__layer-cell--info">Continuous ice sheet</div>
-                    </div>
-                </div>
+            <div class="legend-label">Water abstraction structure in karst aquifer</div>
+        </div>
+    </div>
+
+    <div class="legend-group">
+        <div class="legend-caption">Border between exposed and non-exposed karstifiable rocks</div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Border between exposed and non-exposed karstifiable rocks"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAApUlEQVQ4je3RMQ4BURAG4O8lQqVTWC2tKIlGo5ddh9A4gRO4jU6pcwg3EYk8jWKLJdndVyhMNW8m+d6fTEfi6vzByooE9AL3JCAWGOKUCiyQpQRzDCLdwKMVGJlh/H6ucW6bMC/1RQqwKPWbyC7wbARGJpiWRgOscGmasKiYbduAedUssg/EWmBkhHnFKsMS17oJ+zh82NU/SuCG45cP64FN6/fBF+YjGZdWt1kSAAAAAElFTkSuQmCC"
+                    width="20" height="20" style="opacity: 1;">
             </div>
+            <div class="legend-label">Border between exposed and non-exposed karstifiable rocks</div>
+        </div>
+    </div>
+
+    <div class="legend-group">
+        <div class="legend-caption">Selected city, partly dependent on groundwater</div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Selected city, partly dependent on groundwater"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA+UlEQVQ4je3SQStEURQA4M9rkiKzn42yFJGFrDETa42dspJfYDM7NRsbe/kFU7KcQrIjCyWSX2CNqNeoNxbvSU3vTW+mseLWrXPPufe799YpGPAo/IO/DhaxgSl84CKZfYGrRZrjmMU7rqmFnCWXvPQCTg/TrGIbQZJ8xi7lJxqo5AZXuP/ETke+hP34eeWQJSnfTwVvsJfx9BIWcdkLGGIsA/RTG02rpYKTuMVcSi3CXRw+5gbXcYBlTHTUDvEWh43cYJ2gQrSJLcyL2+YEV2ixhtfcINqnBDWiYxxhBAsxNoOHjHNdG7tdZ+h70cJ5l815wL7GHwS/ADl6MY0TMPxwAAAAAElFTkSuQmCC"
+                    width="20" height="20" style="opacity: 1;">
+            </div>
+            <div class="legend-label">Selected city, partly dependent on groundwater</div>
+        </div>
+    </div>
+
+    <div class="legend-group">
+        <div class="legend-caption">Boundary of continuous permafrost</div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Boundary of continuous permafrost"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAP0lEQVQ4jWNhoDJgGTVwRBp4huE/AwMDA4MJAyN1DKQQQAyEuQoZYBMjBEwYGGnkQjLDC7eBVASjBo4aSAYAAJ9wBlGarYgFAAAAAElFTkSuQmCC"
+                    width="20" height="20" style="opacity: 1;">
+            </div>
+            <div class="legend-label">Boundary of continuous permafrost</div>
+        </div>
+    </div>
+
+    <div class="legend-group">
+        <div class="legend-caption">Surface water</div>
+        <div class="legend-row">
+            <div class="legend-symbol">
+                <img alt="Continuous ice sheet"
+                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVQ4jWPZcu3pfwYqAhYGBgYGGyluqhh25NlXiIHUBKMGjho4auCogaMGIhl45NlXqhkIALwtCV4w3FzbAAAAAElFTkSuQmCC"
+                    width="20" height="20" style="opacity: 1;">
+            </div>
+            <div class="legend-label">Continuous ice sheet</div>
         </div>
     </div>
 </div>
