@@ -83,6 +83,7 @@ body {
 .map-group-content.active {
     padding: 8px 12px;
     max-height: 100px;
+    overflow-y: auto; /* Adds scroll if content exceeds max-height */
 }
 
 .map-group-content label {

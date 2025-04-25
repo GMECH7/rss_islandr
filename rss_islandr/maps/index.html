@@ -26,8 +26,19 @@
             </div>
             <div class="map-group-content">
                 <label for="toggleGeology">Europe<input type="checkbox" id="toggleGeology"></label>
-                <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediteranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
+                <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
                 <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input type="checkbox" id="toggleGeologyIGE2500BGR"></label>
+            </div>
+        </div>
+
+        <!-- Geochemistry maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Geochemistry maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleGemas">GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information<input type="checkbox" id="toggleGemas"></label>
             </div>
         </div>
         
@@ -51,6 +62,9 @@
             <div class="map-group-content">
                 <label for="toggleHydroEurope">International Hydrogeological Map of Europe 1:1,500,000<input type="checkbox" id="toggleHydroEurope"></label>
                 <label for="toggleHydroGlobal">Groundwater Resources of the World<input type="checkbox" id="toggleHydroGlobal"></label>
+                <label for="toggleBGRNorm">Natural Radionuclides in Groundwater<input type="checkbox" id="toggleBGRNorm"></label>
+                <label for="toggleBGRrgwb">River and Groundwater Basins of the World<input type="checkbox" id="toggleBGRrgwb"></label>
+                <label for="toggleBGRwokam">World Karst Aquifer Map<input type="checkbox" id="toggleBGRwokam"></label>
             </div>
         </div>
         
@@ -73,13 +87,11 @@
             </div>
             <div class="map-group-content">
                 <label for="toggleRiverNetwork">EU hydro river network<input type="checkbox" id="toggleRiverNetwork"></label>
-                
             </div>
         </div>
     </div>
 
     <!-- Legends -->
-
     <div id="GeologyLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <img id="GeologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
@@ -105,6 +117,21 @@
         <object type="text/html" data="bgr_hydro_europe_legend.html"></object>
     </div>
 
+    <div id="BGRNormLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_norm_legend.html"></object>
+    </div>
+
+    <div id="BGRrgwbLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_rgwb_legend.html"></object>
+    </div>
+
+    <div id="BGRwokamLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_wokam_legend.html"></object>
+    </div>
+
     <div id="HydroGlobalLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="bgr_hydro_global_legend.html"></object>
@@ -114,7 +141,6 @@
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="bgr_soil_legend.html"></object>
     </div>
-
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>

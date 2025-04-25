@@ -32,7 +32,7 @@ const MAP_CONFIG = {
         transparent: true,
         version: '1.3.0'
       },
-      attribution: 'BGR: International Geological Map of Europe and the Mediteranean Regions 1:1,500,000',
+      attribution: 'BGR: International Geological Map of Europe and the Mediterranean Regions 1:1,500,000',
       legendId: 'GeologyBGRLegend',
       defaultOn: false
     },
@@ -62,6 +62,19 @@ const MAP_CONFIG = {
       legendId: 'MinesLegend',
       defaultOn: false
     },
+    gemas: {
+      name: 'Gemas',
+      url: 'https://services.bgr.de/wms/geochemie/gemas_supporting_information/',
+      params: {
+        layers: '2,3,5,6,8,9,11,13,15',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution: 'GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information',
+      legendId: 'GeologyLegend',
+      defaultOn: false
+    },
     hydroEurope: {
       name: 'HydroEurope',
       url: 'https://services.bgr.de/wms/grundwasser/ihme1500/',
@@ -88,6 +101,48 @@ const MAP_CONFIG = {
       legendId: 'HydroGlobalLegend',
       defaultOn: false
     },
+    BGRNorm: {
+      name: 'BGRNorm',
+      url: 'https://services.bgr.de/wms/grundwasser/norm/',
+      params: {
+        layers: '1,2,3,4,6,7',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution:'BGR: Natural Radionuclides in Groundwater',
+      legendId: 'BGRNormLegend',
+      defaultOn: false
+    },
+
+    BGRrgwb: {
+      name: 'BGRrgwb',
+      url: 'https://services.bgr.de/wms/grundwasser/whymap_rgwb/',
+      params: {
+        layers: '0,1,3,4,5',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution:'BGR: River and Groundwater Basins of the World (WHYMAP RGWB)',
+      legendId: 'BGRrgwbLegend',
+      defaultOn: false
+    },
+
+    BGRwokam: {
+      name: 'BGRwokam',
+      url: 'https://services.bgr.de/wms/grundwasser/whymap_wokam/',
+      params: {
+        layers: '0,1,2,3,4,5,6',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0'
+      },
+      attribution:'BGR: World Karst Aquifer Map (WHYMAP WOKAM)',
+      legendId: 'BGRwokamLegend',
+      defaultOn: false
+    },
+
     soilEurope: {
       name: 'SoilEurope',
       url: 'https://services.bgr.de/wms/boden/eusr5000/',
