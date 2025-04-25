@@ -62,19 +62,19 @@ const MAP_CONFIG = {
       legendId: 'MinesLegend',
       defaultOn: false
     },
-    gemas: {
-      name: 'Gemas',
-      url: 'https://services.bgr.de/wms/geochemie/gemas_supporting_information/',
-      params: {
-        layers: '2,3,5,6,8,9,11,13,15',
-        format: 'image/png',
-        transparent: true,
-        version: '1.3.0'
-      },
-      attribution: 'GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information',
-      legendId: 'GeologyLegend',
-      defaultOn: false
-    },
+    // gemas: {
+    //   name: 'Gemas',
+    //   url: 'https://services.bgr.de/wms/geochemie/gemas_supporting_information/',
+    //   params: {
+    //     layers: '2,3,5,6,8,9,11,13,15',
+    //     format: 'image/png',
+    //     transparent: true,
+    //     version: '1.3.0'
+    //   },
+    //   attribution: 'GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information',
+    //   legendId: 'GemasLegend',
+    //   defaultOn: false
+    // },
     hydroEurope: {
       name: 'HydroEurope',
       url: 'https://services.bgr.de/wms/grundwasser/ihme1500/',

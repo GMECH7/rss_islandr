@@ -25,14 +25,15 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleGeology">Europe<input type="checkbox" id="toggleGeology"></label>
+                <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox" id="toggleGeology"></label>
                 <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
                 <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input type="checkbox" id="toggleGeologyIGE2500BGR"></label>
             </div>
         </div>
 
         <!-- Geochemistry maps -->
-        <div class="map-group">
+
+        <!-- <div class="map-group">
             <div class="map-group-header">
                 <span>Geochemistry maps</span>
                 <span class="toggle-icon">+</span>
@@ -40,7 +41,7 @@
             <div class="map-group-content">
                 <label for="toggleGemas">GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information<input type="checkbox" id="toggleGemas"></label>
             </div>
-        </div>
+        </div> -->
         
         <!-- Minerals maps -->
         <div class="map-group">
@@ -94,7 +95,7 @@
     <!-- Legends -->
     <div id="GeologyLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <img id="GeologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
+        <object type="text/html" data="geozs_legend.html"></object>
     </div>
     
     <div id="GeologyBGRLegend" class="legend">

@@ -144,9 +144,9 @@ body {
     right: 10px;
     z-index: 1000; 
     display: none; /* Initially hidden */
-    width: 300px;
+    width: 400px;
     height: 400px;
-    background: rgba(255, 255, 255, 0.1);
+    background: transparent;
     border-radius: 4px;
     padding: 10px;
     transition: width 0.3s ease, height 0.3s ease;
