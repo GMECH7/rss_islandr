@@ -2,56 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Geology, Mines, and Hydrogeological Map</title>
+    <title>Geology Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-    <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="css/style.css">
+
+
 </head>
 <body>
     <div id="map"></div>
+    <button id="togglePanelBtn" class="toggle-btn">☰</button>
 
-    <div class="controls">
-        <input type="text" id="lat" placeholder="Latitude">
-        <input type="text" id="lng" placeholder="Longitude">
-        <button onclick="updateMarker()">Update Map</button>
+    <div id="controlsPanel" class="controls">
+        <div class="coordinates">
+            <input type="text" id="lat" placeholder="Latitude">
+            <input type="text" id="lng" placeholder="Longitude">
+        </div>
+        
 
-        <div>
-            <input type="checkbox" id="toggleGeology" onclick="toggleLayer(this, wmsGeologyLayer)">
-            <label for="toggleGeology">Surface Geology</label>
+        <!-- Geological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Geological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox" id="toggleGeology"></label>
+                <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
+                <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input type="checkbox" id="toggleGeologyIGE2500BGR"></label>
+            </div>
         </div>
-        <div>
-            <input type="checkbox" id="toggleMines" onclick="toggleLayer(this, wmsMinesLayer)">
-            <label for="toggleMines">Mines</label>
+
+        <!-- Geochemistry maps -->
+
+        <!-- <div class="map-group">
+            <div class="map-group-header">
+                <span>Geochemistry maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleGemas">GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information<input type="checkbox" id="toggleGemas"></label>
+            </div>
+        </div> -->
+        
+        <!-- Minerals maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Minerals resources maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label>Mines of Europe<input type="checkbox" id="toggleMines"></label>
+            </div>
         </div>
-        <div>
-            <input type="checkbox" id="toggleHydroMap" onclick="toggleLayer(this, wmsHydroEuropeLayer)">
-            <label for="toggleHydroMap">Hydrogeological Map</label>
+        
+        <!-- Hydrogeological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Hydrogeological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleHydroEurope">International Hydrogeological Map of Europe 1:1,500,000<input type="checkbox" id="toggleHydroEurope"></label>
+                <label for="toggleHydroGlobal">Groundwater Resources of the World<input type="checkbox" id="toggleHydroGlobal"></label>
+                <label for="toggleBGRNorm">Natural Radionuclides in Groundwater<input type="checkbox" id="toggleBGRNorm"></label>
+                <label for="toggleBGRrgwb">River and Groundwater Basins of the World<input type="checkbox" id="toggleBGRrgwb"></label>
+                <label for="toggleBGRwokam">World Karst Aquifer Map<input type="checkbox" id="toggleBGRwokam"></label>
+            </div>
         </div>
-        <div>
-            <input type="checkbox" id="toggleHydroMapGlobal" onclick="toggleLayer(this, wmsHydroGlobalLayer)">
-            <label for="toggleHydroMapGlobal">Hydrogeological Map Global</label>
+        
+        <!-- Soil maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Soil maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleSoilEurope">Soil Regions of the European Union and Adjacent Countries 1:5,000,000<input type="checkbox" id="toggleSoilEurope"></label>
+            </div>
         </div>
-        <div>
-            <input type="checkbox" id="toggleSoilMapEurope" onclick="toggleLayer(this, wmsSoilEuropeLayer)">
-            <label for="toggleSoilMapEurope">Soil Map Europe</label>
-        </div>
-        <div>
-            <input type="checkbox" id="toggleCopernicusHydroRiver" onclick="toggleLayer(this, wmsEUHydroRiverLayer)">
-            <label for="toggleCopernicusHydroRiver">EU-Hydro River Network</label>
+        
+        <!-- Hydrological maps -->
+        <div class="map-group">
+            <div class="map-group-header">
+                <span>Hydrological maps</span>
+                <span class="toggle-icon">+</span>
+            </div>
+            <div class="map-group-content">
+                <label for="toggleRiverNetwork">EU hydro river network<input type="checkbox" id="toggleRiverNetwork"></label>
+            </div>
         </div>
     </div>
 
-    <div id="info">Click on a layer to get more information.</div>
+    <!-- Legends -->
+    <div id="GeologyLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="geozs_legend.html"></object>
+    </div>
+    
+    <div id="GeologyBGRLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_geology_europe_legend.html"></object>
+    </div>
 
-    <img id="geologyLegend" class="legend zoomable" src="geology_legend.svg" alt="Geology Legend">
-    <img id="minesLegend" class="legend zoomable" src="mines_legend.png" alt="Mines Legend">
-    <img id="hydroLegend" class="legend zoomable" src="hydro_legend.svg" alt="Hydrogeological Legend">
-    <img id="hydroLegendGlobal" class="legend zoomable" src="hydro_legend_global.png" alt="Hydrogeological Legend">
-    <img id="soilLegendEurope" class="legend zoomable" src="hydro_legend_global.png" alt="Soil Legend">
+    <div id="GeologyIGE2500BGRLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_geology_quaternary_legend.html"></object>
+    </div>
+
+    <div id="MinesLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="mines_legend.html"></object>
+    </div>
+
+    <div id="HydroEuropeLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_hydro_europe_legend.html"></object>
+    </div>
+
+    <div id="BGRNormLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_norm_legend.html"></object>
+    </div>
+
+    <div id="BGRrgwbLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_rgwb_legend.html"></object>
+    </div>
+
+    <div id="BGRwokamLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_wokam_legend.html"></object>
+    </div>
+
+    <div id="HydroGlobalLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_hydro_global_legend.html"></object>
+    </div>
+
+    <div id="SoilEuropeLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_soil_legend.html"></object>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
