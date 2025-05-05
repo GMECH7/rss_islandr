@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Geology Map</title>
@@ -9,16 +10,20 @@
 
 
 </head>
+
 <body>
     <div id="map"></div>
     <button id="togglePanelBtn" class="toggle-btn">☰</button>
 
     <div id="controlsPanel" class="controls">
         <div class="coordinates">
-            <input type="text" id="lat" placeholder="Latitude">
-            <input type="text" id="lng" placeholder="Longitude">
+            <div class="coordinates-input-group">
+                <input type="text" id="lat" placeholder="Latitude (e.g., 53.3439 or 40°26'46&quot;N)">
+                <input type="text" id="lng" placeholder="Longitude (e.g., 23.0622 or 79°58'56&quot;W)">
+            </div>
+            <button id="updateMarkerBtn" class="coordinates-button">Update Marker</button>
         </div>
-        
+
 
         <!-- Geological maps -->
         <div class="map-group">
@@ -27,9 +32,14 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox" id="toggleGeology"></label>
-                <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions 1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
-                <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input type="checkbox" id="toggleGeologyIGE2500BGR"></label>
+                <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox"
+                        id="toggleGeology"></label>
+                <!-- <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions
+                    1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
+                <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input
+                        type="checkbox" id="toggleGeologyIGE2500BGR"></label> -->
+                <label for="toggleGeologyIGME5000BGR">International Geological Map of Europe and Adjacent
+                    Areas 1:5,000,000<input type="checkbox" id="toggleGeologyIGME5000BGR"></label>
             </div>
         </div>
 
@@ -44,7 +54,7 @@
                 <label for="toggleGemas">GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information<input type="checkbox" id="toggleGemas"></label>
             </div>
         </div> -->
-        
+
         <!-- Minerals maps -->
         <div class="map-group">
             <div class="map-group-header">
@@ -55,7 +65,7 @@
                 <label>Mines of Europe<input type="checkbox" id="toggleMines"></label>
             </div>
         </div>
-        
+
         <!-- Hydrogeological maps -->
         <div class="map-group">
             <div class="map-group-header">
@@ -63,14 +73,18 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleHydroEurope">International Hydrogeological Map of Europe 1:1,500,000<input type="checkbox" id="toggleHydroEurope"></label>
-                <label for="toggleHydroGlobal">Groundwater Resources of the World<input type="checkbox" id="toggleHydroGlobal"></label>
-                <label for="toggleBGRNorm">Natural Radionuclides in Groundwater<input type="checkbox" id="toggleBGRNorm"></label>
-                <label for="toggleBGRrgwb">River and Groundwater Basins of the World<input type="checkbox" id="toggleBGRrgwb"></label>
+                <label for="toggleHydroEurope">International Hydrogeological Map of Europe 1:1,500,000<input
+                        type="checkbox" id="toggleHydroEurope"></label>
+                <label for="toggleHydroGlobal">Groundwater Resources of the World<input type="checkbox"
+                        id="toggleHydroGlobal"></label>
+                <label for="toggleBGRNorm">Natural Radionuclides in Groundwater<input type="checkbox"
+                        id="toggleBGRNorm"></label>
+                <label for="toggleBGRrgwb">River and Groundwater Basins of the World<input type="checkbox"
+                        id="toggleBGRrgwb"></label>
                 <label for="toggleBGRwokam">World Karst Aquifer Map<input type="checkbox" id="toggleBGRwokam"></label>
             </div>
         </div>
-        
+
         <!-- Soil maps -->
         <div class="map-group">
             <div class="map-group-header">
@@ -78,10 +92,11 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleSoilEurope">Soil Regions of the European Union and Adjacent Countries 1:5,000,000<input type="checkbox" id="toggleSoilEurope"></label>
+                <label for="toggleSoilEurope">Soil Regions of the European Union and Adjacent Countries
+                    1:5,000,000<input type="checkbox" id="toggleSoilEurope"></label>
             </div>
         </div>
-        
+
         <!-- Hydrological maps -->
         <div class="map-group">
             <div class="map-group-header">
@@ -89,7 +104,8 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleRiverNetwork">EU hydro river network<input type="checkbox" id="toggleRiverNetwork"></label>
+                <label for="toggleRiverNetwork">EU hydro river network<input type="checkbox"
+                        id="toggleRiverNetwork"></label>
             </div>
         </div>
     </div>
@@ -99,10 +115,15 @@
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="geozs_legend.html"></object>
     </div>
-    
+
     <div id="GeologyBGRLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="bgr_geology_europe_legend.html"></object>
+    </div>
+
+    <div id="GeologyIGME5000BGRLegend" class="legend">
+        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
+        <object type="text/html" data="bgr_igme5000_legend.html"></object>
     </div>
 
     <div id="GeologyIGE2500BGRLegend" class="legend">
@@ -148,5 +169,5 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
-</html>
 
+</html>

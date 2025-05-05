@@ -1,9 +1,8 @@
 /* Base Styles */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: #000;
+    font-family: 'Calibri', sans-serif;
+    color: #555;
 }
 
 /* Map Container */
@@ -30,17 +29,55 @@ body {
 }
 
 /* Coordinates Input */
+/* Updated Coordinates Section */
 .coordinates {
     margin-bottom: 15px;
+    display: flex;          /* Enable flex layout */
+    align-items: center;    /* Vertically align items */
+    gap: 8px;               /* Space between input and button */
+}
+
+.coordinates-input-group {
+    display: flex;
+    flex-direction: row; /* Stack inputs horizontally */
+    gap: 6px;              /* Match your input margin */
 }
 
 .coordinates input {
-    width: 100px;
+    font-family: 'Calibri', sans-serif;
+    color: #555;
+    width: 240px;
     padding: 6px;
-    margin: 6px 0;
+    margin: 0;              /* Remove margin now handled by parent */
     border: 2px solid #ccc;
     border-radius: 4px;
-    background: transparent;
+    background: rgba(245, 245, 245, 0.9);
+    height: 32px;           /* Explicit height (6px padding * 2 + line-height) */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.coordinates-button {
+    font-family: 'Calibri', sans-serif;
+    color: #555;
+    background: rgba(245, 245, 245, 0.9);
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    height: 32px;           /* Match input height */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    white-space: nowrap;    /* Prevent text wrapping */
+}
+
+.coordinates-button:hover {
+    background: rgba(235, 235, 235, 0.9);
+    border-color: #aaa;
+}
+
+.coordinates-button:active {
+    background: rgba(225, 225, 225, 0.9);
+    transform: translateY(1px);
 }
 
 /* Map Group Styles */
@@ -53,7 +90,7 @@ body {
 
 .map-group-header {
     padding: 8px 12px;
-    background-color: rgba(245, 245, 245, 0.9);
+    background-color: rgba(255, 255, 255, 0.9);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
