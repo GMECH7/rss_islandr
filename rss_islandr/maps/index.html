@@ -3,12 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Geology Map</title>
+    <title>Leaflet maps</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <link rel="stylesheet" href="css/style.css">
-
-
 </head>
 
 <body>
@@ -34,10 +32,6 @@
             <div class="map-group-content">
                 <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox"
                         id="toggleGeology"></label>
-                <!-- <label for="toggleGeologyBGR">International Geological Map of Europe and the Mediterranean Regions
-                    1:1,500,000<input type="checkbox" id="toggleGeologyBGR"></label>
-                <label for="toggleGeologyIGE2500BGR">International Quaternary Map of Europe 1:2,500,000<input
-                        type="checkbox" id="toggleGeologyIGE2500BGR"></label> -->
                 <label for="toggleGeologyIGME5000BGR">International Geological Map of Europe and Adjacent
                     Areas 1:5,000,000<input type="checkbox" id="toggleGeologyIGME5000BGR"></label>
             </div>
@@ -113,61 +107,52 @@
     <!-- Legends -->
     <div id="GeologyLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="geozs_legend.html"></object>
-    </div>
-
-    <div id="GeologyBGRLegend" class="legend">
-        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_geology_europe_legend.html"></object>
+        <object type="text/html" data="legends/geozs_legend.html"></object>
     </div>
 
     <div id="GeologyIGME5000BGRLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_igme5000_legend.html"></object>
-    </div>
-
-    <div id="GeologyIGE2500BGRLegend" class="legend">
-        <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_geology_quaternary_legend.html"></object>
+        <object type="text/html" data="legends/bgr_igme5000_legend.html"></object>
     </div>
 
     <div id="MinesLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="mines_legend.html"></object>
+        <object type="text/html" data="legends/mines_legend.html"></object>
     </div>
 
     <div id="HydroEuropeLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_hydro_europe_legend.html"></object>
+        <object type="text/html" data="legends/bgr_hydro_europe_legend.html"></object>
     </div>
 
     <div id="BGRNormLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_norm_legend.html"></object>
+        <object type="text/html" data="legends/bgr_norm_legend.html"></object>
     </div>
 
     <div id="BGRrgwbLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_rgwb_legend.html"></object>
+        <object type="text/html" data="legends/bgr_rgwb_legend.html"></object>
     </div>
 
     <div id="BGRwokamLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_wokam_legend.html"></object>
+        <object type="text/html" data="legends/bgr_wokam_legend.html"></object>
     </div>
 
     <div id="HydroGlobalLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_hydro_global_legend.html"></object>
+        <object type="text/html" data="legends/bgr_hydro_global_legend.html"></object>
     </div>
 
     <div id="SoilEuropeLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
-        <object type="text/html" data="bgr_soil_legend.html"></object>
+        <object type="text/html" data="legends/bgr_soil_legend.html"></object>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
