@@ -1,15 +1,13 @@
+import base64
 import logging
 import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import ttkbootstrap as tb
 import webview
-
-# from rss_islandr.core.config_parser import ICO_DIR
-
-# CRNT_DIR = Path(__file__).parent
-# STATIC_DIR = CRNT_DIR.resolve().parent / "static"
+from rss_islandr.core.config_parser import SAVED_MAPS_IMAGES_DIR
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,6 +19,27 @@ class Api:
     def send_coordinates(self, lat, lng):
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+
+    def receive_image_data(self, image_data):
+        """Save the base64-encoded image to a file."""
+        try:
+            # Remove the "data:image/png;base64," prefix
+            header, encoded = image_data.split(",", 1)
+
+            # Decode the base64 data
+            img_data = base64.b64decode(encoded)
+
+            # Generate a filename with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{SAVED_MAPS_IMAGES_DIR}/map_export_{timestamp}.png"
+
+            # Save to disk
+            with open(filename, "wb") as f:
+                f.write(img_data)
+
+            logging.info(f"Image saved as: {filename}")
+        except Exception as e:
+            logging.error(f"Failed to save image: {e}")
 
 
 class MapUI:
@@ -59,18 +78,3 @@ class MapUI:
         )
         logging.info("Webview started. Waiting for coordinates...")
         webview.start(debug=True)
-
-
-# # Entry point for the webview process
-# if __name__ == "__main__":
-#     import argparse
-
-#     # Parse command-line arguments
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--webview", action="store_true", help="Run webview in a separate process")
-#     args = parser.parse_args()
-
-#     if args.webview:
-#         # If --webview flag is passed, run the webview window
-#         map_ui = MapUI(STATIC_DIR / "map.html")
-#         map_ui.run_webview()
