@@ -11,10 +11,13 @@ class MapManager {
 
   initMap() {
     this.map = L.map("map").setView(MAP_CONFIG.center, MAP_CONFIG.zoom);
+    
     L.tileLayer(MAP_CONFIG.baseLayer.url, {
       attribution: MAP_CONFIG.baseLayer.attribution,
     }).addTo(this.map);
+    L.control.bigImage({position: 'bottomright'}).addTo(this.map);
   }
+
 
   initLayers() {
     Object.entries(WMS_LAYERS).forEach(([key, config]) => {

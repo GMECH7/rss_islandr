@@ -58,7 +58,7 @@ class MapUI:
             js_api=api_instance,  # Attach the JavaScript API
         )
         logging.info("Webview started. Waiting for coordinates...")
-        webview.start(debug=False)
+        webview.start(debug=True)
 
 
 # # Entry point for the webview process
