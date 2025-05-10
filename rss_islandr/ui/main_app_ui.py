@@ -11,6 +11,7 @@ from ttkbootstrap.dialogs import Messagebox
 from rss_islandr.core.config_parser import (
     ISLANDR_LOGO,
     MAP_DIR,
+    SAVED_MAPS_IMAGES_DIR,
     pathway_keys,
     settings,
     source_keys,
@@ -61,7 +62,7 @@ class MainAppUI:
         self.__init__handle_geometry()
 
         self.map_open = True
-        print(MAP_DIR)
+        self.__init__delete_existing_saved_maps()
         self.map_ui = MapUI(MAP_DIR, tb_style, self.__map_height, self.__map_width)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
@@ -88,6 +89,12 @@ class MainAppUI:
                 f"{inp}_{scenario_id}_frame_risk" for inp in self.__all_keys for scenario_id in self.__scenario_ids
             ],
         }
+
+    def __init__delete_existing_saved_maps(self):
+        """Delete existing saved maps when app is started"""
+        for file in SAVED_MAPS_IMAGES_DIR.glob("*.png"):
+            file.unlink()
+        logging.info(f"Deleted existing saved maps in {SAVED_MAPS_IMAGES_DIR}")
 
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map app."""

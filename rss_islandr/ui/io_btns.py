@@ -78,6 +78,10 @@ class ExportExcelReportBtn(IOBtns):
         super().__init__(ui_inp_vars, ui_calc_vars)
 
     def __delete_files(self, image_files_full_path: list[str]):
+        """
+        This function deletes the image files from the disk after they are inserted into the Excel file.
+        Right now, it is not used, since the images are deleted with a new instance of the program.
+        """
         for file_path in image_files_full_path:
             try:
                 os.remove(file_path)
@@ -137,7 +141,7 @@ class ExportExcelReportBtn(IOBtns):
         # Autofit columns/rows if needed
         sheet.autofit()
         logging.info(f"Successfully inserted {len(image_files)} images")
-        self.__delete_files(image_files_full_path)
+        # self.__delete_files(image_files_full_path)
 
         return None
 
