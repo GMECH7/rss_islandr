@@ -1,9 +1,14 @@
-.bigimage-unicode-icon {
+.leaflet-touch .leaflet-bar, 
+.leaflet-bar .bigimage-unicode-icon {
+    background: rgba(255, 255, 255, 0.5);
+    font-family: 'Calibri', sans-serif;
+    color: #555;
     font-size: 19px;
     font-weight: 700;
     display: block;
     border-radius: 4px;
-    cursor: pointer
+    cursor: pointer;
+
 }
 
 .bigimage-unicode-icon-disable {
@@ -31,7 +36,7 @@
 }
 
 #print-params>input[type=number] {
-    border: 1px solid #999;
+    border: 1px solid #298f6dad;
     border-radius: 4px
 }
 
@@ -76,7 +81,7 @@
     height: 30px;
     width: 30px;
     margin: -15px 0 0 -15px;
-    border: 4px #a7a4ab solid;
+    border: 4px #62448a solid;
     border-top: 4px #52006d solid;
     border-radius: 50%;
     -webkit-animation: spin 1s infinite linear;
@@ -114,7 +119,7 @@
     text-align: center;
     padding: .3em .8em;
     background: linear-gradient(45deg, #2b71ad, #0c7162);
-    color: #fff;
+    color: #571010;
     box-shadow: 0 .4em .4em rgba(0, 0, 0, .25);
     border-radius: .4em;
     transition: box-shadow .2s ease-in-out;

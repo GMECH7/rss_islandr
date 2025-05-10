@@ -87,23 +87,21 @@ class ExportExcelReportBtn(IOBtns):
 
     def __save_pics(self, workbook: xw.Book, excel_starting_cell: str = "A1", image_width: int = 1000) -> None:
         """
-        _summary_
+        Saves all PNG images from SAVED_MAPS_IMAGES_DIR to Excel worksheet vertically,
+        with fixed width and auto-calculated height, then deletes the source files.
+        EXE-compatible version.
 
         Parameters
         ----------
         workbook : xw.Book
-            _description_
+            The Excel workbook to insert images into
         excel_starting_cell : str, optional
-            _description_, by default "A1"
+            Starting cell position for images (default: "A1")
         image_width : int, optional
-            _description_, by default 1000
-
-        Returns
-        -------
-        None
+            Fixed width for all images in points (default: 1000)
         """
         sheet = workbook.sheets[3]
-        image_files = [f for f in os.listdir(SAVED_MAPS_IMAGES_DIR) if f.lower().endswith("png")]
+        image_files = [f for f in SAVED_MAPS_IMAGES_DIR.glob("*.png") if f.is_file() and f.suffix.lower() == ".png"]
 
         if not image_files:
             logging.info(f"No images found in {SAVED_MAPS_IMAGES_DIR}")

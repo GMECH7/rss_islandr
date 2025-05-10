@@ -7,6 +7,7 @@ from pathlib import Path
 
 import ttkbootstrap as tb
 import webview
+
 from rss_islandr.core.config_parser import SAVED_MAPS_IMAGES_DIR
 
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +32,7 @@ class Api:
 
             # Generate a filename with timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"{SAVED_MAPS_IMAGES_DIR}/map_export_{timestamp}.png"
+            filename = SAVED_MAPS_IMAGES_DIR / f"map_export_{timestamp}.png"
 
             # Save to disk
             with open(filename, "wb") as f:
