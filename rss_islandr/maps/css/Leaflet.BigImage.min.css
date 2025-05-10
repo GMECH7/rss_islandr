@@ -75,17 +75,19 @@
 
 #print-loading {
     display: none;
-    position: absolute;
+    position: fixed; /* Changed from absolute to fixed */
     top: 50%;
     left: 50%;
-    height: 30px;
-    width: 30px;
-    margin: -15px 0 0 -15px;
-    border: 4px #62448a solid;
-    border-top: 4px #52006d solid;
+    transform: translate(-50%, -50%); /* This does the perfect centering */
+    height: 60px;
+    width: 60px;
+    margin: 0; /* Remove the negative margin */
+    border: 4px #555 solid;
+    border-top: 4px #006d00 solid;
     border-radius: 50%;
     -webkit-animation: spin 1s infinite linear;
-    animation: spin 1s infinite linear
+    animation: spin 1s infinite linear;
+    z-index: 1001; /* Ensure it appears above other elements */
 }
 
 @-webkit-keyframes spin {
