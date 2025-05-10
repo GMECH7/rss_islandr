@@ -8,8 +8,11 @@ __pycache__/
 *.so
 
 vertical_navbar_ui.py
-/results/
+results/
 report_template__COPY.xlsx
+saved_maps_images/*.png
+
+
 
 _try_maps
 commands.txt

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import shutil
 import tkinter as tk
 from abc import ABC, abstractmethod
@@ -9,7 +10,12 @@ import ttkbootstrap as tb
 import xlwings as xw
 from PIL import Image, ImageTk
 
-from rss_islandr.core.config_parser import STATIC_DIR, XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY
+from rss_islandr.core.config_parser import (
+    SAVED_MAPS_IMAGES_DIR,
+    STATIC_DIR,
+    XLSX_TEMPLATE_FILE,
+    XLSX_TEMPLATE_FILE_COPY,
+)
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 
 logging.basicConfig(level=logging.INFO)
@@ -71,6 +77,74 @@ class ExportExcelReportBtn(IOBtns):
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
 
+    def __delete_files(self, image_files_full_path: list[str]):
+        """
+        This function deletes the image files from the disk after they are inserted into the Excel file.
+        Right now, it is not used, since the images are deleted with a new instance of the program.
+        """
+        for file_path in image_files_full_path:
+            try:
+                os.remove(file_path)
+                logging.info(f"Deleted: {file_path}")
+            except Exception as e:
+                logging.info(f"Error deleting {file_path}: {str(e)}")
+
+    def __save_pics(self, workbook: xw.Book, excel_starting_cell: str = "A1", image_width: int = 1000) -> None:
+        """
+        Saves all PNG images from SAVED_MAPS_IMAGES_DIR to Excel worksheet vertically,
+        with fixed width and auto-calculated height, then deletes the source files.
+        EXE-compatible version.
+
+        Parameters
+        ----------
+        workbook : xw.Book
+            The Excel workbook to insert images into
+        excel_starting_cell : str, optional
+            Starting cell position for images (default: "A1")
+        image_width : int, optional
+            Fixed width for all images in points (default: 1000)
+        """
+        sheet = workbook.sheets[3]
+        image_files = [f for f in SAVED_MAPS_IMAGES_DIR.glob("*.png") if f.is_file() and f.suffix.lower() == ".png"]
+
+        if not image_files:
+            logging.info(f"No images found in {SAVED_MAPS_IMAGES_DIR}")
+            return None
+
+        # Set initial position
+        left_position = sheet.range(excel_starting_cell).left
+        top_position = sheet.range(excel_starting_cell).top
+
+        image_files_full_path = []
+        for i, image_file in enumerate(image_files):
+            full_path = os.path.join(SAVED_MAPS_IMAGES_DIR, image_file)
+            image_files_full_path.append(full_path)
+            with Image.open(full_path) as img:
+                orig_width, orig_height = img.size
+                aspect_ratio = orig_height / orig_width
+                calculated_height = image_width * aspect_ratio
+
+            pic = sheet.pictures.add(
+                full_path,
+                left=left_position,
+                top=top_position,
+                width=image_width,
+                height=calculated_height,
+            )
+
+            # Name the picture (optional)
+            pic.name = f"MapImage_{i + 1}"
+            # Update top position for next image
+            top_position += calculated_height + 20
+        sheet.range("A:A").column_width = image_width / 7
+
+        # Autofit columns/rows if needed
+        sheet.autofit()
+        logging.info(f"Successfully inserted {len(image_files)} images")
+        # self.__delete_files(image_files_full_path)
+
+        return None
+
     def on_btn_click(self):
         """ """
         self.access_vars()
@@ -104,6 +178,7 @@ class ExportExcelReportBtn(IOBtns):
                     if position is not None:
                         sheet.range(position).value = value
 
+            self.__save_pics(workbook)
             workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
             app.quit()

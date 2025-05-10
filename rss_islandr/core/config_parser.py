@@ -23,6 +23,7 @@ ISLANDR_LOGO = STATIC_DIR / "islandr_logo.png"
 
 DATA_DIR = PROJECT_DIR / "data"
 TEMPLATES_DIR = PROJECT_DIR / "templates"
+SAVED_MAPS_IMAGES_DIR = PROJECT_DIR / "saved_maps_images"
 REPORTS_DIR = PROJECT_DIR / "reports"
 
 SETTINGS_JSON_DIR = DATA_DIR / "settings.json"

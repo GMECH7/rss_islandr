@@ -22,6 +22,7 @@ a = Analysis(
     ('rss_islandr\\templates\\report_template.xlsx', 'templates'),
     ('rss_islandr\\data', 'data'),
     ('rss_islandr\\static', 'static'),
+    ('rss_islandr\\saved_maps_images', 'saved_maps_images'),
     ('rss_islandr\\maps', 'maps')
     ],
     binaries=[],
