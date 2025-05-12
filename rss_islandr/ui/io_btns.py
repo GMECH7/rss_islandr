@@ -89,7 +89,9 @@ class ExportExcelReportBtn(IOBtns):
             except Exception as e:
                 logging.info(f"Error deleting {file_path}: {str(e)}")
 
-    def __save_pics(self, workbook: xw.Book, excel_starting_cell: str = "A1", image_width: int = 1000) -> None:
+    def __save_pics(
+        self, workbook: xw.Book, selected_image_files, excel_starting_cell: str = "A1", image_width: int = 1000
+    ) -> None:
         """
         Saves all PNG images from SAVED_MAPS_IMAGES_DIR to Excel worksheet vertically,
         with fixed width and auto-calculated height, then deletes the source files.
@@ -105,20 +107,14 @@ class ExportExcelReportBtn(IOBtns):
             Fixed width for all images in points (default: 1000)
         """
         sheet = workbook.sheets[3]
-        image_files = [f for f in SAVED_MAPS_IMAGES_DIR.glob("*.png") if f.is_file() and f.suffix.lower() == ".png"]
-
-        if not image_files:
-            logging.info(f"No images found in {SAVED_MAPS_IMAGES_DIR}")
-            return None
 
         # Set initial position
         left_position = sheet.range(excel_starting_cell).left
         top_position = sheet.range(excel_starting_cell).top
 
-        image_files_full_path = []
-        for i, image_file in enumerate(image_files):
-            full_path = os.path.join(SAVED_MAPS_IMAGES_DIR, image_file)
-            image_files_full_path.append(full_path)
+        for i, image_file in enumerate(selected_image_files):
+            full_path = os.path.abspath(str(image_file))
+
             with Image.open(full_path) as img:
                 orig_width, orig_height = img.size
                 aspect_ratio = orig_height / orig_width
@@ -140,15 +136,30 @@ class ExportExcelReportBtn(IOBtns):
 
         # Autofit columns/rows if needed
         sheet.autofit()
-        logging.info(f"Successfully inserted {len(image_files)} images")
+        logging.info(f"Successfully inserted {len(selected_image_files)} images")
         # self.__delete_files(image_files_full_path)
 
         return None
+
+    def __add_maps(self):
+        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps to the Excel report?")
+
+        if add_maps:
+            selected_image_files = list(
+                filedialog.askopenfilenames(title="Select PNG Images", filetypes=[("PNG Images", "*.png")])
+            )
+        else:
+            selected_image_files = []
+            messagebox.showinfo("No Images Selected", "No images were selected. Proceeding without maps.")
+
+        return selected_image_files
 
     def on_btn_click(self):
         """ """
         self.access_vars()
 
+        # Ask if user wants to add maps
+        selected_image_files = self.__add_maps()
         file_path = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
             filetypes=[("XLSX files", "*.xlsx"), ("All files", "*.*")],
@@ -178,7 +189,7 @@ class ExportExcelReportBtn(IOBtns):
                     if position is not None:
                         sheet.range(position).value = value
 
-            self.__save_pics(workbook)
+            self.__save_pics(workbook, selected_image_files)
             workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
             app.quit()
