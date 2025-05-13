@@ -11,7 +11,6 @@ import xlwings as xw
 from PIL import Image, ImageTk
 
 from rss_islandr.core.config_parser import (
-    SAVED_MAPS_IMAGES_DIR,
     STATIC_DIR,
     XLSX_TEMPLATE_FILE,
     XLSX_TEMPLATE_FILE_COPY,
@@ -77,30 +76,22 @@ class ExportExcelReportBtn(IOBtns):
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
 
-    def __delete_files(self, image_files_full_path: list[str]):
-        """
-        This function deletes the image files from the disk after they are inserted into the Excel file.
-        Right now, it is not used, since the images are deleted with a new instance of the program.
-        """
-        for file_path in image_files_full_path:
-            try:
-                os.remove(file_path)
-                logging.info(f"Deleted: {file_path}")
-            except Exception as e:
-                logging.info(f"Error deleting {file_path}: {str(e)}")
-
-    def __save_pics(
-        self, workbook: xw.Book, selected_image_files, excel_starting_cell: str = "A1", image_width: int = 1000
+    def __save_maps_as_imgs(
+        self,
+        workbook: xw.Book,
+        selected_image_files: list[str],
+        excel_starting_cell: str = "A1",
+        image_width: int = 1000,
     ) -> None:
         """
-        Saves all PNG images from SAVED_MAPS_IMAGES_DIR to Excel worksheet vertically,
-        with fixed width and auto-calculated height, then deletes the source files.
-        EXE-compatible version.
+        Implementation of method to insert map images into the Excel workbook.
 
         Parameters
         ----------
         workbook : xw.Book
             The Excel workbook to insert images into
+        selected_image_files : list[str]
+            List of selected image file paths
         excel_starting_cell : str, optional
             Starting cell position for images (default: "A1")
         image_width : int, optional
@@ -108,7 +99,6 @@ class ExportExcelReportBtn(IOBtns):
         """
         sheet = workbook.sheets[3]
 
-        # Set initial position
         left_position = sheet.range(excel_starting_cell).left
         top_position = sheet.range(excel_starting_cell).top
 
@@ -118,31 +108,33 @@ class ExportExcelReportBtn(IOBtns):
             with Image.open(full_path) as img:
                 orig_width, orig_height = img.size
                 aspect_ratio = orig_height / orig_width
-                calculated_height = image_width * aspect_ratio
+                image_height_calc = image_width * aspect_ratio
 
             pic = sheet.pictures.add(
                 full_path,
                 left=left_position,
                 top=top_position,
                 width=image_width,
-                height=calculated_height,
+                height=image_height_calc,
             )
 
             # Name the picture (optional)
             pic.name = f"MapImage_{i + 1}"
             # Update top position for next image
-            top_position += calculated_height + 20
+            top_position += image_height_calc + 20
         sheet.range("A:A").column_width = image_width / 7
 
         # Autofit columns/rows if needed
         sheet.autofit()
         logging.info(f"Successfully inserted {len(selected_image_files)} images")
-        # self.__delete_files(image_files_full_path)
 
         return None
 
-    def __add_maps(self):
-        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps to the Excel report?")
+    def __add_maps_prompt(self) -> list[str]:
+        """
+        Prompt to ask user if they want to add maps images to the Excel report.
+        """
+        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps images to the Excel report?")
 
         if add_maps:
             selected_image_files = list(
@@ -158,8 +150,7 @@ class ExportExcelReportBtn(IOBtns):
         """ """
         self.access_vars()
 
-        # Ask if user wants to add maps
-        selected_image_files = self.__add_maps()
+        selected_image_files = self.__add_maps_prompt()
         file_path = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
             filetypes=[("XLSX files", "*.xlsx"), ("All files", "*.*")],
@@ -189,7 +180,7 @@ class ExportExcelReportBtn(IOBtns):
                     if position is not None:
                         sheet.range(position).value = value
 
-            self.__save_pics(workbook, selected_image_files)
+            self.__save_maps_as_imgs(workbook, selected_image_files)
             workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
             app.quit()
@@ -219,9 +210,9 @@ class ExportScenarioBtn(IOBtns):
             filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
             title="Save Scenario As",
         )
-
         if not file_path:  # User canceled the dialog
             return
+
         try:
             with open(file_path, "w") as scenario_file:
                 json.dump(self.saved_scenario, scenario_file, indent=4)
@@ -249,6 +240,7 @@ class ImportScenarioBtn(IOBtns):
         )
         if not file_path:  # User canceled the dialog
             return
+
         try:
             with open(file_path, "r") as file_inp:
                 scenario_data = json.load(file_inp)
@@ -265,6 +257,8 @@ class ImportScenarioBtn(IOBtns):
 
 
 class PopupImage(IOBtns):
+    """Implementation of button for opening a popup window presenting an image."""
+
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
         super().__init__(ui_inp_vars, ui_calc_vars)
         self.image_path = STATIC_DIR / "csm.png"  # Change to your actual image path

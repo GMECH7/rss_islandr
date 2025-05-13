@@ -1,14 +1,11 @@
-import base64
+# -*- coding: utf-8 -*-
 import logging
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import ttkbootstrap as tb
 import webview
-
-from rss_islandr.core.config_parser import SAVED_MAPS_IMAGES_DIR
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,30 +18,9 @@ class Api:
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
-    def receive_image_data(self, image_data):
-        """Save the base64-encoded image to a file."""
-        try:
-            # Remove the "data:image/png;base64," prefix
-            header, encoded = image_data.split(",", 1)
-
-            # Decode the base64 data
-            img_data = base64.b64decode(encoded)
-
-            # Generate a filename with timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = SAVED_MAPS_IMAGES_DIR / f"map_export_{timestamp}.png"
-
-            # Save to disk
-            with open(filename, "wb") as f:
-                f.write(img_data)
-
-            logging.info(f"Image saved as: {filename}")
-        except Exception as e:
-            logging.error(f"Failed to save image: {e}")
-
 
 class MapUI:
-    def __init__(self, map_html: Path, style: tb.Style, map_height: int, map_width: int):
+    def __init__(self, map_html: Path, style: tb.Style):
         self.__style = style
         self.map_html = map_html
         self.webview_process = None
@@ -78,4 +54,4 @@ class MapUI:
             js_api=api_instance,  # Attach the JavaScript API
         )
         logging.info("Webview started. Waiting for coordinates...")
-        webview.start(debug=False)
+        webview.start(debug=True)
