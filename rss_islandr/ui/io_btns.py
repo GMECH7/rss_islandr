@@ -138,7 +138,9 @@ class ExportExcelReportBtn(IOBtns):
 
         if add_maps:
             selected_image_files = list(
-                filedialog.askopenfilenames(title="Select PNG Images", filetypes=[("PNG Images", "*.png")])
+                filedialog.askopenfilenames(
+                    title="Select Map Images", filetypes=[("PNG Images", "*.png"), ("JPEG Images", "*.jpeg")]
+                )
             )
         else:
             selected_image_files = []
