@@ -15,7 +15,7 @@ class MapManager {
     L.tileLayer(MAP_CONFIG.baseLayer.url, {
       attribution: MAP_CONFIG.baseLayer.attribution,
     }).addTo(this.map);
-    L.control.bigImage({position: 'bottomleft'}).addTo(this.map);
+    // L.control.bigImage({position: 'bottomleft'}).addTo(this.map);
   }
 
 
@@ -217,6 +217,7 @@ document
 // Initialize the map when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.mapManager = new MapManager();
+  window.map = window.mapManager.map; // 👈 THIS is the only line you need to add
 });
 
 document.addEventListener("DOMContentLoaded", function () {
