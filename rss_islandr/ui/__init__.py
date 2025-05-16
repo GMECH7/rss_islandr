@@ -6,7 +6,7 @@ from .general_ui import GeneralUITemplate, frame_distances
 from .home_ui import HomeUI
 from .horizontal_navbar import HorizontalNavbar
 from .horizontal_navbar_btns import HorizontalNavbarBtns
-from .io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, IOBtns, PopupImage
+from .io_btns import ExportExcelReportBtn, ExportPDFReportBtn, ExportScenarioBtn, ImportScenarioBtn, IOBtns, PopupImage
 from .main_app_ui import MainAppUI
 from .map_ui import MapUI
 from .site_info_ui import SiteInfoUI
@@ -24,6 +24,7 @@ __all__ = [
     "ExportExcelReportBtn",
     "ExportScenarioBtn",
     "ImportScenarioBtn",
+    "ExportPDFReportBtn",
     "IOBtns",
     "PopupImage",
     "MainAppUI",

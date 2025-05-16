@@ -16,6 +16,7 @@ from rss_islandr.core.config_parser import (
     XLSX_TEMPLATE_FILE_COPY,
 )
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.reporting import create_pdf_report
 
 logging.basicConfig(level=logging.INFO)
 
@@ -226,6 +227,34 @@ class ExportScenarioBtn(IOBtns):
         """ """
         btn = tb.Button(frame, text="Save scenario", command=self.on_btn_click)
         return btn
+
+
+class ExportPDFReportBtn(IOBtns):
+    """Implementation of button for exporting to pdf file"""
+
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+        super().__init__(ui_inp_vars, ui_calc_vars)
+
+    def on_btn_click(self):
+        """ """
+        self.access_vars()
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            title="Save Report As",
+        )
+        if not file_path:  # User canceled the dialog
+            return
+
+        try:
+            create_pdf_report(self.ui_inp_vars, file_path)
+            messagebox.showinfo("Success", "PDF report exported!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def btn(self, frame: tb.Frame):
+        """ """
+        pass
 
 
 class ImportScenarioBtn(IOBtns):
