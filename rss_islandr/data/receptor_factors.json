@@ -7,6 +7,7 @@
         "SD": "Sediment"
     },
     "SL_receptor": {
+        "pdf_table_name": "Soil receptor",
         "excel_col": "C",
         "excel_row": 20,
         "available_pathways": [
@@ -35,6 +36,7 @@
         }
     },
     "GW_receptor": {
+        "pdf_table_name": "Groundwater receptor",
         "excel_col": "F",
         "excel_row": 20,
         "available_pathways": [
@@ -67,6 +69,7 @@
         }
     },
     "SW_receptor": {
+        "pdf_table_name": "Surface water receptor",
         "excel_col": "I",
         "excel_row": 20,
         "available_pathways": [
@@ -104,6 +107,7 @@
         }
     },
     "AR_receptor": {
+        "pdf_table_name": "Air receptor",
         "excel_col": "L",
         "excel_row": 20,
         "available_pathways": [
@@ -127,6 +131,7 @@
         }
     },
     "SD_receptor": {
+        "pdf_table_name": "Sediment receptor",
         "excel_col": "O",
         "excel_row": 20,
         "available_pathways": [

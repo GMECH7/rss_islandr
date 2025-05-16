@@ -247,7 +247,7 @@ class ExportPDFReportBtn(IOBtns):
             return
 
         try:
-            create_pdf_report(self.ui_inp_vars, file_path)
+            create_pdf_report(self.ui_inp_vars, self.ui_calc_vars, file_path)
             messagebox.showinfo("Success", "PDF report exported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

@@ -39,6 +39,7 @@ class UIInpVariable:
     text_descr: Optional[str] = None
     drop_options: Optional[List[str]] = None
     excel_cell: Optional[str] = None
+    pdf_table_name: Optional[str] = None
     state: str = field(default="enabled")
 
 

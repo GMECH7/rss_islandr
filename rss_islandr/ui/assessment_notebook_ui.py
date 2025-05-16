@@ -1,3 +1,5 @@
+from typing import Union
+
 import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
 from PIL import Image
@@ -105,6 +107,14 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         return parent_excel_col, parent_excel_row
 
+    def __get_pdf_table_name(self, data_fetcher, risk_factor_key) -> Union[str, None]:
+        try:
+            pdf_table_name = data_fetcher.getter(risk_factor_key)["pdf_table_name"]
+        except Exception:
+            pdf_table_name = None
+
+        return pdf_table_name
+
     def __assemble_xlsx_row(self, i: int, parent_excel_col: str, parent_excel_row: int) -> tuple[str, str]:
         """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
@@ -123,6 +133,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         for risk_factor_key in self.__source_pathway_keys:
             mechanisms_dict = self.hazard_fetcher.getter(risk_factor_key)["mechanism"]
             parent_excel_col, parent_excel_row = self.__get_xlsx_row_col(risk_factor_key)
+            pdf_table_name = self.__get_pdf_table_name(self.hazard_fetcher, risk_factor_key)
 
             for i, mechanism_key in enumerate(mechanisms_dict):
                 mechanism_alias = self.hazard_fetcher.getter(risk_factor_key, mechanism_key)["alias"]
@@ -156,6 +167,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                     text_descr=None,
                     drop_options=dropdown_severity,
                     excel_cell=excel_cell,
+                    pdf_table_name=pdf_table_name,
                     state="enabled",
                 )
                 self.ui_inp_vars.update({f"drop_{self.scenario_id}_{risk_factor_key}_1_0{i}": ui_var})
@@ -199,6 +211,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         This method defines the dropdown variables used receptor calculations dropdown lists.
         """
         for key in self.__receptor_keys:
+            pdf_table_name = self.__get_pdf_table_name(self.receptor_fetcher, key)
             try:
                 parent_excel_col = self.receptor_fetcher.getter(key)["excel_col"]
                 parent_excel_row = self.receptor_fetcher.getter(key)["excel_row"]
@@ -245,6 +258,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 text_descr=None,
                 drop_options=dropdown_available_pathways_aliases,
                 excel_cell=f"{parent_excel_col}{parent_excel_row}",
+                pdf_table_name=pdf_table_name,
                 state="enabled",
             )
 
@@ -257,6 +271,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 text_descr=None,
                 drop_options=dropdown_receptor_param,
                 excel_cell=f"{parent_excel_col}{parent_excel_row + 1}",
+                pdf_table_name=pdf_table_name,
                 state="enabled",
             )
             self.ui_inp_vars.update({f"drop_{key}_{self.scenario_id}_1_0": ui_var_pathway})
