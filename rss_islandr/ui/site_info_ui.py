@@ -51,6 +51,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Assessment date",
             text_descr=None,
             excel_cell="C3",
+            pdf_table_name="Site information",
         )
 
         self.__date_oper_start_var = tb.StringVar()
@@ -58,18 +59,20 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__date_oper_start_var,
             rel_pos=8,
-            text_val="Operation start & end dates",
+            text_val="Operation start date",
             text_descr=None,
             excel_cell="M3",
+            pdf_table_name="Site information",
         )
         self.__date_oper_end_var = tb.StringVar()
         date_oper_end_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__date_oper_end_var,
             rel_pos=8,
-            text_val="Operation start & end dates",
+            text_val="Operation end date",
             text_descr=None,
             excel_cell="M4",
+            pdf_table_name="Site information",
         )
         self.ui_inp_vars.update({"date_0_00": date_var})
         self.ui_inp_vars.update({"odat_0_00": date_oper_start_var})
@@ -87,6 +90,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Site name",
             text_descr=None,
             excel_cell="C2",
+            pdf_table_name="Site information",
         )
 
         self.__site_area = tb.StringVar()
@@ -97,6 +101,7 @@ class SiteInfoUI(GeneralUITemplate):
             text_val="Site area [km\u00b2]",
             text_descr=None,
             excel_cell="C5",
+            pdf_table_name="Site information",
         )
 
         self.ui_inp_vars.update({"val_0_00": ui_var_site_name, "val_0_01": ui_var_site_area})
@@ -116,20 +121,22 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__activity_var,
             rel_pos=4,
-            text_val="Select activity/industry",
+            text_val="Activity/industry",
             text_descr=None,
             drop_options=self.__activity_options,
             excel_cell="H2",
+            pdf_table_name="Site information",
         )
 
         ui_var_site_status = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__site_status_var,
             rel_pos=7,
-            text_val="Select site status",
+            text_val="Site status",
             text_descr=None,
             drop_options=self.site_status_options,
             excel_cell="M2",
+            pdf_table_name="Site information",
         )
 
         self.__site_status_var.trace_add("write", self.update_date_widgets)
@@ -157,11 +164,12 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__soil_type_1_var,
             rel_pos=5,
-            text_val="Select soil type",
+            text_val="Soil type",
             val_default=self.__soil_type_1_options[0],
             text_descr=None,
             drop_options=self.__soil_type_1_options,
             excel_cell="H4",
+            pdf_table_name="Site information",
         )
 
         self.__soil_type_2_options = self.__soil_types_dict[self.__soil_type_1_var.get()]
@@ -171,11 +179,12 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__soil_type_2_var,
             rel_pos=5,
-            text_val="Select soil type",
+            text_val="Soil type (specific)",
             val_default=self.__soil_type_2_options[0],
             text_descr=None,
             drop_options=self.__soil_type_2_options,
             excel_cell="I4",
+            pdf_table_name="Site information",
         )
 
         self.__soil_type_1_var.trace_add("write", self.__update_soil_options)
@@ -204,11 +213,12 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__land_use_1_var,
             rel_pos=6,
-            text_val="Select land use",
+            text_val="Land use",
             val_default=self.__land_use_1_options[0],
             text_descr=None,
             drop_options=self.__land_use_1_options,
             excel_cell="H3",
+            pdf_table_name="Site information",
         )
 
         self.__land_use_2_options = self.__land_use_dict[self.__land_use_1_var.get()]
@@ -218,11 +228,12 @@ class SiteInfoUI(GeneralUITemplate):
             frame_tag="site_info_frame",
             tk_var=self.__land_use_2_var,
             rel_pos=6,
-            text_val="Select land use",
+            text_val="Land use (specific)",
             val_default=self.__land_use_2_options[0],
             text_descr=None,
             drop_options=self.__land_use_2_options,
             excel_cell="I3",
+            pdf_table_name="Site information",
         )
 
         self.__land_use_1_var.trace_add("write", self.__update_land_use_options)

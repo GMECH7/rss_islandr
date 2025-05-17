@@ -5,7 +5,7 @@ from core.config_parser import settings
 from core.datatypes import TkWidgets, UISettings
 from core.skin_reader import read_skin_details
 from custom_themes import CustomThemes
-from io_btns import ExportExcelReportBtn, ExportScenarioBtn, ImportScenarioBtn, PopupImage
+from io_btns import ExportExcelReportBtn, ExportPDFReportBtn, ExportScenarioBtn, ImportScenarioBtn, PopupImage
 
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 
@@ -70,6 +70,7 @@ class HorizontalNavbarBtns:
         File menu. Import and Export options.
         """
         write_to_excel = ExportExcelReportBtn(self.__ui_inp_vars, self.__ui_calc_vars)
+        write_to_pdf = ExportPDFReportBtn(self.__ui_inp_vars, self.__ui_calc_vars)
         write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
         read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
 
@@ -78,7 +79,8 @@ class HorizontalNavbarBtns:
 
         menu = Menu(menu_btn, tearoff=0)
 
-        menu.add_command(label="Export report", command=write_to_excel.on_btn_click)
+        menu.add_command(label="Export Excel report", command=write_to_excel.on_btn_click)
+        menu.add_command(label="Export PDF report", command=write_to_pdf.on_btn_click)
         menu.add_command(label="Export scenario", command=write_to_json.on_btn_click)
         menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
         menu_btn["menu"] = menu

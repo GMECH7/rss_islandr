@@ -16,6 +16,7 @@ from rss_islandr.core.config_parser import (
     XLSX_TEMPLATE_FILE_COPY,
 )
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.reporting import PDFReport
 
 logging.basicConfig(level=logging.INFO)
 
@@ -58,6 +59,25 @@ class IOBtns(ABC):
         #: Access calculated variables
         for key in self.ui_calc_vars:
             self.__access_vars_loop(key, self.ui_calc_vars)
+
+    @staticmethod
+    def add_maps_prompt() -> list[str]:
+        """
+        Prompt to ask user if they want to add maps images to the Excel/PDF report.
+        """
+        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps images to the Excel report?")
+
+        if add_maps:
+            selected_image_files = list(
+                filedialog.askopenfilenames(
+                    title="Select Map Images", filetypes=[("PNG Images", "*.png"), ("JPEG Images", "*.jpeg")]
+                )
+            )
+        else:
+            selected_image_files = []
+            messagebox.showinfo("No Images Selected", "No images were selected. Proceeding without maps.")
+
+        return selected_image_files
 
     @abstractmethod
     def on_btn_click(self, *args):
@@ -151,8 +171,7 @@ class ExportExcelReportBtn(IOBtns):
     def on_btn_click(self):
         """ """
         self.access_vars()
-
-        selected_image_files = self.__add_maps_prompt()
+        selected_image_files = self.add_maps_prompt()
         file_path = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
             filetypes=[("XLSX files", "*.xlsx"), ("All files", "*.*")],
@@ -226,6 +245,39 @@ class ExportScenarioBtn(IOBtns):
         """ """
         btn = tb.Button(frame, text="Save scenario", command=self.on_btn_click)
         return btn
+
+
+class ExportPDFReportBtn(IOBtns):
+    """Implementation of button for exporting to pdf file"""
+
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+        super().__init__(ui_inp_vars, ui_calc_vars)
+
+    def on_btn_click(self):
+        """ """
+        selected_image_files = self.add_maps_prompt()
+        if len(selected_image_files) == 0:
+            selected_image_files = None
+
+        self.access_vars()
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            title="Save Report As",
+        )
+        if not file_path:  # User canceled the dialog
+            return
+
+        try:
+            pdf_report = PDFReport(file_path)
+            pdf_report(self.ui_inp_vars, self.ui_calc_vars, selected_image_files)
+            messagebox.showinfo("Success", "PDF report exported!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def btn(self, frame: tb.Frame):
+        """ """
+        pass
 
 
 class ImportScenarioBtn(IOBtns):
