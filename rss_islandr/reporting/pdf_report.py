@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -25,6 +25,10 @@ section_title_mapping = {
     "off-on_frame": "Off-site to on-site contamination",
 }
 
+size_1 = 16
+size_2 = 14
+size_3 = 12
+
 
 def create_custom_styles():
     """Create custom paragraph styles for the report"""
@@ -35,7 +39,7 @@ def create_custom_styles():
         ParagraphStyle(
             name="ReportTitle",
             parent=styles["Title"],
-            fontSize=18,
+            fontSize=size_1,
             leading=22,
             spaceAfter=12,
             alignment=1,  # Center aligned
@@ -45,35 +49,11 @@ def create_custom_styles():
         ParagraphStyle(
             name="TOCHeader",
             parent=styles["Heading1"],
-            fontSize=16,
+            fontSize=size_1,
             leading=20,
-            spaceAfter=12,
-            alignment=1,
-            textColor=colors.HexColor("#1E88E5"),
-        )
-    )
-
-    styles.add(
-        ParagraphStyle(
-            name="SectionHeader",
-            parent=styles["Heading2"],
-            fontSize=14,
-            leading=18,
-            spaceBefore=12,
             spaceAfter=6,
-            textColor=colors.HexColor("#E51E1E"),
-        )
-    )
-
-    styles.add(
-        ParagraphStyle(
-            name="SubSectionHeader",
-            parent=styles["Heading3"],
-            fontSize=14,
-            leading=18,
-            spaceBefore=12,
-            spaceAfter=6,
-            textColor=colors.HexColor("#1E88E5"),
+            alignment=0,
+            textColor=colors.black,
         )
     )
 
@@ -81,7 +61,7 @@ def create_custom_styles():
         ParagraphStyle(
             name="toc_entry_section",
             parent=styles["Normal"],
-            fontSize=18,
+            fontSize=size_2,
             leading=16,
             spaceAfter=6,
             leftIndent=0,
@@ -93,7 +73,7 @@ def create_custom_styles():
         ParagraphStyle(
             name="toc_entry_subsection",
             parent=styles["Normal"],
-            fontSize=10,
+            fontSize=size_3,
             leading=16,
             spaceAfter=6,
             leftIndent=10,
@@ -103,26 +83,26 @@ def create_custom_styles():
 
     styles.add(
         ParagraphStyle(
-            name="Level1Header",
+            name="SectionHeader",
             parent=styles["Heading1"],
-            fontSize=16,
+            fontSize=size_2,
             leading=20,
             spaceBefore=24,
             spaceAfter=12,
-            textColor=colors.HexColor("#0D47A1"),  # Darker blue
+            textColor=colors.black,  # Darker blue
             alignment=0,  # Left aligned
         )
     )
 
     styles.add(
         ParagraphStyle(
-            name="Level2Header",
-            parent=styles["Heading2"],
-            fontSize=14,
+            name="SubSectionHeader",
+            parent=styles["Heading3"],
+            fontSize=size_3,
             leading=18,
             spaceBefore=18,
             spaceAfter=8,
-            textColor=colors.HexColor("#1976D2"),  # Medium blue
+            textColor=colors.black,
             alignment=0,
         )
     )
@@ -131,19 +111,17 @@ def create_custom_styles():
 
 
 def create_table_of_contents(sections: dict[str, list[tuple[str, str, str]]], styles) -> ListFlowable:
-    """Create a table of contents flowable"""
+    """Create a table of contents flowable without bullets"""
     toc_items = []
     for section_title in sections:
-        p = Paragraph(f"{section_title}", styles["toc_entry_section"])
-        toc_items.append(ListItem(p))
+        p = Paragraph(f'<a href="#{section_title}">{section_title}</a>', styles["toc_entry_section"])
+        toc_items.append(ListItem(p, bulletText=""))
         for frame_tag, subsection_title, _ in sections[section_title]:
-            p = Paragraph(
-                f'<a href="#{frame_tag}">{subsection_title}</a>',
-                styles["toc_entry_subsection"],
-            )
-            toc_items.append(ListItem(p, bulletColor=colors.HexColor("#1E88E5")))
+            if subsection_title != "":
+                p = Paragraph(f'<a href="#{frame_tag}">{subsection_title}</a>', styles["toc_entry_subsection"])
+                toc_items.append(ListItem(p, bulletText=""))
 
-    return ListFlowable(toc_items, bulletType="bullet", leftIndent=20, rightIndent=20, spaceBefore=12, spaceAfter=12)
+    return ListFlowable(toc_items, bulletType="bullet")
 
 
 def create_table(
@@ -232,13 +210,14 @@ def create_pdf_report(
     # Add report title
     story.append(Paragraph(report_title, styles["ReportTitle"]))
     story.append(Spacer(1, 0.25 * inch))
+    story.append(PageBreak())
 
     # Group variables by frame tag and prepare TOC data
     ui_vars_grouped = group_by_frame_tag(ui_inp_vars)
     toc_sections = {}
 
     # Add table of contents header
-    story.append(Paragraph("Table of Contents", styles["TOCHeader"]))
+    story.append(Paragraph("Contents", styles["TOCHeader"]))
     story.append(Spacer(1, 0.25 * inch))
 
     # First pass: Collect all section titles for TOC
@@ -254,7 +233,7 @@ def create_pdf_report(
         else:
             raise ValueError(f"Unknown frame tag: {frame_tag}")
 
-        subsection_title = vars_list[0].pdf_table_name if hasattr(vars_list[0], "pdf_table_name") else frame_tag
+        subsection_title = vars_list[0].pdf_table_name
         if section_title not in toc_sections:
             toc_sections[section_title] = [(frame_tag, subsection_title, vars_list)]
         else:
@@ -265,12 +244,12 @@ def create_pdf_report(
     story.append(PageBreak())
 
     for section_title in toc_sections:
-        story.append(Paragraph(f'<a name="{frame_tag}"/>{section_title}', styles["Level1Header"]))
+        story.append(Paragraph(f'<a name="{section_title}"/>{section_title}', styles["SectionHeader"]))
         story.append(Spacer(1, 0.25 * inch))
 
         # Add each subsection
         for frame_tag, subsection_title, vars_list in toc_sections[section_title]:
-            story.append(Paragraph(f'<a name="{frame_tag}"/>{subsection_title}', styles["Level2Header"]))
+            story.append(Paragraph(f'<a name="{frame_tag}"/>{subsection_title}', styles["SubSectionHeader"]))
             story.append(Spacer(1, 0.1 * inch))
 
             # Add table
