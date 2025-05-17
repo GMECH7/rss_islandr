@@ -16,7 +16,7 @@ from rss_islandr.core.config_parser import (
     XLSX_TEMPLATE_FILE_COPY,
 )
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
-from rss_islandr.reporting import create_pdf_report
+from rss_islandr.reporting import PDFReport
 
 logging.basicConfig(level=logging.INFO)
 
@@ -59,6 +59,25 @@ class IOBtns(ABC):
         #: Access calculated variables
         for key in self.ui_calc_vars:
             self.__access_vars_loop(key, self.ui_calc_vars)
+
+    @staticmethod
+    def add_maps_prompt() -> list[str]:
+        """
+        Prompt to ask user if they want to add maps images to the Excel/PDF report.
+        """
+        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps images to the Excel report?")
+
+        if add_maps:
+            selected_image_files = list(
+                filedialog.askopenfilenames(
+                    title="Select Map Images", filetypes=[("PNG Images", "*.png"), ("JPEG Images", "*.jpeg")]
+                )
+            )
+        else:
+            selected_image_files = []
+            messagebox.showinfo("No Images Selected", "No images were selected. Proceeding without maps.")
+
+        return selected_image_files
 
     @abstractmethod
     def on_btn_click(self, *args):
@@ -152,8 +171,7 @@ class ExportExcelReportBtn(IOBtns):
     def on_btn_click(self):
         """ """
         self.access_vars()
-
-        selected_image_files = self.__add_maps_prompt()
+        selected_image_files = self.add_maps_prompt()
         file_path = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
             filetypes=[("XLSX files", "*.xlsx"), ("All files", "*.*")],
@@ -237,6 +255,10 @@ class ExportPDFReportBtn(IOBtns):
 
     def on_btn_click(self):
         """ """
+        selected_image_files = self.add_maps_prompt()
+        if len(selected_image_files) == 0:
+            selected_image_files = None
+
         self.access_vars()
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pdf",
@@ -247,7 +269,8 @@ class ExportPDFReportBtn(IOBtns):
             return
 
         try:
-            create_pdf_report(self.ui_inp_vars, self.ui_calc_vars, file_path)
+            pdf_report = PDFReport(file_path)
+            pdf_report(self.ui_inp_vars, self.ui_calc_vars, selected_image_files)
             messagebox.showinfo("Success", "PDF report exported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
