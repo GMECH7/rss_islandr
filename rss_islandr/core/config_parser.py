@@ -48,3 +48,7 @@ ui_heights: list[int] = settings["UI"]["ui_heights"]
 ui_widths: list[int] = settings["UI"]["ui_widths"]
 
 uis_frame_geometry: dict[str, dict] = settings["UI"]["uis_frame_geometry"]
+
+font_size_pdf_1 = settings["PDF_report"]["font_size_pdf_1"]
+font_size_pdf_2 = settings["PDF_report"]["font_size_pdf_2"]
+font_size_pdf_3 = settings["PDF_report"]["font_size_pdf_3"]

@@ -119,5 +119,10 @@
 				"n_col": 1
 			}
 		}
+	},
+	"PDF_report": {
+		"font_size_pdf_1": 16,
+		"font_size_pdf_2": 14,
+		"font_size_pdf_3": 12
 	}
 }

@@ -8,7 +8,6 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfgen import canvas
 from reportlab.platypus import (
     Image,
     PageBreak,
@@ -17,72 +16,13 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-from reportlab.platypus.doctemplate import SimpleDocTemplate
-from reportlab.platypus.tableofcontents import TableOfContents
 
-from rss_islandr.core.config_parser import ISLANDR_LOGO
+from rss_islandr.core.config_parser import ISLANDR_LOGO, font_size_pdf_1, font_size_pdf_2, font_size_pdf_3
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
-
-size_1 = 16
-size_2 = 14
-size_3 = 12
+from rss_islandr.reporting.custom_doc_template import CustomDocTemplate
+from rss_islandr.reporting.numbered_canvas import NumberedCanvas
 
 logging.basicConfig(level=logging.INFO)
-
-
-class CustomDocTemplate(SimpleDocTemplate):
-    """
-    Custom DocTemplate that supports a Table of Contents (TOC).
-    """
-
-    def __init__(self, filename, **kwargs):
-        super().__init__(filename, **kwargs)
-        # create TOC object here so we can inject it in story
-        self.toc = TableOfContents()
-        self.toc.levelStyles = [
-            ParagraphStyle(
-                name="TOCHeading1",
-                fontName="Helvetica-Bold",
-                fontSize=size_2,
-                leftIndent=20,
-                firstLineIndent=-20,
-                spaceBefore=5,
-            ),
-            ParagraphStyle(
-                name="TOCHeading2",
-                fontName="Helvetica",
-                fontSize=size_3,
-                leftIndent=40,
-                firstLineIndent=-20,
-                spaceBefore=0,
-            ),
-        ]
-        self.section_count = 0
-        self.subsection_count = 0
-
-    def afterFlowable(self, flowable):  # noqa: N802
-        """
-        NOTE: This method OVERRIDES the afterFlowable method of SimpleDocTemplate.
-
-        It is automatically called after each flowable is drawn.
-        It is used to register TOC entries for our SectionHeader & SubSectionHeader.
-        """
-        if hasattr(flowable, "style") and hasattr(flowable, "getPlainText"):
-            style_name = flowable.style.name
-            text = flowable.getPlainText()
-            page_num = self.canv.getPageNumber()
-
-            # Create a unique anchor/bookmark name
-            bookmark_name = text.replace(" ", "_").replace("&", "").replace("<", "").replace(">", "")[:50]
-
-            # Register the bookmark on the canvas
-            self.canv.bookmarkPage(bookmark_name)
-
-            # Register the TOC entry with the same anchor name
-            if style_name == "SectionHeader":
-                self.notify("TOCEntry", (0, text, page_num, bookmark_name))
-            elif style_name == "SubSectionHeader":
-                self.notify("TOCEntry", (1, text, page_num, bookmark_name))
 
 
 class PDFReport:
@@ -119,7 +59,7 @@ class PDFReport:
             ParagraphStyle(
                 name="ReportTitle",
                 parent=self._styles["Title"],
-                fontSize=size_1,
+                fontSize=font_size_pdf_1,
                 leading=22,
                 spaceAfter=12,
                 alignment=1,  # center
@@ -129,7 +69,7 @@ class PDFReport:
             ParagraphStyle(
                 name="ReportSubTitle",
                 parent=self._styles["Normal"],
-                fontSize=size_3,
+                fontSize=font_size_pdf_3,
                 leading=0,
                 spaceAfter=12,
                 alignment=1,  # center
@@ -139,7 +79,7 @@ class PDFReport:
             ParagraphStyle(
                 name="TOCHeader",
                 parent=self._styles["Heading1"],
-                fontSize=size_1,
+                fontSize=font_size_pdf_1,
                 leading=20,
                 spaceAfter=6,
                 alignment=0,
@@ -150,7 +90,7 @@ class PDFReport:
             ParagraphStyle(
                 name="SectionHeader",
                 parent=self._styles["Heading1"],
-                fontSize=size_2,
+                fontSize=font_size_pdf_2,
                 leading=20,
                 spaceBefore=24,
                 spaceAfter=12,
@@ -161,8 +101,8 @@ class PDFReport:
         self._styles.add(
             ParagraphStyle(
                 name="SubSectionHeader",
-                parent=self._styles["Heading3"],
-                fontSize=size_3,
+                parent=self._styles["Heading2"],
+                fontSize=font_size_pdf_3,
                 leading=18,
                 spaceBefore=18,
                 spaceAfter=8,
@@ -170,17 +110,6 @@ class PDFReport:
                 alignment=0,
             )
         )
-
-    def add_page_number_footer(self, canvas: canvas.Canvas, doc, skip_count=3):
-        page_num = canvas.getPageNumber()
-        if page_num <= skip_count:
-            return
-        else:
-            text = f"Page {page_num}"
-            canvas.saveState()
-            canvas.setFont("Helvetica", 9)
-            canvas.drawCentredString(0.5 * inch + (doc.pagesize[0] - 1 * inch) / 2.0, 0.5 * inch - 0.3 * inch, text)
-            canvas.restoreState()
 
     def __create_table(
         self, frame_tag: str, ui_inp_vars: list[UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]
@@ -192,17 +121,18 @@ class PDFReport:
         ]
         for var in ui_inp_vars:
             val = var.tk_var.get() if hasattr(var.tk_var, "get") else ""
-            table_data.append(
-                [Paragraph(var.text_val, self._styles["Normal"]), Paragraph(str(val), self._styles["Normal"])]
-            )
+            if var.text_val == "Latitude" or var.text_val == "Longitude":
+                val = f"{float(val):.4f}"
+
+            table_data.append([Paragraph(var.text_val, self._styles["Normal"]), Paragraph(val, self._styles["Normal"])])
 
         if frame_tag in ui_calc_vars:
-            cr = ui_calc_vars[frame_tag].tk_var.get()  # calculated risk
-            if cr:
+            calc_risk = ui_calc_vars[frame_tag].tk_var.get()
+            if calc_risk:
                 table_data.append(
                     [
-                        Paragraph("<b>Calculated Risk</b>", self._styles["Normal"]),
-                        Paragraph(str(cr), self._styles["Normal"]),
+                        Paragraph("<b>Calculated Risk [%]</b>", self._styles["Normal"]),
+                        Paragraph(f"{100 * float(calc_risk):.2f}", self._styles["Normal"]),
                     ]
                 )
 
@@ -237,14 +167,8 @@ class PDFReport:
             grouped.setdefault(v.frame_tag, []).append(v)
         return grouped
 
-    def __call__(
-        self,
-        ui_inp_vars: dict[str, UIInpVariable],
-        ui_calc_vars: dict[str, UICalcVariable],
-        images_list: Optional[list[str]] = None,
-        report_title: str = "Contamination Analysis Report",
-    ) -> None:
-        """PDF report generator"""
+    def __add__title_toc_to_story(self, report_title: str) -> None:
+        """Add title and TOC to the story"""
         date_now = datetime.datetime.now()
         date_str = date_now.strftime("%d %B %Y")
         logo = Image(ISLANDR_LOGO)  # Adjust size as needed
@@ -262,6 +186,40 @@ class PDFReport:
         self.story.append(Spacer(1, 0.25 * inch))
         self.story.append(self.doc.toc)
         self.story.append(PageBreak())
+
+    def __add__figures_to_story(self, images_list: list[str]) -> None:
+        """Add figures to the story"""
+
+        self.story.append(Paragraph("Figures", self._styles["SectionHeader"]))
+        self.story.append(Spacer(1, 0.2 * inch))
+
+        max_width = 5.5 * inch
+
+        for img_path in images_list:
+            try:
+                img_reader = ImageReader(img_path)
+                img_width, img_height = img_reader.getSize()
+                aspect = img_height / float(img_width)
+                scaled_height = max_width * aspect
+
+                img = Image(img_path, width=max_width, height=scaled_height)
+                img.hAlign = "CENTER"
+                self.story.append(img)
+                self.story.append(Spacer(1, 0.2 * inch))
+            except Exception:
+                logging.info(f"Error : Image {img_path} was not included in the PDF report")
+
+        self.story.append(PageBreak())
+
+    def __call__(
+        self,
+        ui_inp_vars: dict[str, UIInpVariable],
+        ui_calc_vars: dict[str, UICalcVariable],
+        images_list: Optional[list[str]] = None,
+        report_title: str = "Contamination Analysis Report",
+    ) -> None:
+        """PDF report generator"""
+        self.__add__title_toc_to_story(report_title)
 
         # Build mapping of sections→subsections
         grouped = self.__group_by_frame_tag(ui_inp_vars)
@@ -294,26 +252,7 @@ class PDFReport:
             self.story.append(PageBreak())
 
         if images_list:
-            self.story.append(Paragraph("Figures", self._styles["SectionHeader"]))
-            self.story.append(Spacer(1, 0.2 * inch))
-
-            max_width = 5.5 * inch  # or whatever fits your page layout
-
-            for img_path in images_list:
-                try:
-                    img_reader = ImageReader(img_path)
-                    img_width, img_height = img_reader.getSize()
-                    aspect = img_height / float(img_width)
-                    scaled_height = max_width * aspect
-
-                    img = Image(img_path, width=max_width, height=scaled_height)
-                    img.hAlign = "CENTER"
-                    self.story.append(img)
-                    self.story.append(Spacer(1, 0.2 * inch))
-                except Exception:
-                    logging.info(f"Error : Image {img_path} was not included in the PDF report")
-
-            self.story.append(PageBreak())
+            self.__add__figures_to_story(images_list)
 
         # two‐pass build to resolve TOC page numbers
-        self.doc.multiBuild(self.story, onLaterPages=self.add_page_number_footer)
+        self.doc.multiBuild(self.story, canvasmaker=NumberedCanvas)
