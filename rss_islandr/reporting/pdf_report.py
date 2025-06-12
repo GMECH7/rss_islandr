@@ -38,6 +38,7 @@ class PDFReport:
     }
 
     def __init__(self, filename: str):
+        self._pages_to_omit = 3  # cover + TOC will be omitted from page numbering
         self.filename = filename
         self.doc = CustomDocTemplate(
             filename,
@@ -253,6 +254,8 @@ class PDFReport:
 
         if images_list:
             self.__add__figures_to_story(images_list)
+        from functools import partial
 
+        canvasmaker = partial(NumberedCanvas, pages_to_omit=self._pages_to_omit)
         # two‐pass build to resolve TOC page numbers
-        self.doc.multiBuild(self.story, canvasmaker=NumberedCanvas)
+        self.doc.multiBuild(self.story, canvasmaker=canvasmaker)
