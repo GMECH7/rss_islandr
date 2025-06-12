@@ -191,14 +191,18 @@ class MapManager {
     return NaN;
   }
 
-  sendLocation(lat, lng) {
+sendLocation(lat, lng) {
+    // Format coordinates to 4 decimal places
+    const formattedLat = parseFloat(lat).toFixed(4);
+    const formattedLng = parseFloat(lng).toFixed(4);
+    
     if (window.pywebview?.api) {
-      console.log("Sending coordinates to pywebview:", lat, lng);
-      window.pywebview.api.send_coordinates(lat, lng);
+      console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
+      window.pywebview.api.send_coordinates(formattedLat, formattedLng);
     } else {
       console.warn("PyWebView API not ready. Skipping coordinate send.");
     }
-  }
+}
 }
 
 function toggleLegend(button) {
