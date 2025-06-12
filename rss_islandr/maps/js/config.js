@@ -11,8 +11,8 @@ const MAP_CONFIG = {
 
   // WMS Layers Configuration
   const WMS_LAYERS = {
-    geology: {
-      name: "Geology",
+    geologyGeoZS: {
+      name: "GeologyGeoZS",
       url: "https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms",
       params: {
         layers: "gsmlp:GeologicUnitView_Lithology",
@@ -21,9 +21,10 @@ const MAP_CONFIG = {
         version: "1.3.0",
       },
       attribution: "Geological Survey of Slovenia (GeoZS)",
-      legendId: "GeologyLegend",
+      legendId: "GeologyGeoZSLegend",
       defaultOn: false,
     },
+
     geologyBGR: {
       name: "GeologyBGR",
       url: "https://services.bgr.de/wms/geologie/igk1500/",
@@ -68,6 +69,7 @@ const MAP_CONFIG = {
       legendId: "GeologyIGE2500BGRLegend",
       defaultOn: false,
     },
+
     mines: {
       name: "Mines",
       url: "https://data.geus.dk/egdi/wms/",
@@ -109,6 +111,7 @@ const MAP_CONFIG = {
       legendId: "HydroEuropeLegend",
       defaultOn: false,
     },
+
     hydroGlobal: {
       name: "HydroGlobal",
       url: "https://services.bgr.de/wms/grundwasser/whymap_gwr/",
@@ -122,6 +125,7 @@ const MAP_CONFIG = {
       legendId: "HydroGlobalLegend",
       defaultOn: false,
     },
+
     BGRNorm: {
       name: "BGRNorm",
       url: "https://services.bgr.de/wms/grundwasser/norm/",
@@ -178,6 +182,7 @@ const MAP_CONFIG = {
       legendId: "SoilEuropeLegend",
       defaultOn: false,
     },
+
     riverNetwork: {
       name: "RiverNetwork",
       url: "https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer",
@@ -188,7 +193,7 @@ const MAP_CONFIG = {
         version: "1.3.0",
       },
       attribution:
-        "Generated using European Union's Copernicus Land Monitoring Service information",
+        "European River Network Generated using European Union's Copernicus Land Monitoring Service information",
       legendId: "RiverNetworkLegend",
       defaultOn: false,
     },
