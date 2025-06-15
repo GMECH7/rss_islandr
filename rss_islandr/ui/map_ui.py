@@ -18,6 +18,9 @@ class Api:
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
+    def send_drawing(self, *args, **kwargs):
+        pass
+
 
 class MapUI:
     def __init__(self, map_html: Path, style: tb.Style):
@@ -55,6 +58,6 @@ class MapUI:
         )
         logging.info("Webview started. Waiting for coordinates...")
         # Set the webview settings to avoid opening devtools when debugging is True
-        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
+        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = True
         webview.settings["ALLOW_DOWNLOADS"] = True
         webview.start(debug=True)
