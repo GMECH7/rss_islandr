@@ -58,6 +58,6 @@ class MapUI:
         )
         logging.info("Webview started. Waiting for coordinates...")
         # Set the webview settings to avoid opening devtools when debugging is True
-        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = True
+        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
         webview.settings["ALLOW_DOWNLOADS"] = True
         webview.start(debug=True)
