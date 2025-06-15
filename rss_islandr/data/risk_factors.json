@@ -3,7 +3,7 @@
         "pdf_table_name": "Source hazard",
         "excel_col": "C",
         "excel_row": 7,
-        "alias": "Industry",
+        "alias": "Contamination source",
         "mechanism": {
             "01": {
                 "alias": "Toxicity",

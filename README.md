@@ -139,35 +139,55 @@ The map viewer option of this app is built using [Leaflet.js](https://leafletjs.
 
 ## 🌐 Map Services Used
 
-##### 1. **Surface Geology (GeoZS)**
+#### Geological maps
 
-- **Service URL:** `https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms`
-- **Layer Name:** `gsmlp:GeologicUnitView_Lithology`
+- ##### 1. Geological Survey of Slovenia (GeoZS)
 
-##### 2. **Mines**
+  - **Service URL:** `https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms`
+  - **Layer Name:** `gsmlp:GeologicUnitView_Lithology`
 
-- **Service URL:** `https://data.geus.dk/egdi/wms/`
-- **Layer Name:** `egdi_mines`
+- ##### 2. BGR: 1:5 Million International Geological Map of Europe and Adjacent Areas (IGME5000)
 
-##### 3. **International Hydrogeological Map of Europe 1:1,500,000 (IHME1500) (BGR)**
+  - **Service URL:** `https://services.bgr.de/wms/geologie/igme5000/`
+  - **Layer Names:** `3,5,6,8,10,11,13,14,15,16,17,18,19,20,22,23,24,27,29,31,33,37,39,41,43,44,46,47,48,51,53,55,57`
 
-- **Service URL:** `https://services.bgr.de/wms/grundwasser/ihme1500/`
-- **Layer Names:** `0,1,2`
+#### Minerals resources maps
 
-##### 4. **Groundwater Resources of the World (BGR)**
+- ##### 1. Mines of Europe
 
-- **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_gwr/`
-- **Layer Names:** `0`
+  - **Service URL:** `https://data.geus.dk/egdi/wms/`
+  - **Layer Name:** `egdi_mines`
 
-##### 5. **Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (BGR)**
+#### Hydrogeοlogical maps
 
-- **Service URL:** `https://services.bgr.de/wms/boden/eusr5000/`
-- **Layer Names:** `1,3,5`
+- ##### 1. BGR & UNESCO (eds.) (2019): International Hydrogeological Map of Europe 1:1,500,000 (IHME1500)
 
-##### 6. **River Network (Copernicus Land Monitoring Service information)**
+  - **Service URL:** `https://services.bgr.de/wms/grundwasser/ihme1500/`
+  - **Layer Names:** `0,1,2`
 
-- **Service URL:** `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer`
-- **Layer Names:** `0,1,2,3,4,5`
+- ##### 2. BGR: Groundwater Resources of the World (WHYMAP GWR) (WMS)
+
+  - **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_gwr/`
+  - **Layer Names:** `0`
+
+- ##### 3. BGR: Natural Radionuclides in Groundwater
+
+  - **Service URL:** `https://services.bgr.de/wms/grundwasser/norm/`
+  - **Layer Names:** `1,2,3,4,6,7`
+
+#### Soil maps
+
+- ##### 1. BGR: Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (WMS)
+
+  - **Service URL:** `https://services.bgr.de/wms/boden/eusr5000/`
+  - **Layer Names:** `1,3,5`
+
+#### Hydrological maps
+
+- ##### 1. European River Network Generated using European Union's Copernicus Land Monitoring Service information
+
+  - **Service URL:** `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer`
+  - **Layer Names:** `0,1,2,3,4,5`
 
 ### 4. Links
 

@@ -3,10 +3,15 @@ class MapManager {
     this.map = null;
     this.layers = {};
     this.clickMarker = null;
+    this.drawnItems = new L.FeatureGroup(); // Store all drawn items
+    this.currentDrawingMode = null; // Track current drawing mode
+    this.isDrawing = false; // Track if currently drawing
     this.initMap();
     this.initLayers();
     this.initEventHandlers();
     this.initPyWebViewIntegration();
+    this.initDrawingControls();
+    
   }
 
   initMap() {
@@ -38,7 +43,9 @@ class MapManager {
   initEventHandlers() {
     // Map click handler
     this.map.on("click", (e) => {
-      this.setMarker(e.latlng.lat, e.latlng.lng);
+      if (!this.isDrawing) { // Only set marker if not drawing
+        this.setMarker(e.latlng.lat, e.latlng.lng);
+      }
     });
 
     // Dynamic checkbox event listeners
@@ -58,7 +65,6 @@ class MapManager {
       .getElementById("updateMarkerBtn")
       ?.addEventListener("click", () => this.updateMarker());
   
-
     // Add Enter key listeners for coordinate inputs
     document.getElementById('lat')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
@@ -71,7 +77,134 @@ class MapManager {
         this.updateMarker();
       }
     });
+
+    // Add event listeners for drawing buttons
+    document.getElementById('drawSourceBtn')?.addEventListener('click', () => this.startDrawing('source'));
+    document.getElementById('drawPathwayBtn')?.addEventListener('click', () => this.startDrawing('pathway'));
+    document.getElementById('drawReceiverBtn')?.addEventListener('click', () => this.startDrawing('receiver'));
+    document.getElementById('clearDrawingsBtn')?.addEventListener('click', () => this.clearDrawings());
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isDrawing) {
+        this.cancelDrawing();
+      }
+  });
+    
   }
+
+  initDrawingControls() {
+    // Add the feature group to the map
+    this.drawnItems.addTo(this.map);
+
+    // Initialize the draw control (we'll use our own buttons)
+    this.drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: this.drawnItems
+      },
+      draw: {
+        polygon: false, // We'll handle these manually
+        rectangle: false,
+        circle: false,
+        marker: false,
+        polyline: false,
+        circlemarker: false
+      }
+    });
+    
+    // Listen for drawing events
+    this.map.on(L.Draw.Event.CREATED, (e) => {
+      const layer = e.layer;
+      this.finalizeDrawing(layer);
+    });
+  }
+
+  startDrawing(type) {
+    if (!L.Draw || !L.Draw.Polygon) {
+      alert('Drawing functionality not available. Please ensure Leaflet.draw plugin is loaded.');
+      return;
+    }
+    this.isDrawing = true;
+    // Disable any current drawing mode
+    if (this.currentDrawingMode) {
+      this.currentDrawingMode.disable();
+    }
+
+    // Set style based on type
+    let style = {};
+    switch(type) {
+      case 'source':
+        style = { color: '#ff0000', fillColor: '#ff0000', fillOpacity: 0.01 };
+        break;
+      case 'pathway':
+        style = { color: '#0000ff', fillColor: '#0000ff', fillOpacity: 0.01, dashArray: '5,5' };
+        break;
+      case 'receiver':
+        style = { color: '#00aa00', fillColor: '#00aa00', fillOpacity: 0.01 };
+        break;
+    }
+
+    // Initialize the appropriate drawing tool
+    this.currentDrawingMode = new L.Draw.Polygon(this.map, {
+      shapeOptions: style,
+      showArea: true,
+      metric: true,
+      guideLayers: this.drawnItems
+    });
+
+    this.currentDrawingMode.enable();
+    this.currentType = type; // Store the current type for finalization
+  }
+
+  finalizeDrawing(layer) {
+    // Add type metadata to the layer
+    layer.feature = layer.feature || {};
+    layer.feature.type = 'polygon:' + this.currentType;
+    
+    // Add to our feature group
+    this.drawnItems.addLayer(layer);
+    
+    // Add popup with information
+    layer.bindPopup(`<b>${this.currentType.toUpperCase()}</b><br>Area: ${(L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000).toFixed(6)} km²`);
+    
+    // Send to backend if needed
+    this.sendDrawing(layer);
+    
+    // Reset drawing mode
+    this.currentDrawingMode = null;
+    this.currentType = null;
+    this.isDrawing = false;
+  }
+
+  sendDrawing(layer) {
+    if (window.pywebview?.api) {
+      const type = layer.feature.type;
+      const latlngs = layer.getLatLngs()[0].map(ll => [ll.lat, ll.lng]);
+      const area = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+      
+      window.pywebview.api.send_drawing({
+        type: type,
+        coordinates: latlngs,
+        area: area,
+        properties: layer.feature.properties || {}
+      });
+    }
+  }
+
+  clearDrawings() {
+    this.drawnItems.clearLayers();
+    if (window.pywebview?.api) {
+      window.pywebview.api.clear_drawings();
+    }
+  }
+
+  cancelDrawing() {
+    if (this.currentDrawingMode) {
+      this.currentDrawingMode.disable();
+      this.currentDrawingMode = null;
+      this.currentType = null;
+      this.isDrawing = false;
+    }
+  }
+
 
   initPyWebViewIntegration() {
     document.addEventListener("pywebviewready", () => {
@@ -191,14 +324,18 @@ class MapManager {
     return NaN;
   }
 
-  sendLocation(lat, lng) {
+sendLocation(lat, lng) {
+    // Format coordinates to 4 decimal places
+    const formattedLat = parseFloat(lat).toFixed(4);
+    const formattedLng = parseFloat(lng).toFixed(4);
+    
     if (window.pywebview?.api) {
-      console.log("Sending coordinates to pywebview:", lat, lng);
-      window.pywebview.api.send_coordinates(lat, lng);
+      console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
+      window.pywebview.api.send_coordinates(formattedLat, formattedLng);
     } else {
       console.warn("PyWebView API not ready. Skipping coordinate send.");
     }
-  }
+}
 }
 
 function toggleLegend(button) {

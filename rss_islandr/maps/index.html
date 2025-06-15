@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
     <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" /> -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Leaflet.draw CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+
     <!-- <style>
         #screenshotBtn {
             position: absolute;
@@ -25,11 +29,19 @@
 </head>
 
 <body>
+
     <div id="map"></div>
     <!-- <button id="screenshotBtn">📸 Screenshot Area</button> -->
     <button id="togglePanelBtn" class="toggle-btn">☰</button>
 
     <div id="controlsPanel" class="controls">
+        <div class="drawing-controls">
+            <h3>Contamination Drawing Tools</h3>
+            <button id="drawSourceBtn" class="draw-btn" style="background-color: #ffcccc;">Draw Source</button>
+            <button id="drawPathwayBtn" class="draw-btn" style="background-color: #ccccff;">Draw Pathway</button>
+            <button id="drawReceiverBtn" class="draw-btn" style="background-color: #ccffcc;">Draw Receiver</button>
+            <button id="clearDrawingsBtn" class="draw-btn">Clear All Drawings</button>
+        </div>
         <div class="coordinates">
             <div class="coordinates-input-group">
                 <input type="text" id="lat" placeholder="Latitude (e.g., 53.3439 or 40°26'46&quot;N)">
@@ -46,8 +58,8 @@
                 <span class="toggle-icon">+</span>
             </div>
             <div class="map-group-content">
-                <label for="toggleGeology">Surface Geologic Units Lithology<input type="checkbox"
-                        id="toggleGeology"></label>
+                <label for="toggleGeologyGeoZS">Surface Geologic Units Lithology<input type="checkbox"
+                        id="toggleGeologyGeoZS"></label>
                 <label for="toggleGeologyIGME5000BGR">International Geological Map of Europe and Adjacent
                     Areas 1:5,000,000<input type="checkbox" id="toggleGeologyIGME5000BGR"></label>
             </div>
@@ -121,7 +133,7 @@
     </div>
 
     <!-- Legends -->
-    <div id="GeologyLegend" class="legend">
+    <div id="GeologyGeoZSLegend" class="legend">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/geozs_legend.html"></object>
     </div>
@@ -174,6 +186,8 @@
     <script src="js/script.js"></script>
     <!-- <script src="js/new_script.js"></script> 👈 NEW -->
     <!-- <script src="js/Leaflet.BigImage.min.js"></script> -->
+    <!-- Leaflet.draw JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 </body>
 
 </html>
