@@ -201,7 +201,6 @@ sendDrawing(layer) {
         const featureData = {
             type: layer.feature.type,
             coordinates: layer.feature.properties.coordinates,
-            area_m2: layer.feature.properties.area_m2,
             area_km2: layer.feature.properties.area_km2,
             node_count: layer.feature.properties.coordinates.length
         };

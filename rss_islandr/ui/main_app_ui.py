@@ -40,7 +40,7 @@ class MainAppUI:
         self.root = root
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
-        self.polygons_data = None
+        self.polygons_data = tb.StringVar(None)
         tb_style = tb.Style(self.theme)
         #: Create custom themes
         ct = CustomThemes(tb_style, self.ui_settings)
@@ -274,7 +274,7 @@ class MainAppUI:
 
     def __monitor_map_changes(self):
         """Continuously checks for new coordinates from MapUI when the map is open."""
-        logging.info(f"{self.__monitor_map_changes.__name__} called!")
+        logging.debug(f"{self.__monitor_map_changes.__name__} called!")
         while self.map_open:
             coords = self.map_ui.get_coordinates()
             if coords is not None:
@@ -291,17 +291,12 @@ class MainAppUI:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lat)
-        logging.info(f"Updated Coordinates: {lat}, {lng}")
+        logging.debug(f"Updated Coordinates: {lat}, {lng}")
 
     def __update_polygons_data(self, polygons_data):
         """Callback function to update polygons data"""
-        self.polygons_data = polygons_data
-        logging.info(f"Updated polygons: {polygons_data}")
-        # with open(
-        #     r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\maps\lelos.dat", "w"
-        # ) as fout:
-        #     for list_ in self.polygons_data:
-        #         fout.write(list_)
+        self.polygons_data.set(polygons_data)
+        logging.debug(f"Updated polygons: {polygons_data}")
 
     def __create_vertical_navbar_buttons(self) -> None:
         """
@@ -330,7 +325,10 @@ class MainAppUI:
                 self.ui_inp_vars,
                 self.ui_calc_vars,
                 self.widgets_reconfigured,
-            )(page)
+            )(
+                page,
+                polygons_data=self.polygons_data,
+            )
 
             site_to_site_app = SiteToSiteAssessmentUI(
                 app_navbar_frame,
@@ -383,7 +381,10 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.__home_page)
+        )(
+            self.__home_page,
+            polygons_data=self.polygons_data,
+        )
         app_home = HomeUI(home_navbar_frame, home_frame)
 
         #: Site info app Create horizontal navbar and rest of frame per page to be displayed
@@ -392,7 +393,10 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.__site_info_page)
+        )(
+            self.__site_info_page,
+            polygons_data=self.polygons_data,
+        )
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
             site_info_frame,

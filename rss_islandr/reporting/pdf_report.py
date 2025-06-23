@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
+from collections import defaultdict
 from typing import Optional
 
 from reportlab.lib import colors
@@ -208,16 +210,133 @@ class PDFReport:
                 self.story.append(img)
                 self.story.append(Spacer(1, 0.2 * inch))
             except Exception:
-                logging.info(f"Error : Image {img_path} was not included in the PDF report")
+                logging.debug(f"Error : Image {img_path} was not included in the PDF report")
 
         self.story.append(PageBreak())
 
+    # Add this method to your PDFReport class
+    def __add_polygons_to_story(self, polygons_data):
+        """Add polygon data tables to the report"""
+        if not polygons_data:
+            return
+
+        try:
+            # Parse the polygon data
+            input_str = polygons_data.get()
+            polygons = self.__parse_polygon_data(input_str)
+
+            logging.info(f"Checkpoint 1 polygons {polygons}")
+            # Add section header
+            self.story.append(Paragraph("Polygon Data", self._styles["SectionHeader"]))
+            self.story.append(Spacer(1, 0.2 * inch))
+            logging.info("Checkpoint 2")
+            # Group polygons by type
+            type_groups = defaultdict(list)
+            for poly in polygons:
+                type_groups[poly["type"]].append(poly)
+            logging.info("Checkpoint 3")
+            # Create tables for each polygon type
+            for poly_type, polygons in type_groups.items():
+                # Add subsection header
+                clean_type = poly_type.replace("polygon:", "").capitalize()
+                self.story.append(Paragraph(clean_type, self._styles["SubSectionHeader"]))
+                self.story.append(Spacer(1, 0.1 * inch))
+
+                # Create table data
+                table_data = [["Index", "Longitude", "Latitude", "Area (km²)", "Nodes"]]
+
+                for idx, poly in enumerate(polygons, 1):
+                    for coord_idx, coord in enumerate(poly["coordinates"]):
+                        if coord_idx == 0:  # First row shows all info
+                            table_data.append(
+                                [
+                                    str(idx),
+                                    f"{coord[0]:.6f}",
+                                    f"{coord[1]:.6f}",
+                                    f"{poly['area_km2']:,.2f}",
+                                    str(poly["node_count"]),
+                                ]
+                            )
+                        else:  # Subsequent rows just show coordinates
+                            table_data.append(["", f"{coord[0]:.6f}", f"{coord[1]:.6f}", "", ""])
+                    # Add empty row between polygons
+                    table_data.append(["", "", "", "", ""])
+
+                # Remove last empty row if exists
+                if not table_data[-1][0]:
+                    table_data = table_data[:-1]
+
+                # Create the table
+                tbl = Table(table_data, colWidths=[0.5 * inch, 1.2 * inch, 1.2 * inch, 1 * inch, 0.6 * inch])
+                logging.info("Checkpoint 4")
+                # Add style to table
+                tbl_style = TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1E88E5")),
+                        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                        ("FONTSIZE", (0, 0), (-1, 0), 9),
+                        ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
+                        ("BACKGROUND", (0, 1), (-1, -1), colors.white),
+                        ("GRID", (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                        ("SPAN", (0, 1), (0, len(poly["coordinates"]))),  # Span index
+                        ("SPAN", (3, 1), (3, len(poly["coordinates"]))),  # Span area
+                        ("SPAN", (4, 1), (4, len(poly["coordinates"]))),  # Span node count
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ]
+                )
+
+                # zebra striping
+                for i in range(1, len(table_data)):
+                    if i % 2 == 0:
+                        tbl_style.add("BACKGROUND", (0, i), (-1, i), colors.HexColor("#F5F5F5"))
+
+                tbl.setStyle(tbl_style)
+
+                self.story.append(tbl)
+                self.story.append(Spacer(1, 0.3 * inch))
+
+        except Exception as e:
+            logging.error(f"Error processing polygon data: {e}")
+            self.story.append(Paragraph("Error displaying polygon data", self._styles["Normal"]))
+
+    # Add this helper method to the class
+    def __parse_polygon_data(self, input_str):
+        """Parse the polygon data string into a list of dictionaries"""
+        if not input_str:
+            return []
+
+        # Clean and parse the input string
+        input_str = input_str.strip()[1:-1]  # Remove surrounding parentheses
+        json_strings = [s.strip() for s in input_str.split('", "')]
+
+        # Fix the first and last strings
+        if len(json_strings) > 0:
+            json_strings[0] = json_strings[0].strip('"')
+            json_strings[-1] = json_strings[-1].strip('"')
+
+        # Parse each JSON string
+        polygons = []
+        for json_str in json_strings:
+            try:
+                # Replace single quotes with double quotes for proper JSON
+                json_str = json_str.replace("'", '"')
+                polygons.append(json.loads(json_str))
+            except json.JSONDecodeError as e:
+                logging.error(f"JSON parse error: {e} at string: {json_str}")
+                continue
+
+        return polygons
+
+    # Update the __call__ method to use the new polygon method
     def __call__(
         self,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
         images_list: Optional[list[str]] = None,
         report_title: str = "Contamination Analysis Report",
+        polygons_data: Optional[list] = None,
     ) -> None:
         """PDF report generator"""
         self.__add__title_toc_to_story(report_title)
@@ -254,8 +373,11 @@ class PDFReport:
 
         if images_list:
             self.__add__figures_to_story(images_list)
+
+        if polygons_data:
+            self.__add_polygons_to_story(polygons_data)
+
         from functools import partial
 
         canvasmaker = partial(NumberedCanvas, pages_to_omit=self._pages_to_omit)
-        # two‐pass build to resolve TOC page numbers
         self.doc.multiBuild(self.story, canvasmaker=canvasmaker)

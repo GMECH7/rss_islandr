@@ -17,14 +17,14 @@ class Api:
     def send_coordinates(self, lat, lng):
         """Handle coordinates sent from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-        logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+        logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
     def send_drawing(self, feature_data):
         """Handle polygon data from JavaScript"""
         if self.map_ui.map_polygons_data is None:
             self.map_ui.map_polygons_data = []
         self.map_ui.map_polygons_data.append(feature_data)
-        logging.info(f"Received drawing data: {feature_data}")
+        logging.debug(f"Received drawing data: {feature_data}")
 
 
 class MapUI:
@@ -68,7 +68,7 @@ class MapUI:
             background_color=self.__style.colors.bg,
             js_api=api_instance,  # Attach the JavaScript API
         )
-        logging.info("Webview started. Waiting for coordinates...")
+        logging.debug("Webview started. Waiting for coordinates...")
         # Set the webview settings to avoid opening devtools when debugging is True
         webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
         webview.settings["ALLOW_DOWNLOADS"] = True
