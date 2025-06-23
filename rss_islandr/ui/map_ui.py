@@ -15,11 +15,16 @@ class Api:
         self.map_ui = map_ui_instance  # Reference to MapUI instance
 
     def send_coordinates(self, lat, lng):
+        """Handle coordinates sent from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.info(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
-    def send_drawing(self, *args, **kwargs):
-        pass
+    def send_drawing(self, feature_data):
+        """Handle polygon data from JavaScript"""
+        if self.map_ui.map_polygons_data is None:
+            self.map_ui.map_polygons_data = []
+        self.map_ui.map_polygons_data.append(feature_data)
+        logging.info(f"Received drawing data: {feature_data}")
 
 
 class MapUI:
@@ -28,6 +33,7 @@ class MapUI:
         self.map_html = map_html
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
+        self.map_polygons_data = None  # List to store polygons data collected from the webview
 
     def show_map(self):
         """Launch the webview window in a separate process."""
@@ -44,6 +50,12 @@ class MapUI:
         coords = self.coordinates
         self.coordinates = None  # Reset after reading
         return coords
+
+    def get_polygons_data(self):
+        """Retrieve the polygons data collected from the webview."""
+        map_polygons_data = self.map_polygons_data
+        self.map_polygons_data = None
+        return map_polygons_data
 
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""

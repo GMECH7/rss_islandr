@@ -11,7 +11,6 @@ from ttkbootstrap.dialogs import Messagebox
 from rss_islandr.core.config_parser import (
     ISLANDR_LOGO,
     MAP_DIR,
-    SAVED_MAPS_IMAGES_DIR,
     pathway_keys,
     settings,
     source_keys,
@@ -41,6 +40,7 @@ class MainAppUI:
         self.root = root
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
+        self.polygons_data = None
         tb_style = tb.Style(self.theme)
         #: Create custom themes
         ct = CustomThemes(tb_style, self.ui_settings)
@@ -266,51 +266,42 @@ class MainAppUI:
         else:
             pass
 
-    # def __show_page(self, page: tb.Frame, button_name: str):
-    #     """Show the selected page and update button states"""
-    #     self.__reset_all_buttons()
-    #     self.__set_button_active(button_name)
-    #     page.tkraise()
-
-    # def __reset_all_buttons(self):
-    #     """Reset all navigation buttons to inactive style"""
-    #     for btn in self.__nav_buttons_references.values():
-    #         btn.configure(bootstyle=self.ui_settings.ui_btn_bg_color_1)
-
-    # def __set_button_active(self, button_name: str):
-    #     """Set the specified button to active style"""
-    #     self.__nav_buttons_references[button_name].configure(bootstyle=self.ui_settings.ui_btn_bg_color_2)
-
     def __toggle_map(self):
-        # if self.map_open:
-        #     self.map_ui.close_map()
-        #     self.map_open = False
-        #     self.btn_map.config(text="Maps Viewer")
-        # else:
-        #     self.map_ui.run_webview()
-        #     # self.map_ui.show_map()
-        #     self.map_open = True
-        #     self.btn_map.config(text="Maps Viewer")
         self.map_ui.run_webview()
         self.btn_map.config(text="Maps Viewer")
         #: Start a thread to check for coordinate updates in the webview app.
-        threading.Thread(target=self.__monitor_coordinates, daemon=True).start()
+        threading.Thread(target=self.__monitor_map_changes, daemon=True).start()
 
-    def __monitor_coordinates(self):
+    def __monitor_map_changes(self):
         """Continuously checks for new coordinates from MapUI when the map is open."""
-        logging.info(f"{self.__monitor_coordinates.__name__} called")
+        logging.info(f"{self.__monitor_map_changes.__name__} called!")
         while self.map_open:
             coords = self.map_ui.get_coordinates()
             if coords is not None:
                 lat, lng = coords
                 self.__update_coordinates(lat, lng)
+
+            polygons_data = self.map_ui.get_polygons_data()
+            if polygons_data is not None:
+                self.__update_polygons_data(polygons_data)
+
             time.sleep(1.0)  # Polling interval (s)
 
     def __update_coordinates(self, lat, lng) -> None:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
-        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        logging.debug(f"Updated Coordinates: {lat}, {lng}")
+        self.ui_inp_vars["map_0_01"].tk_var.set(lat)
+        logging.info(f"Updated Coordinates: {lat}, {lng}")
+
+    def __update_polygons_data(self, polygons_data):
+        """Callback function to update polygons data"""
+        self.polygons_data = polygons_data
+        logging.info(f"Updated polygons: {polygons_data}")
+        # with open(
+        #     r"C:\Users\George\Documents\makge\Python\islandr\rss_islandr\rss_islandr\maps\lelos.dat", "w"
+        # ) as fout:
+        #     for list_ in self.polygons_data:
+        #         fout.write(list_)
 
     def __create_vertical_navbar_buttons(self) -> None:
         """
