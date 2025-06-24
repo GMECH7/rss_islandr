@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+
 import datetime
-import json
 import logging
-from collections import defaultdict
 from typing import Optional
 
+import ttkbootstrap as tb
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -21,6 +21,7 @@ from reportlab.platypus import (
 
 from rss_islandr.core.config_parser import ISLANDR_LOGO, font_size_pdf_1, font_size_pdf_2, font_size_pdf_3
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.reporting.custom_doc_template import CustomDocTemplate
 from rss_islandr.reporting.numbered_canvas import NumberedCanvas
 
@@ -56,6 +57,7 @@ class PDFReport:
 
     def __init__create_custom_styles(self):
         """Create custom paragraph styles for the report"""
+        self.__table_header_color = "#1E88E5"
         self._styles = getSampleStyleSheet()
 
         self._styles.add(
@@ -142,7 +144,7 @@ class PDFReport:
         tbl = Table(table_data, colWidths=[3 * inch, 2 * inch])
         tbl_style = TableStyle(
             [
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1E88E5")),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(self.__table_header_color)),
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                 ("ALIGN", (0, 0), (-1, -1), "LEFT"),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
@@ -214,65 +216,60 @@ class PDFReport:
 
         self.story.append(PageBreak())
 
-    # Add this method to your PDFReport class
-    def __add_polygons_to_story(self, polygons_data):
-        """Add polygon data tables to the report"""
-        if not polygons_data:
-            return
+    def __add_polygons_to_story(self, polygons_data_tkvar: tb.StringVar):
+        """
+        Add polygon data table to the report
+
+        Parameters
+        ----------
+        polygons_data_tkvar : tb.StringVar
+            Representation of the polygons dictionary.
+        """
+        polygons_data = extract_dicts_from_string(polygons_data_tkvar.get())
 
         try:
-            # Parse the polygon data
-            input_str = polygons_data.get()
-            polygons = self.__parse_polygon_data(input_str)
-
-            logging.info(f"Checkpoint 1 polygons {polygons}")
             # Add section header
             self.story.append(Paragraph("Polygon Data", self._styles["SectionHeader"]))
             self.story.append(Spacer(1, 0.2 * inch))
-            logging.info("Checkpoint 2")
-            # Group polygons by type
-            type_groups = defaultdict(list)
-            for poly in polygons:
-                type_groups[poly["type"]].append(poly)
-            logging.info("Checkpoint 3")
-            # Create tables for each polygon type
-            for poly_type, polygons in type_groups.items():
-                # Add subsection header
+
+            # Extract polygon type for header
+            for polygon_dict in polygons_data:
+                poly_type = polygon_dict.get("type", "polygon:unknown")
                 clean_type = poly_type.replace("polygon:", "").capitalize()
+
                 self.story.append(Paragraph(clean_type, self._styles["SubSectionHeader"]))
                 self.story.append(Spacer(1, 0.1 * inch))
 
-                # Create table data
-                table_data = [["Index", "Longitude", "Latitude", "Area (km²)", "Nodes"]]
+                # Create table data with headers
+                table_data = [["Point", "Longitude", "Latitude", "Area (km²)", "Nodes"]]
 
-                for idx, poly in enumerate(polygons, 1):
-                    for coord_idx, coord in enumerate(poly["coordinates"]):
-                        if coord_idx == 0:  # First row shows all info
+                coordinates = polygon_dict.get("coordinates", [])
+                area = polygon_dict.get("area_km2", 0)
+                nodes = polygon_dict.get("node_count", 0)
+
+                # Add each coordinate pair with point numbering
+                for point_idx, coord in enumerate(coordinates, 1):
+                    if len(coord) >= 2:  # Ensure we have both lat and long
+                        if point_idx == 1:  # First row shows all info
                             table_data.append(
                                 [
-                                    str(idx),
+                                    str(point_idx),
                                     f"{coord[0]:.6f}",
                                     f"{coord[1]:.6f}",
-                                    f"{poly['area_km2']:,.2f}",
-                                    str(poly["node_count"]),
+                                    f"{float(area):,.2f}",
+                                    str(nodes),
                                 ]
                             )
                         else:  # Subsequent rows just show coordinates
-                            table_data.append(["", f"{coord[0]:.6f}", f"{coord[1]:.6f}", "", ""])
-                    # Add empty row between polygons
-                    table_data.append(["", "", "", "", ""])
-
-                # Remove last empty row if exists
-                if not table_data[-1][0]:
-                    table_data = table_data[:-1]
+                            table_data.append([str(point_idx), f"{coord[0]:.6f}", f"{coord[1]:.6f}", "", ""])
 
                 # Create the table
-                tbl = Table(table_data, colWidths=[0.5 * inch, 1.2 * inch, 1.2 * inch, 1 * inch, 0.6 * inch])
-                logging.info("Checkpoint 4")
+                tbl = Table(table_data, colWidths=[0.6 * inch, 1.2 * inch, 1.2 * inch, 1 * inch, 0.6 * inch])
+
                 # Add style to table
                 tbl_style = TableStyle(
                     [
-                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1E88E5")),
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(self.__table_header_color)),
                         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
                         ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                         ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
@@ -280,20 +277,18 @@ class PDFReport:
                         ("BOTTOMPADDING", (0, 0), (-1, 0), 6),
                         ("BACKGROUND", (0, 1), (-1, -1), colors.white),
                         ("GRID", (0, 0), (-1, -1), 0.5, colors.lightgrey),
-                        ("SPAN", (0, 1), (0, len(poly["coordinates"]))),  # Span index
-                        ("SPAN", (3, 1), (3, len(poly["coordinates"]))),  # Span area
-                        ("SPAN", (4, 1), (4, len(poly["coordinates"]))),  # Span node count
+                        ("SPAN", (3, 1), (3, len(coordinates))),  # Span area
+                        ("SPAN", (4, 1), (4, len(coordinates))),  # Span node count
                         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                     ]
                 )
 
-                # zebra striping
+                # Zebra striping
                 for i in range(1, len(table_data)):
                     if i % 2 == 0:
                         tbl_style.add("BACKGROUND", (0, i), (-1, i), colors.HexColor("#F5F5F5"))
 
                 tbl.setStyle(tbl_style)
-
                 self.story.append(tbl)
                 self.story.append(Spacer(1, 0.3 * inch))
 
@@ -301,42 +296,14 @@ class PDFReport:
             logging.error(f"Error processing polygon data: {e}")
             self.story.append(Paragraph("Error displaying polygon data", self._styles["Normal"]))
 
-    # Add this helper method to the class
-    def __parse_polygon_data(self, input_str):
-        """Parse the polygon data string into a list of dictionaries"""
-        if not input_str:
-            return []
-
-        # Clean and parse the input string
-        input_str = input_str.strip()[1:-1]  # Remove surrounding parentheses
-        json_strings = [s.strip() for s in input_str.split('", "')]
-
-        # Fix the first and last strings
-        if len(json_strings) > 0:
-            json_strings[0] = json_strings[0].strip('"')
-            json_strings[-1] = json_strings[-1].strip('"')
-
-        # Parse each JSON string
-        polygons = []
-        for json_str in json_strings:
-            try:
-                # Replace single quotes with double quotes for proper JSON
-                json_str = json_str.replace("'", '"')
-                polygons.append(json.loads(json_str))
-            except json.JSONDecodeError as e:
-                logging.error(f"JSON parse error: {e} at string: {json_str}")
-                continue
-
-        return polygons
-
     # Update the __call__ method to use the new polygon method
     def __call__(
         self,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
+        polygons_data: tb.StringVar,
         images_list: Optional[list[str]] = None,
         report_title: str = "Contamination Analysis Report",
-        polygons_data: Optional[list] = None,
     ) -> None:
         """PDF report generator"""
         self.__add__title_toc_to_story(report_title)
@@ -374,7 +341,7 @@ class PDFReport:
         if images_list:
             self.__add__figures_to_story(images_list)
 
-        if polygons_data:
+        if polygons_data.get() != "":
             self.__add_polygons_to_story(polygons_data)
 
         from functools import partial

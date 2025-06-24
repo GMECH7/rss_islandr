@@ -40,7 +40,7 @@ class MainAppUI:
         self.root = root
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
-        self.polygons_data = tb.StringVar(None)
+        self.polygons_data = tb.StringVar(value="")
         tb_style = tb.Style(self.theme)
         #: Create custom themes
         ct = CustomThemes(tb_style, self.ui_settings)
