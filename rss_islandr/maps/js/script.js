@@ -11,12 +11,12 @@ class MapManager {
     this.initEventHandlers();
     this.initPyWebViewIntegration();
     this.initDrawingControls();
-    
+
   }
 
   initMap() {
     this.map = L.map("map").setView(MAP_CONFIG.center, MAP_CONFIG.zoom);
-    
+
     L.tileLayer(MAP_CONFIG.baseLayer.url, {
       attribution: MAP_CONFIG.baseLayer.attribution,
     }).addTo(this.map);
@@ -64,14 +64,14 @@ class MapManager {
     document
       .getElementById("updateMarkerBtn")
       ?.addEventListener("click", () => this.updateMarker());
-  
+
     // Add Enter key listeners for coordinate inputs
     document.getElementById('lat')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         this.updateMarker();
       }
     });
-    
+
     document.getElementById('lng')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         this.updateMarker();
@@ -87,8 +87,8 @@ class MapManager {
       if (e.key === 'Escape' && this.isDrawing) {
         this.cancelDrawing();
       }
-  });
-    
+    });
+
   }
 
   initDrawingControls() {
@@ -109,7 +109,7 @@ class MapManager {
         circlemarker: false
       }
     });
-    
+
     // Listen for drawing events
     this.map.on(L.Draw.Event.CREATED, (e) => {
       const layer = e.layer;
@@ -130,7 +130,7 @@ class MapManager {
 
     // Set style based on type
     let style = {};
-    switch(type) {
+    switch (type) {
       case 'source':
         style = { color: '#ff0000', fillColor: '#ff0000', fillOpacity: 0.01 };
         break;
@@ -158,16 +158,38 @@ class MapManager {
     // Add type metadata to the layer
     layer.feature = layer.feature || {};
     layer.feature.type = 'polygon:' + this.currentType;
-    
+
+    // Get all coordinates as array of [lat, lng] tuples
+    const coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+
+    // Store coordinates in layer properties
+    layer.feature.properties = {
+      coordinates: coordinates,
+      area_m2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]),
+      area_km2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000
+    };
+
     // Add to our feature group
     this.drawnItems.addLayer(layer);
-    
-    // Add popup with information
-    layer.bindPopup(`<b>${this.currentType.toUpperCase()}</b><br>Area: ${(L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000).toFixed(6)} km²`);
-    
+
+    // Create popup content with coordinates
+    const popupContent = `
+        <b>${this.currentType.toUpperCase()}</b>
+        <br>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²
+        <br>Nodes: ${coordinates.length}
+        <div class="coord-preview" style="max-height: 100px; overflow-y: auto;">
+            ${coordinates.slice(0, 5).map(coord =>
+      `<div>${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
+    ).join('')}
+            ${coordinates.length > 5 ? '<div>...and ' + (coordinates.length - 5) + ' more</div>' : ''}
+        </div>
+    `;
+
+    layer.bindPopup(popupContent);
+
     // Send to backend if needed
     this.sendDrawing(layer);
-    
+
     // Reset drawing mode
     this.currentDrawingMode = null;
     this.currentType = null;
@@ -176,16 +198,15 @@ class MapManager {
 
   sendDrawing(layer) {
     if (window.pywebview?.api) {
-      const type = layer.feature.type;
-      const latlngs = layer.getLatLngs()[0].map(ll => [ll.lat, ll.lng]);
-      const area = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-      
-      window.pywebview.api.send_drawing({
-        type: type,
-        coordinates: latlngs,
-        area: area,
-        properties: layer.feature.properties || {}
-      });
+      const featureData = {
+        type: layer.feature.type,
+        coordinates: layer.feature.properties.coordinates,
+        area_km2: layer.feature.properties.area_km2,
+        node_count: layer.feature.properties.coordinates.length
+      };
+
+      console.log("Sending polygon data to pywebview:", featureData);
+      window.pywebview.api.send_drawing(featureData);
     }
   }
 
@@ -324,18 +345,18 @@ class MapManager {
     return NaN;
   }
 
-sendLocation(lat, lng) {
+  sendLocation(lat, lng) {
     // Format coordinates to 4 decimal places
     const formattedLat = parseFloat(lat).toFixed(4);
     const formattedLng = parseFloat(lng).toFixed(4);
-    
+
     if (window.pywebview?.api) {
       console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
       window.pywebview.api.send_coordinates(formattedLat, formattedLng);
     } else {
       console.warn("PyWebView API not ready. Skipping coordinate send.");
     }
-}
+  }
 }
 
 function toggleLegend(button) {

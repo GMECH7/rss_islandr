@@ -233,3 +233,44 @@ Opening the URL shows an **XML document** with many `<Layer>` entries. Look for:
 - Use the <Name> value in your WMS layer config
 - <Title> helps identify what the layer represents
 ```
+
+## Updating polygons flowchart
+
+```mermaid
+%%{init: {'themeVariables': {'fontFamily': 'monospace'}}}%%
+%%{init: {'themeVariables': {'fontFamily': 'monospace'}}}%%
+graph LR
+    %% Define CSS classes
+    classDef javascript fill:#f7df1e,color:black,stroke:#d4b106
+    classDef python fill:#3776ab,color:white,stroke:#2a5f8a
+    classDef python_method fill:#4CAF50,color:white,stroke:#2a5f8a
+    classDef variable fill:#9C27B0,color:white,stroke:#6A1B9A
+
+    subgraph "script.js"
+        JS["MapManager"]:::javascript
+        JS -->|defines| sendDrawing["sendDrawing()"]:::javascript
+    end
+
+    subgraph "main_app_ui.py"
+        Py["Api"]:::python
+        MapUI["MapUI"]:::python
+        send_drawing["send_drawing()"]:::python_method
+
+        %% Relationships
+        sendDrawing -->|links| send_drawing
+        Py -->|defines| send_drawing
+        Py -->|updates| MapUI
+        MapUI -->|instantiates| Py
+        MapUI -->|defines| run_webview["run_webview()"]:::python_method
+        MapUI -->|defines| get_polygons_data["get_polygons_data()"]:::python_method
+    end
+
+    subgraph "map_ui.py"
+        MainAppUI["MainAppUI"]:::python
+        MainAppUI -->|calls| run_webview
+        MainAppUI -->|defines| __monitor_map_changes["__monitor_map_changes()"]:::python_method
+        __monitor_map_changes -->|calls| get_polygons_data
+        MainAppUI -->|contains| tb.StringVar["polygons_data<br>(tb.StringVar)"]:::variable
+        __monitor_map_changes -.->|updates| tb.StringVar
+    end
+```

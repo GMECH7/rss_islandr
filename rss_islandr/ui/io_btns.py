@@ -146,7 +146,7 @@ class ExportExcelReportBtn(IOBtns):
 
         # Autofit columns/rows if needed
         sheet.autofit()
-        logging.info(f"Successfully inserted {len(selected_image_files)} images")
+        logging.debug(f"Successfully inserted {len(selected_image_files)} images")
 
         return None
 
@@ -220,8 +220,10 @@ class ExportExcelReportBtn(IOBtns):
 class ExportPDFReportBtn(IOBtns):
     """Implementation of button for exporting to pdf file"""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
+        polygons_data = kwargs.get("polygons_data", tb.StringVar(value=""))
+        self.polygons_data = polygons_data
 
     def on_btn_click(self):
         """ """
@@ -240,7 +242,7 @@ class ExportPDFReportBtn(IOBtns):
 
         try:
             pdf_report = PDFReport(file_path)
-            pdf_report(self.ui_inp_vars, self.ui_calc_vars, selected_image_files)
+            pdf_report(self.ui_inp_vars, self.ui_calc_vars, self.polygons_data, selected_image_files)
             messagebox.showinfo("Success", "PDF report exported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
