@@ -305,7 +305,27 @@ class PDFReport:
         images_list: Optional[list[str]] = None,
         report_title: str = "Contamination Analysis Report",
     ) -> None:
-        """PDF report generator"""
+        """
+        PDF report generator
+
+        Parameters
+        ----------
+        ui_inp_vars : dict[str, UIInpVariable]
+            _description_
+        ui_calc_vars : dict[str, UICalcVariable]
+            _description_
+        polygons_data : tb.StringVar
+            _description_
+        images_list : Optional[list[str]], optional
+            _description_, by default None
+        report_title : str, optional
+            _description_, by default "Contamination Analysis Report"
+
+        Raises
+        ------
+        ValueError
+            _description_
+        """
         self.__add__title_toc_to_story(report_title)
 
         # Build mapping of sections→subsections

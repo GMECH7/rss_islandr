@@ -24,8 +24,7 @@ class Api:
         if self.map_ui.map_polygons_data is None:
             self.map_ui.map_polygons_data = ""
         self.map_ui.map_polygons_data += f"{feature_data}"
-        # print(f"this is it {feature_data}, {type(feature_data)}")
-        # print("printing", self.map_ui.map_polygons_data)
+
         logging.debug(f"Received drawing data: {feature_data}")
 
 
