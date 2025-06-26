@@ -244,3 +244,17 @@
 .leaflet-oldie .leaflet-draw-toolbar {
   border: 1px solid #999;
 }
+
+
+/* Custom vertex markers - small circles */
+.leaflet-marker-icon.leaflet-div-icon {
+  background: #3388ff; /* Default blue color */
+  border-radius: 50%; /* Makes it circular */
+  width: 8px !important;
+  height: 8px !important;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+  margin-left: -4px !important;
+  margin-top: -4px !important;
+  opacity: 1 !important;
+}
