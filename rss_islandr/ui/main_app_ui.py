@@ -285,7 +285,7 @@ class MainAppUI:
             if polygons_data is not None:
                 self.__update_polygons_data(polygons_data)
 
-            # time.sleep(0.1)  # Polling interval (s)
+            time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
     def __update_coordinates(self, lat, lng) -> None:
         """Callback function to update the coordinates label."""
