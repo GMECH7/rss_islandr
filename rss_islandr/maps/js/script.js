@@ -20,7 +20,6 @@ class MapManager {
     L.tileLayer(MAP_CONFIG.baseLayer.url, {
       attribution: MAP_CONFIG.baseLayer.attribution,
     }).addTo(this.map);
-    // L.control.bigImage({position: 'bottomleft'}).addTo(this.map);
   }
 
 
@@ -43,7 +42,7 @@ class MapManager {
   initEventHandlers() {
     // Map click handler
     this.map.on("click", (e) => {
-      if (!this.isDrawing) { // Only set marker if not drawing
+      if (e.originalEvent.ctrlKey && !this.isDrawing) { // Only set marker if Ctrl is pressed and not drawing
         this.setMarker(e.latlng.lat, e.latlng.lng);
       }
     });
@@ -95,13 +94,14 @@ class MapManager {
     // Add the feature group to the map
     this.drawnItems.addTo(this.map);
 
-    // Initialize the draw control (we'll use our own buttons)
+    // Initialize the draw control
     this.drawControl = new L.Control.Draw({
+      position: 'bottomleft',
       edit: {
         featureGroup: this.drawnItems
       },
       draw: {
-        polygon: false, // We'll handle these manually
+        polygon: false,
         rectangle: false,
         circle: false,
         marker: false,
@@ -110,6 +110,7 @@ class MapManager {
       }
     });
 
+    this.drawControl.addTo(this.map);
     // Listen for drawing events
     this.map.on(L.Draw.Event.CREATED, (e) => {
       const layer = e.layer;
@@ -147,7 +148,7 @@ class MapManager {
       shapeOptions: style,
       showArea: true,
       metric: true,
-      guideLayers: this.drawnItems
+      guideLayers: this.drawnItems,
     });
 
     this.currentDrawingMode.enable();
@@ -174,16 +175,16 @@ class MapManager {
 
     // Create popup content with coordinates
     const popupContent = `
-        <b>${this.currentType.toUpperCase()}</b>
-        <br>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²
-        <br>Nodes: ${coordinates.length}
-        <div class="coord-preview" style="max-height: 100px; overflow-y: auto;">
-            ${coordinates.slice(0, 5).map(coord =>
-      `<div>${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
+    <b>${this.currentType.toUpperCase()}</b>
+    <br>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²
+    <br>Nodes: ${coordinates.length}
+    <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
+        ${coordinates.slice(0, 100).map(coord =>
+      `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
     ).join('')}
-            ${coordinates.length > 5 ? '<div>...and ' + (coordinates.length - 5) + ' more</div>' : ''}
-        </div>
-    `;
+        ${coordinates.length > 100 ? '<div style="padding: 2px 0; color: #666;">...and ' + (coordinates.length - 100) + ' more</div>' : ''}
+    </div>
+`;
 
     layer.bindPopup(popupContent);
 
@@ -218,6 +219,7 @@ class MapManager {
   }
 
   cancelDrawing() {
+    // Cancel drawing by ESC while drawing
     if (this.currentDrawingMode) {
       this.currentDrawingMode.disable();
       this.currentDrawingMode = null;

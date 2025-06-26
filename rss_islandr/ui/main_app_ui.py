@@ -285,13 +285,13 @@ class MainAppUI:
             if polygons_data is not None:
                 self.__update_polygons_data(polygons_data)
 
-            time.sleep(1.0)  # Polling interval (s)
+            # time.sleep(0.1)  # Polling interval (s)
 
     def __update_coordinates(self, lat, lng) -> None:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
-        self.ui_inp_vars["map_0_01"].tk_var.set(lat)
-        logging.debug(f"Updated Coordinates: {lat}, {lng}")
+        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
+        logging.info(f"Updated Coordinates: {lat}, {lng}")
 
     def __update_polygons_data(self, polygons_data):
         """Callback function to update polygons data"""
