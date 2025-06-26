@@ -20,7 +20,6 @@ class MapManager {
     L.tileLayer(MAP_CONFIG.baseLayer.url, {
       attribution: MAP_CONFIG.baseLayer.attribution,
     }).addTo(this.map);
-    // L.control.bigImage({position: 'bottomleft'}).addTo(this.map);
   }
 
 
@@ -95,13 +94,13 @@ class MapManager {
     // Add the feature group to the map
     this.drawnItems.addTo(this.map);
 
-    // Initialize the draw control (we'll use our own buttons)
+    // Initialize the draw control
     this.drawControl = new L.Control.Draw({
       edit: {
         featureGroup: this.drawnItems
       },
       draw: {
-        polygon: false, // We'll handle these manually
+        polygon: false,
         rectangle: false,
         circle: false,
         marker: false,
@@ -109,7 +108,8 @@ class MapManager {
         circlemarker: false
       }
     });
-
+    // // adds the toolbar to the map
+    // this.drawControl.addTo(this.map);
     // Listen for drawing events
     this.map.on(L.Draw.Event.CREATED, (e) => {
       const layer = e.layer;
@@ -147,7 +147,8 @@ class MapManager {
       shapeOptions: style,
       showArea: true,
       metric: true,
-      guideLayers: this.drawnItems
+      guideLayers: this.drawnItems,
+      markerStyle: {}
     });
 
     this.currentDrawingMode.enable();
@@ -218,6 +219,7 @@ class MapManager {
   }
 
   cancelDrawing() {
+    // Cancel drawing by ESC while drawing
     if (this.currentDrawingMode) {
       this.currentDrawingMode.disable();
       this.currentDrawingMode = null;
