@@ -1,11 +1,16 @@
+/**
+ * Manages a Leaflet map with layers, drawing tools, and event handlers.
+ * @class
+ */
 class MapManager {
   constructor() {
     this.map = null;
     this.layers = {};
-    this.clickMarker = null;
-    this.drawnItems = new L.FeatureGroup(); // Store all drawn items
+    this.clickMarker = null; //Store a marker when clicking on map
+    this.drawnItems = new L.FeatureGroup(); // Store all drawn items (Leaflet)
     this.currentDrawingMode = null; // Track current drawing mode
-    this.isDrawing = false; // Track if currently drawing
+    this.isDrawing = false; // Track if drawing is in progress
+    // initialization methods
     this.initMap();
     this.initLayers();
     this.initEventHandlers();
@@ -13,7 +18,10 @@ class MapManager {
     this.initDrawingControls();
 
   }
-
+  /**
+   * Initializes the Leaflet map with a base tile layer and default view.
+   * MAP_CONFIG from config.js is used
+   */
   initMap() {
     this.map = L.map("map").setView(MAP_CONFIG.center, MAP_CONFIG.zoom);
 
@@ -22,7 +30,10 @@ class MapManager {
     }).addTo(this.map);
   }
 
-
+  /**
+   * Initializes WMS layers and adds them to the map.
+   * WMS_LAYERS from config.js is used
+   */
   initLayers() {
     Object.entries(WMS_LAYERS).forEach(([key, config]) => {
       const layer = L.tileLayer.wms(config.url, config.params);
@@ -40,14 +51,14 @@ class MapManager {
   }
 
   initEventHandlers() {
-    // Map click handler
+    // Set map marker if pressing Ctrl+left click and not drawing
     this.map.on("click", (e) => {
-      if (e.originalEvent.ctrlKey && !this.isDrawing) { // Only set marker if Ctrl is pressed and not drawing
+      if (e.originalEvent.ctrlKey && !this.isDrawing) {
         this.setMarker(e.latlng.lat, e.latlng.lng);
       }
     });
 
-    // Dynamic checkbox event listeners
+    // Set dynamic checkboxes
     Object.keys(this.layers).forEach((key) => {
       const checkbox = document.getElementById(
         `toggle${key.charAt(0).toUpperCase() + key.slice(1)}`
@@ -59,25 +70,26 @@ class MapManager {
       }
     });
 
-    // Manual coordinate submission
+    // Update lat-long coordinates after placing marker 
     document
       .getElementById("updateMarkerBtn")
       ?.addEventListener("click", () => this.updateMarker());
 
-    // Add Enter key listeners for coordinate inputs
+    // Update longtitude after typing it in the respective entry box by pressing Enter
     document.getElementById('lat')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         this.updateMarker();
       }
     });
 
+    // Update longtitude after typing it in the respective entry box by pressing Enter
     document.getElementById('lng')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         this.updateMarker();
       }
     });
 
-    // Add event listeners for drawing buttons
+    // Event listeners for drawing buttons
     document.getElementById('drawSourceBtn')?.addEventListener('click', () => this.startDrawing('source'));
     document.getElementById('drawPathwayBtn')?.addEventListener('click', () => this.startDrawing('pathway'));
     document.getElementById('drawReceiverBtn')?.addEventListener('click', () => this.startDrawing('receiver'));
@@ -90,6 +102,31 @@ class MapManager {
 
   }
 
+  initPyWebViewIntegration() {
+    document.addEventListener("pywebviewready", () => {
+      console.log("PyWebView is ready!");
+      // Ensure default layers are toggled on
+      Object.entries(this.layers).forEach(([key, { config }]) => {
+        const checkbox = document.getElementById(
+          `toggle${key.charAt(0).toUpperCase() + key.slice(1)}`
+        );
+        if (checkbox) {
+          checkbox.checked = config.defaultOn; // Set checkbox checked based on defaultOn value
+          // If the checkbox is checked, add the layer
+          if (checkbox.checked) {
+            this.toggleLayer(key, true); // Call toggleLayer to ensure the layer is added
+          }
+        }
+      });
+    });
+  }
+
+  /**
+   * Initializes the Leaflet.draw control with custom settings:
+   * - Drawing tools are hidden (managed by custom buttons).
+   * - All drawings are stored in `this.drawnItems`.
+   * - Triggers `finalizeDrawing()` on shape completion.
+  */
   initDrawingControls() {
     // Add the feature group to the map
     this.drawnItems.addTo(this.map);
@@ -197,6 +234,10 @@ class MapManager {
     this.isDrawing = false;
   }
 
+  /**
+   * send drawing to pywebview.
+   * @param {*} layer 
+   */
   sendDrawing(layer) {
     if (window.pywebview?.api) {
       const featureData = {
@@ -210,7 +251,9 @@ class MapManager {
       window.pywebview.api.send_drawing(featureData);
     }
   }
-
+  /**
+   * Clear all drawings. Button handles that
+   */
   clearDrawings() {
     this.drawnItems.clearLayers();
     if (window.pywebview?.api) {
@@ -218,34 +261,16 @@ class MapManager {
     }
   }
 
+  /**
+   * Cancel drawing by ESC while drawing
+   */
   cancelDrawing() {
-    // Cancel drawing by ESC while drawing
     if (this.currentDrawingMode) {
       this.currentDrawingMode.disable();
       this.currentDrawingMode = null;
       this.currentType = null;
       this.isDrawing = false;
     }
-  }
-
-
-  initPyWebViewIntegration() {
-    document.addEventListener("pywebviewready", () => {
-      console.log("PyWebView is ready!");
-      // Ensure default layers are toggled on
-      Object.entries(this.layers).forEach(([key, { config }]) => {
-        const checkbox = document.getElementById(
-          `toggle${key.charAt(0).toUpperCase() + key.slice(1)}`
-        );
-        if (checkbox) {
-          checkbox.checked = config.defaultOn; // Set checkbox checked based on defaultOn value
-          // If the checkbox is checked, add the layer
-          if (checkbox.checked) {
-            this.toggleLayer(key, true); // Call toggleLayer to ensure the layer is added
-          }
-        }
-      });
-    });
   }
 
   toggleLayer(layerKey, isActive) {
@@ -309,7 +334,14 @@ class MapManager {
       );
     }
   }
-  // Helper method to parse various coordinate formats
+
+
+  /**
+   * Helper method to parse various coordinate formats
+   * @param {*} input 
+   * @param {*} isLatitude 
+   * @returns 
+   */
   parseCoordinate(input, isLatitude) {
     // Try simple decimal format first
     if (/^-?\d+(\.\d+)?$/.test(input)) {
