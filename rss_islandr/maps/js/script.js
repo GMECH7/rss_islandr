@@ -16,10 +16,11 @@ class MapManager {
     this.initEventHandlers();
     this.initPyWebViewIntegration();
     this.initDrawingControls();
-
   }
+
   /**
    * Initializes the Leaflet map with a base tile layer and default view.
+   * 
    * MAP_CONFIG from config.js is used
    */
   initMap() {
@@ -32,6 +33,7 @@ class MapManager {
 
   /**
    * Initializes WMS layers and adds them to the map.
+   * 
    * WMS_LAYERS from config.js is used
    */
   initLayers() {
@@ -51,12 +53,24 @@ class MapManager {
   }
 
   initEventHandlers() {
-    // Set map marker if pressing Ctrl+left click and not drawing
+    // Set map marker if pressing Ctrl + Left click and not drawing
     this.map.on("click", (e) => {
       if (e.originalEvent.ctrlKey && !this.isDrawing) {
-        this.setMarker(e.latlng.lat, e.latlng.lng);
+        if (this.clickMarker && this.map.hasLayer(this.clickMarker)) {
+          this.deleteMarker();
+        } else {
+          this.setMarker(e.latlng.lat, e.latlng.lng);
+        }
       }
     });
+
+    // Remove map marker on Ctrl + Right Click
+    // this.map.on("contextmenu", (e) => {
+    //   if (e.originalEvent.ctrlKey && this.clickMarker) {
+    //     //e.originalEvent.preventDefault(); // Prevent default right-click menu
+    //     this.deleteMarker();
+    //   }
+    // });
 
     // Set dynamic checkboxes
     Object.keys(this.layers).forEach((key) => {
@@ -92,7 +106,7 @@ class MapManager {
     // Event listeners for drawing buttons
     document.getElementById('drawSourceBtn')?.addEventListener('click', () => this.startDrawing('source'));
     document.getElementById('drawPathwayBtn')?.addEventListener('click', () => this.startDrawing('pathway'));
-    document.getElementById('drawReceiverBtn')?.addEventListener('click', () => this.startDrawing('receiver'));
+    document.getElementById('drawReceptorBtn')?.addEventListener('click', () => this.startDrawing('receptor'));
     document.getElementById('clearDrawingsBtn')?.addEventListener('click', () => this.clearDrawings());
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isDrawing) {
@@ -175,7 +189,7 @@ class MapManager {
       case 'pathway':
         style = { color: '#0000ff', fillColor: '#0000ff', fillOpacity: 0.01, dashArray: '5,5' };
         break;
-      case 'receiver':
+      case 'receptor':
         style = { color: '#00aa00', fillColor: '#00aa00', fillOpacity: 0.01 };
         break;
     }
@@ -220,8 +234,7 @@ class MapManager {
       `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
     ).join('')}
         ${coordinates.length > 100 ? '<div style="padding: 2px 0; color: #666;">...and ' + (coordinates.length - 100) + ' more</div>' : ''}
-    </div>
-`;
+    </div>`;
 
     layer.bindPopup(popupContent);
 
@@ -335,6 +348,20 @@ class MapManager {
     }
   }
 
+  deleteMarker() {
+    if (this.clickMarker) {
+      this.map.removeLayer(this.clickMarker);
+      this.clickMarker = null;
+    }
+
+    // Clear the input fields
+    document.getElementById("lat").value = "";
+    document.getElementById("lng").value = "";
+
+    // send default coordinates to frontend
+    this.sendLocation(0.0, 0.0);
+
+  }
 
   /**
    * Helper method to parse various coordinate formats
@@ -393,6 +420,7 @@ class MapManager {
   }
 }
 
+// TODO This will have to be incorporated in the class
 function toggleLegend(button) {
   const legend = button.parentElement;
   legend.classList.toggle("collapsed");
@@ -409,7 +437,7 @@ document
 // Initialize the map when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.mapManager = new MapManager();
-  window.map = window.mapManager.map; // 👈 THIS is the only line you need to add
+  window.map = window.mapManager.map;
 });
 
 document.addEventListener("DOMContentLoaded", function () {

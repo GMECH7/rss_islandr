@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.18.1"
+version = "1.18.2"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
 
 # Custom tool section for release version
 [tool.islandr]
-release_version = "1.5.1" # Release version for clients
+release_version = "1.5.2" # Release version for clients
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.14"
