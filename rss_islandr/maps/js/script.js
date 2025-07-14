@@ -64,13 +64,7 @@ class MapManager {
       }
     });
 
-    // Remove map marker on Ctrl + Right Click
-    // this.map.on("contextmenu", (e) => {
-    //   if (e.originalEvent.ctrlKey && this.clickMarker) {
-    //     //e.originalEvent.preventDefault(); // Prevent default right-click menu
-    //     this.deleteMarker();
-    //   }
-    // });
+
 
     // Set dynamic checkboxes
     Object.keys(this.layers).forEach((key) => {
