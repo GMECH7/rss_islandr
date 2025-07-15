@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/leaflet.css">
     <link rel="stylesheet" href="css/leaflet_draw.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -16,11 +17,18 @@
 
     <div id="controlsPanel" class="controls">
         <div class="drawing-controls">
-            <h3>Contamination Drawing Tools</h3>
-            <button id="drawSourceBtn" class="draw-btn" style="background-color: #ffcccc;">Draw Source</button>
-            <button id="drawPathwayBtn" class="draw-btn" style="background-color: #ccccff;">Draw Pathway</button>
-            <button id="drawReceptorBtn" class="draw-btn" style="background-color: #ccffcc;">Draw Receptor</button>
-            <button id="clearDrawingsBtn" class="draw-btn">Clear All Drawings</button>
+            <button id="drawSourceBtn" class="draw-btn" style="background-color: #8B0000; color: white;">
+                <i class="fas fa-industry"></i> Draw Source
+            </button>
+            <button id="drawPathwayBtn" class="draw-btn" style="background-color: #ccccff;">
+                <i class="fas fa-random"></i> Draw Pathway
+            </button>
+            <button id="drawReceptorBtn" class="draw-btn" style="background-color: #ccffcc;">
+                <i class="fas fa-city"></i> Draw Receptor
+            </button>
+            <button id="clearDrawingsBtn" class="draw-btn">
+                <i class="fas fa-trash-alt"></i> Clear All Drawings
+            </button>
         </div>
         <div class="coordinates">
             <div class="coordinates-input-group">

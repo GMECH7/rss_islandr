@@ -241,10 +241,15 @@ body, .coordinates input, .coordinates-button {
 /* Drawing Controls */
 .drawing-controls {
     margin-top: 15px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     padding: 10px;
     background-color: #f5f5f5;
     border-radius: 5px;
+    overflow: hidden;
 }
+    
 
 .draw-btn {
     margin: 5px;
