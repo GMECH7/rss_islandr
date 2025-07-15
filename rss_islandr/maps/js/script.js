@@ -479,3 +479,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+
+document.getElementById('captureScreenBtn').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    const track = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(track);
+
+    const bitmap = await imageCapture.grabFrame();
+    const canvas = document.getElementById('screenshotCanvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    track.stop(); // stop screen capture
+
+    // Optional: Save the screenshot as PNG
+    const imgURL = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = imgURL;
+    a.download = "screenshot.png";
+    a.click();
+
+  } catch (err) {
+    console.error("Error capturing screen:", err);
+    alert("Failed to capture screen. Make sure you allow screen sharing.");
+  }
+});

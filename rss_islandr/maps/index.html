@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="css/leaflet.css">
     <link rel="stylesheet" href="css/leaflet_draw.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-easyprint@2.1.9/dist/easyPrint.css">
 </head>
 
 <body>
@@ -45,18 +44,6 @@
                     Areas 1:5,000,000<input type="checkbox" id="toggleGeologyIGME5000BGR"></label>
             </div>
         </div>
-
-        <!-- Geochemistry maps -->
-
-        <!-- <div class="map-group">
-            <div class="map-group-header">
-                <span>Geochemistry maps</span>
-                <span class="toggle-icon">+</span>
-            </div>
-            <div class="map-group-content">
-                <label for="toggleGemas">GEMAS – Chemistry of Europe’s Agricultural soils, Supporting information<input type="checkbox" id="toggleGemas"></label>
-            </div>
-        </div> -->
 
         <!-- Minerals maps -->
         <div class="map-group">
@@ -114,58 +101,58 @@
     </div>
 
     <!-- Legends -->
-    <div id="GeologyGeoZSLegend" class="legend">
+    <div id="GeologyGeoZSLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/geozs_legend.html"></object>
     </div>
 
-    <div id="GeologyIGME5000BGRLegend" class="legend">
+    <div id="GeologyIGME5000BGRLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_igme5000_legend.html"></object>
     </div>
 
-    <div id="MinesLegend" class="legend">
+    <div id="MinesLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/mines_legend.html"></object>
     </div>
 
-    <div id="HydroEuropeLegend" class="legend">
+    <div id="HydroEuropeLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_hydro_europe_legend.html"></object>
     </div>
 
-    <div id="BGRNormLegend" class="legend">
+    <div id="BGRNormLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_norm_legend.html"></object>
     </div>
 
-    <div id="BGRrgwbLegend" class="legend">
+    <div id="BGRrgwbLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_rgwb_legend.html"></object>
     </div>
 
-    <div id="BGRwokamLegend" class="legend">
+    <div id="BGRwokamLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_wokam_legend.html"></object>
     </div>
 
-    <div id="HydroGlobalLegend" class="legend">
+    <div id="HydroGlobalLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_hydro_global_legend.html"></object>
     </div>
 
-    <div id="SoilEuropeLegend" class="legend">
+    <div id="SoilEuropeLegend" class="legend-container">
         <button class="minimize-btn" onclick="toggleLegend(this)">–</button>
         <object type="text/html" data="legends/bgr_soil_legend.html"></object>
     </div>
 
+    <button id="captureScreenBtn" class="screenshot-btn">Capture Screenshot</button>
+
     <script src="js/leaflet.js"></script>
     <script src="js/leaflet_draw.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-easyprint@2.1.9/dist/bundle.min.js"></script>
     <script src="js/config.js"></script>
-
     <script src="js/script.js"></script>
-
+    <canvas id="screenshotCanvas" style="display:none;"></canvas>
 </body>
 
 </html>
