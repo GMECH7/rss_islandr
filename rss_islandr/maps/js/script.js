@@ -16,6 +16,7 @@ class MapManager {
     this.initEventHandlers();
     this.initPyWebViewIntegration();
     this.initDrawingControls();
+    this.initPrintControl();
   }
 
   /**
@@ -64,13 +65,7 @@ class MapManager {
       }
     });
 
-    // Remove map marker on Ctrl + Right Click
-    // this.map.on("contextmenu", (e) => {
-    //   if (e.originalEvent.ctrlKey && this.clickMarker) {
-    //     //e.originalEvent.preventDefault(); // Prevent default right-click menu
-    //     this.deleteMarker();
-    //   }
-    // });
+
 
     // Set dynamic checkboxes
     Object.keys(this.layers).forEach((key) => {
@@ -167,6 +162,33 @@ class MapManager {
       const layer = e.layer;
       this.finalizeDrawing(layer);
     });
+  }
+
+  initPrintControl() {
+    console.log("Initializing print control..."); // Debug log
+
+    this.printControl = L.easyPrint({
+      title: 'Export Map',
+      position: 'bottomright',
+      exportOnly: true,
+      sizeModes: ['Current', 'A4Portrait', 'A4Landscape'],
+      filename: 'contamination_map',
+      tileWait: 500,
+      hideControlContainer: false // Make sure we can see it
+    }).addTo(this.map);
+
+    console.log("Print control initialized:", this.printControl); // Debug log
+
+    // Force the button to be visible (debug only)
+    setTimeout(() => {
+      const printBtn = document.querySelector('.easyPrint-button');
+      console.log("Print button element:", printBtn);
+      if (printBtn) {
+        printBtn.style.display = 'block';
+        printBtn.style.visibility = 'visible';
+        printBtn.style.opacity = '1';
+      }
+    }, 1000);
   }
 
   startDrawing(type) {
@@ -456,4 +478,33 @@ document.addEventListener("DOMContentLoaded", function () {
       icon.textContent = content.classList.contains("active") ? "-" : "+";
     });
   });
+});
+
+
+document.getElementById('captureScreenBtn').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    const track = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(track);
+
+    const bitmap = await imageCapture.grabFrame();
+    const canvas = document.getElementById('screenshotCanvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    track.stop(); // stop screen capture
+
+    // Optional: Save the screenshot as PNG
+    const imgURL = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = imgURL;
+    a.download = "screenshot.png";
+    a.click();
+
+  } catch (err) {
+    console.error("Error capturing screen:", err);
+    alert("Failed to capture screen. Make sure you allow screen sharing.");
+  }
 });

@@ -16,6 +16,7 @@ from rss_islandr.core.config_parser import (
     XLSX_TEMPLATE_FILE_COPY,
 )
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.reporting import PDFReport
 
 logging.basicConfig(level=logging.INFO)
@@ -93,8 +94,10 @@ class IOBtns(ABC):
 class ExportExcelReportBtn(IOBtns):
     """Implementation of button for exporting to excel file"""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
+        polygons_data = kwargs.get("polygons_data", tb.StringVar(value=""))
+        self._polygons_data = polygons_data
 
     def __save_maps_as_imgs(
         self,
@@ -150,23 +153,29 @@ class ExportExcelReportBtn(IOBtns):
 
         return None
 
-    def __add_maps_prompt(self) -> list[str]:
+    def __save_polygons_data(self, workbook: xw.Book):
         """
-        Prompt to ask user if they want to add maps images to the Excel report.
+        Save polygons data to the Excel workbook.
+
+        Parameters
+        ----------
+        workbook : xw.Book
+            The Excel workbook to save polygons data into.
         """
-        add_maps = messagebox.askyesno("Add Maps", "Do you want to add maps images to the Excel report?")
+        sheet = workbook.sheets[4]
+        polygons_data = extract_dicts_from_string(self._polygons_data.get())
 
-        if add_maps:
-            selected_image_files = list(
-                filedialog.askopenfilenames(
-                    title="Select Map Images", filetypes=[("PNG Images", "*.png"), ("JPEG Images", "*.jpeg")]
-                )
-            )
-        else:
-            selected_image_files = []
-            messagebox.showinfo("No Images Selected", "No images were selected. Proceeding without maps.")
-
-        return selected_image_files
+        row_idx = 1
+        for i in range(len(polygons_data)):
+            row_idx += 1
+            coords = polygons_data[i].get("coordinates", [])
+            sheet.range(f"E{row_idx}").value = polygons_data[i].get("area_km2", "")
+            for j, coord in enumerate(coords):
+                sheet.range(f"A{row_idx}").value = polygons_data[i].get("type", "")
+                sheet.range(f"B{row_idx}").value = j + 1
+                sheet.range(f"C{row_idx}").value = coord[0]
+                sheet.range(f"D{row_idx}").value = coord[1]
+                row_idx += 1
 
     def on_btn_click(self):
         """ """
@@ -202,6 +211,7 @@ class ExportExcelReportBtn(IOBtns):
                         sheet.range(position).value = value
 
             self.__save_maps_as_imgs(workbook, selected_image_files)
+            self.__save_polygons_data(workbook)
             workbook.save(XLSX_TEMPLATE_FILE_COPY)
             workbook.close()
             app.quit()
