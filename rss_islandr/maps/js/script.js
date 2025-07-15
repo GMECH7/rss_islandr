@@ -199,8 +199,11 @@ class MapManager {
     this.currentDrawingMode.enable();
     this.currentType = type; // Store the current type for finalization
   }
-
   finalizeDrawing(layer) {
+    // Prompt user for polygon name
+    const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)} ${this.drawnItems.getLayers().length + 1}`;
+    const polygonName = prompt("Enter polygon name:", defaultName) || defaultName;
+
     // Add type metadata to the layer
     layer.feature = layer.feature || {};
     layer.feature.type = 'polygon:' + this.currentType;
@@ -208,8 +211,9 @@ class MapManager {
     // Get all coordinates as array of [lat, lng] tuples
     const coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
 
-    // Store coordinates in layer properties
+    // Store coordinates and name in layer properties
     layer.feature.properties = {
+      name: polygonName,
       coordinates: coordinates,
       area_m2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]),
       area_km2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000
@@ -218,19 +222,36 @@ class MapManager {
     // Add to our feature group
     this.drawnItems.addLayer(layer);
 
-    // Create popup content with coordinates
+    // Create enhanced popup content
     const popupContent = `
-    <b>${this.currentType.toUpperCase()}</b>
-    <br>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²
-    <br>Nodes: ${coordinates.length}
-    <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
-        ${coordinates.slice(0, 100).map(coord =>
+    <div style="min-width: 200px;">
+      <b>${polygonName}</b>
+      <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">${this.currentType.toUpperCase()}</div>
+      <div>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²</div>
+      <div>Nodes: ${coordinates.length}</div>
+      <button class="rename-btn" style="margin-top: 8px; padding: 2px 6px; font-size: 0.8em;">
+        Rename
+      </button>
+      <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
+          ${coordinates.slice(0, 100).map(coord =>
       `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
     ).join('')}
-        ${coordinates.length > 100 ? '<div style="padding: 2px 0; color: #666;">...and ' + (coordinates.length - 100) + ' more</div>' : ''}
+          ${coordinates.length > 100 ? '<div style="padding: 2px 0; color: #666;">...and ' + (coordinates.length - 100) + ' more</div>' : ''}
+      </div>
     </div>`;
 
     layer.bindPopup(popupContent);
+
+    // Add event listener to rename button
+    layer.on('popupopen', () => {
+      document.querySelector('.rename-btn')?.addEventListener('click', () => {
+        const newName = prompt("Enter new name:", layer.feature.properties.name);
+        if (newName) {
+          layer.feature.properties.name = newName;
+          layer.setPopupContent(this.createPopupContent(layer)); // Refresh popup
+        }
+      });
+    });
 
     // Send to backend if needed
     this.sendDrawing(layer);
@@ -241,6 +262,29 @@ class MapManager {
     this.isDrawing = false;
   }
 
+  // Helper method to create popup content (extracted for reuse)
+  createPopupContent(layer) {
+    return `
+    <div style="min-width: 200px;">
+      <b>${layer.feature.properties.name}</b>
+      <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">${layer.feature.type.split(':')[1].toUpperCase()}</div>
+      <div>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²</div>
+      <div>Nodes: ${layer.feature.properties.coordinates.length}</div>
+      <button class="rename-btn" style="margin-top: 8px; padding: 2px 6px; font-size: 0.8em;">
+        Rename
+      </button>
+      <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
+          ${layer.feature.properties.coordinates.slice(0, 100).map(coord =>
+      `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
+    ).join('')}
+          ${layer.feature.properties.coordinates.length > 100 ?
+        '<div style="padding: 2px 0; color: #666;">...and ' +
+        (layer.feature.properties.coordinates.length - 100) +
+        ' more</div>' : ''}
+      </div>
+    </div>`;
+  }
+
   /**
    * send drawing to pywebview.
    * @param {*} layer 
@@ -249,6 +293,7 @@ class MapManager {
     if (window.pywebview?.api) {
       const featureData = {
         type: layer.feature.type,
+        name: layer.feature.properties.name,
         coordinates: layer.feature.properties.coordinates,
         area_km2: layer.feature.properties.area_km2,
         node_count: layer.feature.properties.coordinates.length
@@ -258,6 +303,8 @@ class MapManager {
       window.pywebview.api.send_drawing(featureData);
     }
   }
+
+
   /**
    * Clear all drawings. Button handles that
    */

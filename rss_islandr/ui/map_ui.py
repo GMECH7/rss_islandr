@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import base64
 import logging
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
 import ttkbootstrap as tb
@@ -28,22 +26,6 @@ class Api:
         self.map_ui.map_polygons_data += f"{feature_data}"
 
         logging.debug(f"Received drawing data: {feature_data}")
-
-    def saveScreenshot(self, data_url):
-        # Extract base64 data from data URL
-        header, encoded = data_url.split(",", 1)
-        data = base64.b64decode(encoded)
-
-        # Generate filename
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"webview_screenshot_{timestamp}.png"
-
-        # Save to file
-        with open(filename, "wb") as f:
-            f.write(data)
-
-        print(f"Screenshot saved as {filename}")
-        return filename
 
 
 class MapUI:
