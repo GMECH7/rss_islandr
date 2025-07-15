@@ -47,7 +47,7 @@ class MapManager {
       // Initialize default layers
       if (config.defaultOn) {
         layer.addTo(this.map);
-        this.toggleLegend(config.legendId, true);
+        this.visibilityLegend(config.legendId, true);
       }
     });
   }
@@ -296,10 +296,10 @@ class MapManager {
     }
 
     // Toggle the legend visibility based on whether the layer is active
-    this.toggleLegend(config.legendId, isActive);
+    this.visibilityLegend(config.legendId, isActive);
   }
 
-  toggleLegend(legendId, show) {
+  visibilityLegend(legendId, show) {
     const legend = document.getElementById(legendId);
     if (legend) {
       legend.style.display = show ? "block" : "none";
