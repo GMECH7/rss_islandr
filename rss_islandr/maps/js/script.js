@@ -16,7 +16,6 @@ class MapManager {
     this.initEventHandlers();
     this.initPyWebViewIntegration();
     this.initDrawingControls();
-    this.initPrintControl();
   }
 
   /**
@@ -162,33 +161,6 @@ class MapManager {
       const layer = e.layer;
       this.finalizeDrawing(layer);
     });
-  }
-
-  initPrintControl() {
-    console.log("Initializing print control..."); // Debug log
-
-    this.printControl = L.easyPrint({
-      title: 'Export Map',
-      position: 'bottomright',
-      exportOnly: true,
-      sizeModes: ['Current', 'A4Portrait', 'A4Landscape'],
-      filename: 'contamination_map',
-      tileWait: 500,
-      hideControlContainer: false // Make sure we can see it
-    }).addTo(this.map);
-
-    console.log("Print control initialized:", this.printControl); // Debug log
-
-    // Force the button to be visible (debug only)
-    setTimeout(() => {
-      const printBtn = document.querySelector('.easyPrint-button');
-      console.log("Print button element:", printBtn);
-      if (printBtn) {
-        printBtn.style.display = 'block';
-        printBtn.style.visibility = 'visible';
-        printBtn.style.opacity = '1';
-      }
-    }, 1000);
   }
 
   startDrawing(type) {
