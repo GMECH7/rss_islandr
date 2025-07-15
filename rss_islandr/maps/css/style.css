@@ -1,5 +1,5 @@
 /* Base Styles */
-body {
+body, .coordinates input, .coordinates-button {
     margin: 0;
     font-family: 'Calibri', sans-serif;
     color: #555;
@@ -28,46 +28,39 @@ body {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
-/* Coordinates Input */
-/* Updated Coordinates Section */
+/* Coordinates Section */
 .coordinates {
     margin-bottom: 15px;
-    display: flex;          /* Enable flex layout */
-    align-items: center;    /* Vertically align items */
-    gap: 8px;               /* Space between input and button */
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .coordinates-input-group {
     display: flex;
-    flex-direction: row; /* Stack inputs horizontally */
-    gap: 6px;              /* Match your input margin */
+    gap: 6px;
 }
 
 .coordinates input {
-    font-family: 'Calibri', sans-serif;
-    color: #555;
     width: 240px;
     padding: 6px;
-    margin: 0;              /* Remove margin now handled by parent */
     border: 2px solid #ccc;
     border-radius: 4px;
     background: rgba(245, 245, 245, 0.9);
-    height: 32px;           /* Explicit height (6px padding * 2 + line-height) */
-    box-sizing: border-box; /* Include padding in height calculation */
+    height: 32px;
+    box-sizing: border-box;
 }
 
 .coordinates-button {
-    font-family: 'Calibri', sans-serif;
-    color: #555;
     background: rgba(245, 245, 245, 0.9);
     border: 2px solid #ccc;
     border-radius: 4px;
     padding: 6px 12px;
-    height: 32px;           /* Match input height */
+    height: 32px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-sizing: border-box;
-    white-space: nowrap;    /* Prevent text wrapping */
+    white-space: nowrap;
 }
 
 .coordinates-button:hover {
@@ -105,10 +98,6 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
-.toggle-icon {
-    font-weight: bold;
-}
-
 .map-group-content {
     padding: 0;
     max-height: 0;
@@ -120,7 +109,7 @@ body {
 .map-group-content.active {
     padding: 8px 12px;
     max-height: 100px;
-    overflow-y: auto; /* Adds scroll if content exceeds max-height */
+    overflow-y: auto;
 }
 
 .map-group-content label {
@@ -156,7 +145,6 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none;
 }
 
 /* Toggle Button */
@@ -180,7 +168,7 @@ body {
     top: 10px;
     right: 10px;
     z-index: 1000; 
-    display: none; /* Initially hidden */
+    display: none;
     width: 400px;
     height: 400px;
     background: transparent;
@@ -189,13 +177,11 @@ body {
     transition: width 0.3s ease, height 0.3s ease;
 }
 
-/*This ensures anything embedded inside the legend-container (like SVG, PDFs, etc. using <object>) stretches to fill it.*/
 .legend-container object { 
     width: 100%;
     height: 100%;
 }
 
-/* Minimize Button inside the legend-container */
 .minimize-btn {
     position: absolute;
     top: 5px;
@@ -209,16 +195,14 @@ body {
     z-index: 10;
 }
 
-/* Collapsed Legend override the default .legend-container styles*/
 .legend-container.collapsed {
     width: 20px;
     height: 20px;
     padding: 5px;
     background-color:transparent;
     border: none;
-    overflow: hidden; /* hides anything overflowing outside this tiny box. */
+    overflow: hidden;
 }
-
 
 .legend-container.collapsed .legend-container-content,
 .legend-container.collapsed object,
@@ -239,7 +223,6 @@ body {
     left: 0;
 }
 
-
 /* Zoomable Elements */
 .zoomable {
     transition: transform 0.2s;
@@ -255,32 +238,27 @@ body {
     display: none;
 }
 
-/* Drawing polygons Controls */
+/* Drawing Controls */
 .drawing-controls {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border-radius: 5px;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
 }
 
 .draw-btn {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+    margin: 5px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .draw-btn:hover {
-  opacity: 0.8;
+    opacity: 0.8;
 }
 
-.leaflet-draw-draw-polygon .leaflet-draw-tooltip {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
+/* Screenshot Button */
 .screenshot-btn {
     position: fixed;
     bottom: 20px;
@@ -291,7 +269,7 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    z-index: 1000; /* Ensure it's above other elements */
+    z-index: 1000;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
