@@ -254,11 +254,11 @@ graph LR
     subgraph "main_app_ui.py"
         Py["Api"]:::python
         MapUI["MapUI"]:::python
-        send_drawing["send_drawing()"]:::python_method
+        py_api_polygons_receiver["py_api_polygons_receiver()"]:::python_method
 
         %% Relationships
-        sendDrawing -->|links| send_drawing
-        Py -->|defines| send_drawing
+        sendDrawing -->|links| py_api_polygons_receiver
+        Py -->|defines| py_api_polygons_receiver
         Py -->|updates| MapUI
         MapUI -->|instantiates| Py
         MapUI -->|defines| run_webview["run_webview()"]:::python_method

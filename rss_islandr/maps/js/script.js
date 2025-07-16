@@ -126,7 +126,7 @@ class MapManager {
 
     if (window.pywebview?.api) {
       console.log("API available, requesting polygons...");
-      window.pywebview.api.get_saved_polygons().then(polygons => {
+      window.pywebview.api.py_api_send_polygons_to_js().then(polygons => {
         if (polygons && polygons.length > 0) {
           console.log(`Received ${polygons.length} polygons to redraw`);
           this.redrawPolygons(polygons);
@@ -202,7 +202,7 @@ class MapManager {
       const layers = e.layers;
       layers.eachLayer((layer) => {
         if (window.pywebview?.api && layer.feature) {
-          window.pywebview.api.delete_drawing({
+          window.pywebview.api.py_api_delete_polygons({
             type: layer.feature.type,
             name: layer.feature.properties.name
           });
@@ -258,7 +258,7 @@ class MapManager {
 
   finalizeDrawing(layer) {
     // Prompt user for polygon name
-    const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)} ${this.drawnItems.getLayers().length + 1}`;
+    const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)}`;
     const polygonName = prompt("Enter polygon name:", defaultName) || defaultName;
 
     // Add type metadata to the layer
@@ -313,31 +313,31 @@ class MapManager {
    * Updates a polygon in backend storage after editing
    * @param {L.Polygon} layer - The edited polygon layer
    */
-  updatePolygonInBackend(layer) {
-    if (!layer.feature || !window.pywebview?.api) return;
+  // updatePolygonInBackend(layer) {
+  //   if (!layer.feature || !window.pywebview?.api) return;
 
-    // Update coordinates in the layer's properties
-    layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+  //   // Update coordinates in the layer's properties
+  //   layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
 
-    // Update area calculations
-    const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-    layer.feature.properties.area_m2 = area_m2;
-    layer.feature.properties.area_km2 = area_m2 / 1000000;
+  //   // Update area calculations
+  //   const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+  //   layer.feature.properties.area_m2 = area_m2;
+  //   layer.feature.properties.area_km2 = area_m2 / 1000000;
 
-    // Update popup content
-    layer.setPopupContent(this.createPopupContent(layer));
+  //   // Update popup content
+  //   layer.setPopupContent(this.createPopupContent(layer));
 
-    // Send updated data to backend
-    const featureData = {
-      type: layer.feature.type,
-      name: layer.feature.properties.name,
-      coordinates: layer.feature.properties.coordinates,
-      area_km2: layer.feature.properties.area_km2,
-      node_count: layer.feature.properties.coordinates.length
-    };
+  //   // Send updated data to backend
+  //   const featureData = {
+  //     type: layer.feature.type,
+  //     name: layer.feature.properties.name,
+  //     coordinates: layer.feature.properties.coordinates,
+  //     area_km2: layer.feature.properties.area_km2,
+  //     node_count: layer.feature.properties.coordinates.length
+  //   };
 
-    window.pywebview.api.update_drawing(featureData);
-  }
+  //   window.pywebview.api.update_drawing(featureData);
+  // }
 
   // Helper method to create popup content (extracted for reuse)
   createPopupContent(layer) {
@@ -378,7 +378,7 @@ class MapManager {
       };
 
       console.log("Sending polygon data to pywebview:", featureData);
-      window.pywebview.api.send_drawing(featureData);
+      window.pywebview.api.py_api_polygons_receiver(featureData);
     }
   }
 
@@ -391,7 +391,7 @@ class MapManager {
 
     // Clear from backend storage
     if (window.pywebview?.api) {
-      window.pywebview.api.clear_drawings().then(success => {
+      window.pywebview.api.py_api_clear_polygons().then(success => {
         if (success) {
           console.log("All drawings cleared from backend");
         }
@@ -597,7 +597,7 @@ class MapManager {
 
     if (window.pywebview?.api) {
       console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
-      window.pywebview.api.send_coordinates(formattedLat, formattedLng);
+      window.pywebview.api.py_api_coord_receiver(formattedLat, formattedLng);
     } else {
       console.warn("PyWebView API not ready. Skipping coordinate send.");
     }
@@ -669,7 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check for saved polygons
   if (window.pywebview?.api) {
-    window.pywebview.api.get_saved_polygons().then(polygons => {
+    window.pywebview.api.py_api_send_polygons_to_js().then(polygons => {
       if (polygons && polygons.length > 0) {
         window.mapManager.redrawPolygons(polygons);
       }

@@ -232,12 +232,11 @@ class PDFReport:
             self.story.append(Paragraph("Polygon Data", self._styles["SectionHeader"]))
             self.story.append(Spacer(1, 0.2 * inch))
 
-            # Extract polygon type for header
             for polygon_dict in polygons_data:
-                poly_type = polygon_dict.get("type", "polygon:unknown")
-                clean_type = poly_type.replace("polygon:", "").capitalize()
+                polygon_name = polygon_dict.get("name", "Unknown")
+                # clean_type = poly_type.replace("polygon:", "").capitalize()
 
-                self.story.append(Paragraph(clean_type, self._styles["SubSectionHeader"]))
+                self.story.append(Paragraph(polygon_name, self._styles["SubSectionHeader"]))
                 self.story.append(Spacer(1, 0.1 * inch))
 
                 # Create table data with headers

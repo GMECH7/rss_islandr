@@ -14,13 +14,13 @@ class Api:
     def __init__(self, map_ui_instance):
         self.map_ui = map_ui_instance  # Reference to MapUI instance
 
-    def send_coordinates(self, lat, lng):
-        """Handle coordinates sent from JavaScript"""
+    def py_api_coord_receiver(self, lat, lng):
+        """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
-    def send_drawing(self, feature_data):
-        """Handle both new and updated polygon data using unique_id"""
+    def py_api_polygons_receiver(self, feature_data):
+        """Receive polygon data from JavaScript"""
 
         logging.debug(f"Received polygon data: {feature_data}")
 
@@ -55,42 +55,16 @@ class Api:
             self.map_ui.polygons.append(polygon)
             logging.debug(f"Added new polygon: {polygon}")
 
-        # # Update the string data representation
-        # if self.map_ui.map_polygons_data is None:
-        #     self.map_ui.map_polygons_data = ""
-        # # print(111111111111111111, polygon)
-        # # print(222222222222222222, self.map_ui.map_polygons_data)
-        # self.map_ui.map_polygons_data += f"{feature_data}"
-
         return True
 
-    def get_saved_polygons(self):
-        """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
-        return self.map_ui.polygons
-
-    def clear_drawings(self):
+    def py_api_clear_polygons(self):
         """Clear all stored polygons"""
         logging.debug("Clearing all polygons from storage")
         self.map_ui.polygons = []  # Empty the list
-        self.map_ui.map_polygons_data = None  # Clear the string data
-        return True  # Return something to confirm completion
 
-    # def update_drawing(self, feature_data):
-    #     """Update an existing polygon in storage"""
-    #     logging.debug(f"Updating polygon: {feature_data}")
+        return True
 
-    #     # Find and update the polygon by name and type
-    #     for i, poly in enumerate(self.map_ui.polygons):
-    #         if poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"]:
-    #             self.map_ui.polygons[i] = feature_data
-    #             logging.debug(f"Updated polygon: {feature_data}")
-    #             return True
-
-    #     logging.warning(f"Polygon not found for update: {feature_data}")
-    #     return False
-
-    def delete_drawing(self, feature_data):
+    def py_api_delete_polygons(self, feature_data):
         """Delete a polygon from storage"""
         logging.debug(f"Deleting polygon: {feature_data}")
 
@@ -104,6 +78,11 @@ class Api:
         logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
         return True
 
+    def py_api_send_polygons_to_js(self):
+        """Return all stored polygons to JavaScript for redrawing"""
+        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
+        return self.map_ui.polygons
+
 
 class MapUI:
     def __init__(self, map_html: Path, style: tb.Style):
@@ -111,7 +90,6 @@ class MapUI:
         self.map_html = map_html
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
-        self.map_polygons_data = None  # List to store polygons data collected from the webview
         self.polygons = []
 
     def show_map(self):
@@ -130,7 +108,7 @@ class MapUI:
         self.coordinates = None  # Reset after reading
         return coords
 
-    def get_polygons_data(self):
+    def get_polygons_data(self) -> str:
         """Retrieve the polygons data collected from the webview."""
         map_polygons_data = ""
         for polygon in self.polygons:
