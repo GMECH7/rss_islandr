@@ -171,7 +171,7 @@ class ExportExcelReportBtn(IOBtns):
             coords = polygons_data[i].get("coordinates", [])
             sheet.range(f"E{row_idx}").value = polygons_data[i].get("area_km2", "")
             for j, coord in enumerate(coords):
-                sheet.range(f"A{row_idx}").value = polygons_data[i].get("type", "")
+                sheet.range(f"A{row_idx}").value = polygons_data[i].get("name", "")
                 sheet.range(f"B{row_idx}").value = j + 1
                 sheet.range(f"C{row_idx}").value = coord[0]
                 sheet.range(f"D{row_idx}").value = coord[1]

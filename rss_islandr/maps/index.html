@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/leaflet.css">
     <link rel="stylesheet" href="css/leaflet_draw.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
@@ -16,11 +17,18 @@
 
     <div id="controlsPanel" class="controls">
         <div class="drawing-controls">
-            <h3>Contamination Drawing Tools</h3>
-            <button id="drawSourceBtn" class="draw-btn" style="background-color: #ffcccc;">Draw Source</button>
-            <button id="drawPathwayBtn" class="draw-btn" style="background-color: #ccccff;">Draw Pathway</button>
-            <button id="drawReceptorBtn" class="draw-btn" style="background-color: #ccffcc;">Draw Receptor</button>
-            <button id="clearDrawingsBtn" class="draw-btn">Clear All Drawings</button>
+            <button id="drawSourceBtn" class="draw-btn" style="background-color: #8B0000; color: white;">
+                <i class="fas fa-industry"></i> Draw Source
+            </button>
+            <button id="drawPathwayBtn" class="draw-btn" style="background-color: #ccccff;">
+                <i class="fas fa-random"></i> Draw Pathway
+            </button>
+            <button id="drawReceptorBtn" class="draw-btn" style="background-color: #ccffcc;">
+                <i class="fas fa-city"></i> Draw Receptor
+            </button>
+            <button id="clearDrawingsBtn" class="draw-btn">
+                <i class="fas fa-trash-alt"></i> Clear All Drawings
+            </button>
         </div>
         <div class="coordinates">
             <div class="coordinates-input-group">
@@ -146,8 +154,13 @@
         <object type="text/html" data="legends/bgr_soil_legend.html"></object>
     </div>
 
-    <button id="captureScreenBtn" class="screenshot-btn">Capture Screenshot</button>
 
+    <button id="captureScreenBtn" class="screenshot-btn" title="Save">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path
+                d="M17,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3M12,19A2.5,2.5 0 1,1 14.5,16.5A2.5,2.5 0 0,1 12,19M6,8V5H15V8H6Z" />
+        </svg>
+    </button>
     <script src="js/leaflet.js"></script>
     <script src="js/leaflet_draw.js"></script>
     <script src="js/config.js"></script>
