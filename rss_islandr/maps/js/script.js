@@ -109,24 +109,46 @@ class MapManager {
     });
 
   }
-
   initPyWebViewIntegration() {
-    document.addEventListener("pywebviewready", () => {
-      console.log("PyWebView is ready!");
-      // Ensure default layers are toggled on
-      Object.entries(this.layers).forEach(([key, { config }]) => {
-        const checkbox = document.getElementById(
-          `toggle${key.charAt(0).toUpperCase() + key.slice(1)}`
-        );
-        if (checkbox) {
-          checkbox.checked = config.defaultOn; // Set checkbox checked based on defaultOn value
-          // If the checkbox is checked, add the layer
-          if (checkbox.checked) {
-            this.toggleLayer(key, true); // Call toggleLayer to ensure the layer is added
-          }
+    const tryInit = () => {
+      if (window.pywebview?.api) {
+        console.log("✅ PyWebView is ready!");
+        this.handlePyWebViewReady();
+      } else {
+        console.log("⏳ Waiting for PyWebView...");
+        setTimeout(tryInit, 300); // Retry every 300ms
+      }
+    };
+
+    tryInit(); // Start checking immediately
+  }
+
+  handlePyWebViewReady() {
+    console.log("PyWebView is confirmed ready!");
+
+    if (window.pywebview?.api) {
+      console.log("API available, requesting polygons...");
+      window.pywebview.api.get_saved_polygons().then(polygons => {
+        if (polygons && polygons.length > 0) {
+          console.log(`Received ${polygons.length} polygons to redraw`);
+          this.redrawPolygons(polygons);
         }
       });
+    }
+    // Ensure default layers are toggled on
+    Object.entries(this.layers).forEach(([key, { config }]) => {
+      const checkbox = document.getElementById(
+        `toggle${key.charAt(0).toUpperCase() + key.slice(1)}`
+      );
+      if (checkbox) {
+        checkbox.checked = config.defaultOn; // Set checkbox checked based on defaultOn value
+        // If the checkbox is checked, add the layer
+        if (checkbox.checked) {
+          this.toggleLayer(key, true); // Call toggleLayer to ensure the layer is added
+        }
+      }
     });
+
   }
 
   /**
@@ -309,9 +331,18 @@ class MapManager {
    * Clear all drawings. Button handles that
    */
   clearDrawings() {
+    // Clear from the map
     this.drawnItems.clearLayers();
+
+    // Clear from backend storage
     if (window.pywebview?.api) {
-      window.pywebview.api.clear_drawings();
+      window.pywebview.api.clear_drawings().then(success => {
+        if (success) {
+          console.log("All drawings cleared from backend");
+        }
+      }).catch(error => {
+        console.error("Error clearing drawings:", error);
+      });
     }
   }
 
@@ -325,6 +356,52 @@ class MapManager {
       this.currentType = null;
       this.isDrawing = false;
     }
+  }
+
+  /**
+ * Redraws all polygons from stored data
+ * @param {Array} polygons - Array of polygon data objects
+ */
+  redrawPolygons(polygons) {
+    // Clear existing drawings first
+    this.drawnItems.clearLayers();
+
+    // Redraw each polygon
+    polygons.forEach(polygonData => {
+      // Create a new polygon layer
+      const polygon = L.polygon(polygonData.coordinates, {
+        color: this.getColorForType(polygonData.type),
+        fillColor: this.getColorForType(polygonData.type),
+        fillOpacity: 0.01,
+        dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
+      });
+
+      // Add metadata to the layer
+      polygon.feature = {
+        type: polygonData.type,
+        properties: {
+          name: polygonData.name,
+          coordinates: polygonData.coordinates,
+          area_km2: polygonData.area_km2
+        }
+      };
+
+      // Add to feature group
+      this.drawnItems.addLayer(polygon);
+
+      // Bind popup
+      polygon.bindPopup(this.createPopupContent(polygon));
+    });
+  }
+
+  /**
+   * Helper method to get color based on polygon type
+   */
+  getColorForType(type) {
+    if (type.includes('source')) return '#ff0000';
+    if (type.includes('pathway')) return '#0000ff';
+    if (type.includes('receptor')) return '#00aa00';
+    return '#333333'; // default color
   }
 
   toggleLayer(layerKey, isActive) {
@@ -476,10 +553,10 @@ document
   });
 
 // Initialize the map when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  window.mapManager = new MapManager();
-  window.map = window.mapManager.map;
-});
+// document.addEventListener("DOMContentLoaded", () => {
+//   window.mapManager = new MapManager();
+//   window.map = window.mapManager.map;
+// });
 
 document.addEventListener("DOMContentLoaded", function () {
   const headers = document.querySelectorAll(".map-group-header");
@@ -525,5 +602,19 @@ document.getElementById('captureScreenBtn').addEventListener('click', async () =
   } catch (err) {
     console.error("Error capturing screen:", err);
     alert("Failed to capture screen. Make sure you allow screen sharing.");
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.mapManager = new MapManager();
+  window.map = window.mapManager.map;
+
+  // Check for saved polygons
+  if (window.pywebview?.api) {
+    window.pywebview.api.get_saved_polygons().then(polygons => {
+      if (polygons && polygons.length > 0) {
+        window.mapManager.redrawPolygons(polygons);
+      }
+    });
   }
 });

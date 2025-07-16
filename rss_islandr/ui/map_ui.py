@@ -21,11 +21,25 @@ class Api:
 
     def send_drawing(self, feature_data):
         """Handle polygon data from JavaScript"""
+        self.map_ui.polygons.append(feature_data)
+        logging.debug("Polygons received from js {self.map_ui.polygons}")
         if self.map_ui.map_polygons_data is None:
             self.map_ui.map_polygons_data = ""
         self.map_ui.map_polygons_data += f"{feature_data}"
 
         logging.debug(f"Received drawing data: {feature_data}")
+
+    def get_saved_polygons(self):
+        """Return all stored polygons to JavaScript for redrawing"""
+        logging.debug("Polygons sent to js {self.map_ui.polygons}")
+        return self.map_ui.polygons
+
+    def clear_drawings(self):
+        """Clear all stored polygons"""
+        logging.debug("Clearing all polygons from storage")
+        self.map_ui.polygons = []  # Empty the list
+        self.map_ui.map_polygons_data = None  # Clear the string data
+        return True  # Return something to confirm completion
 
 
 class MapUI:
@@ -35,6 +49,7 @@ class MapUI:
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
         self.map_polygons_data = None  # List to store polygons data collected from the webview
+        self.polygons = []
 
     def show_map(self):
         """Launch the webview window in a separate process."""
