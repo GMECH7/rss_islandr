@@ -216,28 +216,26 @@ class PDFReport:
 
         self.story.append(PageBreak())
 
-    def __add_polygons_to_story(self, polygons_data_tkvar: tb.StringVar):
+    def __add_polygons_to_story(self, map_polygons_tb: tb.StringVar):
         """
         Add polygon data table to the report
 
         Parameters
         ----------
-        polygons_data_tkvar : tb.StringVar
+        map_polygons_tb : tb.StringVar
             Representation of the polygons dictionary.
         """
-        polygons_data = extract_dicts_from_string(polygons_data_tkvar.get())
+        map_polygons_list = extract_dicts_from_string(map_polygons_tb.get())
 
         try:
             # Add section header
             self.story.append(Paragraph("Polygon Data", self._styles["SectionHeader"]))
             self.story.append(Spacer(1, 0.2 * inch))
 
-            # Extract polygon type for header
-            for polygon_dict in polygons_data:
-                poly_type = polygon_dict.get("type", "polygon:unknown")
-                clean_type = poly_type.replace("polygon:", "").capitalize()
+            for polygon_dict in map_polygons_list:
+                polygon_name = polygon_dict.get("name", "Unknown")
 
-                self.story.append(Paragraph(clean_type, self._styles["SubSectionHeader"]))
+                self.story.append(Paragraph(polygon_name, self._styles["SubSectionHeader"]))
                 self.story.append(Spacer(1, 0.1 * inch))
 
                 # Create table data with headers
@@ -301,7 +299,7 @@ class PDFReport:
         self,
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
-        polygons_data: tb.StringVar,
+        map_polygons_tb: tb.StringVar,
         images_list: Optional[list[str]] = None,
         report_title: str = "Contamination Analysis Report",
     ) -> None:
@@ -314,7 +312,7 @@ class PDFReport:
             _description_
         ui_calc_vars : dict[str, UICalcVariable]
             _description_
-        polygons_data : tb.StringVar
+        map_polygons_tb : tb.StringVar
             _description_
         images_list : Optional[list[str]], optional
             _description_, by default None
@@ -361,8 +359,8 @@ class PDFReport:
         if images_list:
             self.__add__figures_to_story(images_list)
 
-        if polygons_data.get() != "":
-            self.__add_polygons_to_story(polygons_data)
+        if map_polygons_tb.get() != "":
+            self.__add_polygons_to_story(map_polygons_tb)
 
         from functools import partial
 

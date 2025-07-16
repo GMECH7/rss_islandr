@@ -14,32 +14,74 @@ class Api:
     def __init__(self, map_ui_instance):
         self.map_ui = map_ui_instance  # Reference to MapUI instance
 
-    def send_coordinates(self, lat, lng):
-        """Handle coordinates sent from JavaScript"""
+    def py_api_coord_receiver(self, lat, lng):
+        """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
-    def send_drawing(self, feature_data):
-        """Handle polygon data from JavaScript"""
-        self.map_ui.polygons.append(feature_data)
-        logging.debug("Polygons received from js {self.map_ui.polygons}")
-        if self.map_ui.map_polygons_data is None:
-            self.map_ui.map_polygons_data = ""
-        self.map_ui.map_polygons_data += f"{feature_data}"
+    def py_api_polygons_receiver(self, feature_data):
+        """Receive polygon data from JavaScript"""
 
-        logging.debug(f"Received drawing data: {feature_data}")
+        logging.debug(f"Received polygon data: {feature_data}")
 
-    def get_saved_polygons(self):
-        """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug("Polygons sent to js {self.map_ui.polygons}")
-        return self.map_ui.polygons
+        # Ensure unique_id exists
+        if "unique_id" not in feature_data:
+            logging.error("Received polygon without unique_id!")
+            return False
 
-    def clear_drawings(self):
+        # Check if this polygon already exists
+        existing_index = None
+        for i, poly in enumerate(self.map_ui.polygons):
+            if poly.get("unique_id") == feature_data["unique_id"]:
+                existing_index = i
+                break
+
+        # Create the polygon data structure
+        polygon = {
+            "unique_id": feature_data["unique_id"],
+            "type": feature_data["type"],
+            "name": feature_data["name"],
+            "coordinates": feature_data["coordinates"],
+            "area_km2": feature_data["area_km2"],
+            "node_count": feature_data["node_count"],
+        }
+
+        if existing_index is not None:
+            # Update existing polygon
+            self.map_ui.polygons[existing_index] = polygon
+            logging.debug(f"Updated existing polygon: {polygon}")
+        else:
+            # Add new polygon
+            self.map_ui.polygons.append(polygon)
+            logging.debug(f"Added new polygon: {polygon}")
+
+        return True
+
+    def py_api_clear_polygons(self):
         """Clear all stored polygons"""
         logging.debug("Clearing all polygons from storage")
         self.map_ui.polygons = []  # Empty the list
-        self.map_ui.map_polygons_data = None  # Clear the string data
-        return True  # Return something to confirm completion
+
+        return True
+
+    def py_api_delete_polygons(self, feature_data):
+        """Delete a polygon from storage"""
+        logging.debug(f"Deleting polygon: {feature_data}")
+
+        # Remove the polygon by name and type
+        self.map_ui.polygons = [
+            poly
+            for poly in self.map_ui.polygons
+            if not (poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"])
+        ]
+
+        logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
+        return True
+
+    def py_api_send_polygons_to_js(self):
+        """Return all stored polygons to JavaScript for redrawing"""
+        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
+        return self.map_ui.polygons
 
 
 class MapUI:
@@ -48,8 +90,7 @@ class MapUI:
         self.map_html = map_html
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
-        self.map_polygons_data = None  # List to store polygons data collected from the webview
-        self.polygons = []
+        self.polygons = []  # stores pologons as fetched from javascript
 
     def show_map(self):
         """Launch the webview window in a separate process."""
@@ -67,11 +108,16 @@ class MapUI:
         self.coordinates = None  # Reset after reading
         return coords
 
-    def get_polygons_data(self):
-        """Retrieve the polygons data collected from the webview."""
-        map_polygons_data = self.map_polygons_data
-        self.map_polygons_data = None
-        return map_polygons_data
+    def get_polygons_data(self) -> str:
+        """
+        Retrieve the polygons data collected from the webview
+        and format it as a string for further manipulation in python
+        """
+        map_polygons_as_str = ""
+        for polygon in self.polygons:
+            map_polygons_as_str += f"{polygon}"
+
+        return map_polygons_as_str
 
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""

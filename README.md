@@ -254,11 +254,11 @@ graph LR
     subgraph "main_app_ui.py"
         Py["Api"]:::python
         MapUI["MapUI"]:::python
-        send_drawing["send_drawing()"]:::python_method
+        py_api_polygons_receiver["py_api_polygons_receiver()"]:::python_method
 
         %% Relationships
-        sendDrawing -->|links| send_drawing
-        Py -->|defines| send_drawing
+        sendDrawing -->|links| py_api_polygons_receiver
+        Py -->|defines| py_api_polygons_receiver
         Py -->|updates| MapUI
         MapUI -->|instantiates| Py
         MapUI -->|defines| run_webview["run_webview()"]:::python_method
@@ -270,7 +270,7 @@ graph LR
         MainAppUI -->|calls| run_webview
         MainAppUI -->|defines| __monitor_map_changes["__monitor_map_changes()"]:::python_method
         __monitor_map_changes -->|calls| get_polygons_data
-        MainAppUI -->|contains| tb.StringVar["polygons_data<br>(tb.StringVar)"]:::variable
+        MainAppUI -->|contains| tb.StringVar["map_polygons_tb<br>(tb.StringVar)"]:::variable
         __monitor_map_changes -.->|updates| tb.StringVar
     end
 ```
