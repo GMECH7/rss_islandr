@@ -20,14 +20,49 @@ class Api:
         logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
 
     def send_drawing(self, feature_data):
-        """Handle polygon data from JavaScript"""
-        self.map_ui.polygons.append(feature_data)
-        logging.debug(f"Polygons received from js {self.map_ui.polygons}")
-        if self.map_ui.map_polygons_data is None:
-            self.map_ui.map_polygons_data = ""
-        self.map_ui.map_polygons_data += f"{feature_data}"
+        """Handle both new and updated polygon data using unique_id"""
 
-        logging.debug(f"Received drawing data: {feature_data}")
+        logging.debug(f"Received polygon data: {feature_data}")
+
+        # Ensure unique_id exists
+        if "unique_id" not in feature_data:
+            logging.error("Received polygon without unique_id!")
+            return False
+
+        # Check if this polygon already exists
+        existing_index = None
+        for i, poly in enumerate(self.map_ui.polygons):
+            if poly.get("unique_id") == feature_data["unique_id"]:
+                existing_index = i
+                break
+
+        # Create the polygon data structure
+        polygon = {
+            "unique_id": feature_data["unique_id"],
+            "type": feature_data["type"],
+            "name": feature_data["name"],
+            "coordinates": feature_data["coordinates"],
+            "area_km2": feature_data["area_km2"],
+            "node_count": feature_data["node_count"],
+        }
+
+        if existing_index is not None:
+            # Update existing polygon
+            self.map_ui.polygons[existing_index] = polygon
+            logging.debug(f"Updated existing polygon: {polygon}")
+        else:
+            # Add new polygon
+            self.map_ui.polygons.append(polygon)
+            logging.debug(f"Added new polygon: {polygon}")
+
+        # # Update the string data representation
+        # if self.map_ui.map_polygons_data is None:
+        #     self.map_ui.map_polygons_data = ""
+        # # print(111111111111111111, polygon)
+        # # print(222222222222222222, self.map_ui.map_polygons_data)
+        # self.map_ui.map_polygons_data += f"{feature_data}"
+
+        return True
 
     def get_saved_polygons(self):
         """Return all stored polygons to JavaScript for redrawing"""
@@ -41,19 +76,19 @@ class Api:
         self.map_ui.map_polygons_data = None  # Clear the string data
         return True  # Return something to confirm completion
 
-    def update_drawing(self, feature_data):
-        """Update an existing polygon in storage"""
-        logging.debug(f"Updating polygon: {feature_data}")
+    # def update_drawing(self, feature_data):
+    #     """Update an existing polygon in storage"""
+    #     logging.debug(f"Updating polygon: {feature_data}")
 
-        # Find and update the polygon by name and type
-        for i, poly in enumerate(self.map_ui.polygons):
-            if poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"]:
-                self.map_ui.polygons[i] = feature_data
-                logging.debug(f"Updated polygon: {feature_data}")
-                return True
+    #     # Find and update the polygon by name and type
+    #     for i, poly in enumerate(self.map_ui.polygons):
+    #         if poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"]:
+    #             self.map_ui.polygons[i] = feature_data
+    #             logging.debug(f"Updated polygon: {feature_data}")
+    #             return True
 
-        logging.warning(f"Polygon not found for update: {feature_data}")
-        return False
+    #     logging.warning(f"Polygon not found for update: {feature_data}")
+    #     return False
 
     def delete_drawing(self, feature_data):
         """Delete a polygon from storage"""
@@ -97,8 +132,10 @@ class MapUI:
 
     def get_polygons_data(self):
         """Retrieve the polygons data collected from the webview."""
-        map_polygons_data = self.map_polygons_data
-        self.map_polygons_data = None
+        map_polygons_data = ""
+        for polygon in self.polygons:
+            map_polygons_data += f"{polygon}"
+
         return map_polygons_data
 
     def run_webview(self):

@@ -164,7 +164,7 @@ class ExportExcelReportBtn(IOBtns):
         """
         sheet = workbook.sheets[4]
         polygons_data = extract_dicts_from_string(self._polygons_data.get())
-
+        logging.info(f"Polygons data to save: {polygons_data}")
         row_idx = 1
         for i in range(len(polygons_data)):
             row_idx += 1

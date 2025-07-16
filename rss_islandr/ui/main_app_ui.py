@@ -282,16 +282,16 @@ class MainAppUI:
                 self.__update_coordinates(lat, lng)
 
             polygons_data = self.map_ui.get_polygons_data()
-            if polygons_data is not None:
-                self.__update_polygons_data(polygons_data)
-
+            # if polygons_data is not None:
+            #     self.__update_polygons_data(polygons_data)
+            self.__update_polygons_data(polygons_data)
             time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
     def __update_coordinates(self, lat, lng) -> None:
         """Callback function to update the coordinates label."""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        logging.info(f"Updated Coordinates: {lat}, {lng}")
+        logging.debug(f"Updated Coordinates: {lat}, {lng}")
 
     def __update_polygons_data(self, polygons_data):
         """Callback function to update polygons data"""

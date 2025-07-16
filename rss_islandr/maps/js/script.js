@@ -186,7 +186,14 @@ class MapManager {
     this.map.on(L.Draw.Event.EDITED, (e) => {
       const layers = e.layers;
       layers.eachLayer((layer) => {
-        this.updatePolygonInBackend(layer);
+        // Update properties before sending
+        layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+        const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+        layer.feature.properties.area_m2 = area_m2;
+        layer.feature.properties.area_km2 = area_m2 / 1000000;
+        layer.feature.properties.node_count = layer.feature.properties.coordinates.length;
+
+        this.sendDrawing(layer);
       });
     });
 
@@ -241,6 +248,14 @@ class MapManager {
     this.currentType = type; // Store the current type for finalization
   }
 
+  /**
+ * Generates a unique ID for polygons
+ * @returns {string} Unique ID
+ */
+  generatePolygonId() {
+    return 'polygon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
   finalizeDrawing(layer) {
     // Prompt user for polygon name
     const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)} ${this.drawnItems.getLayers().length + 1}`;
@@ -250,6 +265,10 @@ class MapManager {
     layer.feature = layer.feature || {};
     layer.feature.type = 'polygon:' + this.currentType;
 
+    // Generate and assign unique ID
+    const uniqueId = this.generatePolygonId();
+    layer.feature.unique_id = uniqueId;
+
     // Get all coordinates as array of [lat, lng] tuples
     const coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
 
@@ -258,7 +277,9 @@ class MapManager {
       name: polygonName,
       coordinates: coordinates,
       area_m2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]),
-      area_km2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000
+      area_km2: L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 1000000,
+      node_count: coordinates.length,
+      unique_id: uniqueId  // Store in properties too for consistency
     };
 
     // Add to our feature group
@@ -267,14 +288,14 @@ class MapManager {
     // Create enhanced popup content
     layer.bindPopup(this.createPopupContent(layer));
 
-    // Add event listener to rename button
+    // Setup rename handler
     layer.on('popupopen', () => {
       document.querySelector('.rename-btn')?.addEventListener('click', () => {
         const newName = prompt("Enter new name:", layer.feature.properties.name);
         if (newName) {
           layer.feature.properties.name = newName;
-          layer.setPopupContent(this.createPopupContent(layer)); // Refresh popup
-          this.updatePolygonInBackend(layer); // Update backend with new name
+          layer.setPopupContent(this.createPopupContent(layer));
+          this.sendDrawing(layer);
         }
       });
     });
@@ -348,6 +369,7 @@ class MapManager {
   sendDrawing(layer) {
     if (window.pywebview?.api) {
       const featureData = {
+        unique_id: layer.feature.unique_id,
         type: layer.feature.type,
         name: layer.feature.properties.name,
         coordinates: layer.feature.properties.coordinates,
@@ -411,18 +433,31 @@ class MapManager {
 
       // Add all original metadata to the layer
       polygon.feature = {
+        unique_id: polygonData.unique_id,
         type: polygonData.type,
         properties: {
-          ...polygonData, // Spread all original properties
-          coordinates: polygonData.coordinates // Ensure coordinates are set
+          ...polygonData,
+          coordinates: polygonData.coordinates
         }
       };
 
       // Add to feature group
       this.drawnItems.addLayer(polygon);
 
-      // Bind popup
+      // Bind popup with working rename functionality
       polygon.bindPopup(this.createPopupContent(polygon));
+
+      // Reattach rename event handler
+      polygon.on('popupopen', () => {
+        document.querySelector('.rename-btn')?.addEventListener('click', () => {
+          const newName = prompt("Enter new name:", polygon.feature.properties.name);
+          if (newName) {
+            polygon.feature.properties.name = newName;
+            polygon.setPopupContent(this.createPopupContent(polygon));
+            this.sendDrawing(polygon);
+          }
+        });
+      });
     });
   }
 
