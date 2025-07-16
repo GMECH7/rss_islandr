@@ -96,8 +96,8 @@ class ExportExcelReportBtn(IOBtns):
 
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        polygons_data = kwargs.get("polygons_data", tb.StringVar(value=""))
-        self._polygons_data = polygons_data
+        map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
+        self._polygons_data = map_polygons_tb
 
     def __save_maps_as_imgs(
         self,
@@ -163,15 +163,15 @@ class ExportExcelReportBtn(IOBtns):
             The Excel workbook to save polygons data into.
         """
         sheet = workbook.sheets[4]
-        polygons_data = extract_dicts_from_string(self._polygons_data.get())
-        logging.info(f"Polygons data to save: {polygons_data}")
+        map_polygons_tb = extract_dicts_from_string(self._polygons_data.get())
+        logging.debug(f"Polygons data to save: {map_polygons_tb}")
         row_idx = 1
-        for i in range(len(polygons_data)):
+        for i in range(len(map_polygons_tb)):
             row_idx += 1
-            coords = polygons_data[i].get("coordinates", [])
-            sheet.range(f"E{row_idx}").value = polygons_data[i].get("area_km2", "")
+            coords = map_polygons_tb[i].get("coordinates", [])
+            sheet.range(f"E{row_idx}").value = map_polygons_tb[i].get("area_km2", "")
             for j, coord in enumerate(coords):
-                sheet.range(f"A{row_idx}").value = polygons_data[i].get("name", "")
+                sheet.range(f"A{row_idx}").value = map_polygons_tb[i].get("name", "")
                 sheet.range(f"B{row_idx}").value = j + 1
                 sheet.range(f"C{row_idx}").value = coord[0]
                 sheet.range(f"D{row_idx}").value = coord[1]
@@ -232,8 +232,8 @@ class ExportPDFReportBtn(IOBtns):
 
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        polygons_data = kwargs.get("polygons_data", tb.StringVar(value=""))
-        self.polygons_data = polygons_data
+        map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
+        self.map_polygons_tb = map_polygons_tb
 
     def on_btn_click(self):
         """ """
@@ -252,7 +252,7 @@ class ExportPDFReportBtn(IOBtns):
 
         try:
             pdf_report = PDFReport(file_path)
-            pdf_report(self.ui_inp_vars, self.ui_calc_vars, self.polygons_data, selected_image_files)
+            pdf_report(self.ui_inp_vars, self.ui_calc_vars, self.map_polygons_tb, selected_image_files)
             messagebox.showinfo("Success", "PDF report exported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

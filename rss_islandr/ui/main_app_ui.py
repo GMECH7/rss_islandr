@@ -3,6 +3,7 @@ import sys
 import threading
 import time
 from tkinter import messagebox
+from turtle import st
 
 import ttkbootstrap as tb
 from PIL import Image, ImageTk
@@ -40,7 +41,7 @@ class MainAppUI:
         self.root = root
         self.ui_settings = read_skin_details(settings, "dark")
         self.theme = self.ui_settings.ui_ttkbootstrap_theme
-        self.polygons_data = tb.StringVar(value="")
+        self.map_polygons_tb = tb.StringVar(value="")
         tb_style = tb.Style(self.theme)
         #: Create custom themes
         ct = CustomThemes(tb_style, self.ui_settings)
@@ -281,10 +282,9 @@ class MainAppUI:
                 lat, lng = coords
                 self.__update_coordinates(lat, lng)
 
-            polygons_data = self.map_ui.get_polygons_data()
-            # if polygons_data is not None:
-            #     self.__update_polygons_data(polygons_data)
-            self.__update_polygons_data(polygons_data)
+            map_polygons_as_str = self.map_ui.get_polygons_data()
+
+            self.__update_polygons_data(map_polygons_as_str)
             time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
     def __update_coordinates(self, lat, lng) -> None:
@@ -293,10 +293,10 @@ class MainAppUI:
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
         logging.debug(f"Updated Coordinates: {lat}, {lng}")
 
-    def __update_polygons_data(self, polygons_data):
+    def __update_polygons_data(self, map_polygons_as_str: str) -> None:
         """Callback function to update polygons data"""
-        self.polygons_data.set(polygons_data)
-        logging.debug(f"Updated polygons: {polygons_data}")
+        self.map_polygons_tb.set(map_polygons_as_str)
+        logging.debug(f"Updated polygons: {map_polygons_as_str}")
 
     def __create_vertical_navbar_buttons(self) -> None:
         """
@@ -327,7 +327,7 @@ class MainAppUI:
                 self.widgets_reconfigured,
             )(
                 page,
-                polygons_data=self.polygons_data,
+                map_polygons_tb=self.map_polygons_tb,
             )
 
             site_to_site_app = SiteToSiteAssessmentUI(
@@ -383,7 +383,7 @@ class MainAppUI:
             self.widgets_reconfigured,
         )(
             self.__home_page,
-            polygons_data=self.polygons_data,
+            map_polygons_tb=self.map_polygons_tb,
         )
         app_home = HomeUI(home_navbar_frame, home_frame)
 
@@ -395,7 +395,7 @@ class MainAppUI:
             self.widgets_reconfigured,
         )(
             self.__site_info_page,
-            polygons_data=self.polygons_data,
+            map_polygons_tb=self.map_polygons_tb,
         )
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,

@@ -90,7 +90,7 @@ class MapUI:
         self.map_html = map_html
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
-        self.polygons = []
+        self.polygons = []  # stores pologons as fetched from javascript
 
     def show_map(self):
         """Launch the webview window in a separate process."""
@@ -109,12 +109,15 @@ class MapUI:
         return coords
 
     def get_polygons_data(self) -> str:
-        """Retrieve the polygons data collected from the webview."""
-        map_polygons_data = ""
+        """
+        Retrieve the polygons data collected from the webview
+        and format it as a string for further manipulation in python
+        """
+        map_polygons_as_str = ""
         for polygon in self.polygons:
-            map_polygons_data += f"{polygon}"
+            map_polygons_as_str += f"{polygon}"
 
-        return map_polygons_data
+        return map_polygons_as_str
 
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
