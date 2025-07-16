@@ -22,7 +22,7 @@ class Api:
     def send_drawing(self, feature_data):
         """Handle polygon data from JavaScript"""
         self.map_ui.polygons.append(feature_data)
-        logging.debug("Polygons received from js {self.map_ui.polygons}")
+        logging.debug(f"Polygons received from js {self.map_ui.polygons}")
         if self.map_ui.map_polygons_data is None:
             self.map_ui.map_polygons_data = ""
         self.map_ui.map_polygons_data += f"{feature_data}"
@@ -31,7 +31,7 @@ class Api:
 
     def get_saved_polygons(self):
         """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug("Polygons sent to js {self.map_ui.polygons}")
+        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
         return self.map_ui.polygons
 
     def clear_drawings(self):
@@ -40,6 +40,34 @@ class Api:
         self.map_ui.polygons = []  # Empty the list
         self.map_ui.map_polygons_data = None  # Clear the string data
         return True  # Return something to confirm completion
+
+    def update_drawing(self, feature_data):
+        """Update an existing polygon in storage"""
+        logging.debug(f"Updating polygon: {feature_data}")
+
+        # Find and update the polygon by name and type
+        for i, poly in enumerate(self.map_ui.polygons):
+            if poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"]:
+                self.map_ui.polygons[i] = feature_data
+                logging.debug(f"Updated polygon: {feature_data}")
+                return True
+
+        logging.warning(f"Polygon not found for update: {feature_data}")
+        return False
+
+    def delete_drawing(self, feature_data):
+        """Delete a polygon from storage"""
+        logging.debug(f"Deleting polygon: {feature_data}")
+
+        # Remove the polygon by name and type
+        self.map_ui.polygons = [
+            poly
+            for poly in self.map_ui.polygons
+            if not (poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"])
+        ]
+
+        logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
+        return True
 
 
 class MapUI:

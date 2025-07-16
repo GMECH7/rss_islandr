@@ -64,8 +64,6 @@ class MapManager {
       }
     });
 
-
-
     // Set dynamic checkboxes
     Object.keys(this.layers).forEach((key) => {
       const checkbox = document.getElementById(
@@ -107,8 +105,8 @@ class MapManager {
         this.cancelDrawing();
       }
     });
-
   }
+
   initPyWebViewIntegration() {
     const tryInit = () => {
       if (window.pywebview?.api) {
@@ -148,7 +146,6 @@ class MapManager {
         }
       }
     });
-
   }
 
   /**
@@ -178,10 +175,32 @@ class MapManager {
     });
 
     this.drawControl.addTo(this.map);
+
     // Listen for drawing events
     this.map.on(L.Draw.Event.CREATED, (e) => {
       const layer = e.layer;
       this.finalizeDrawing(layer);
+    });
+
+    // Listen for edit events
+    this.map.on(L.Draw.Event.EDITED, (e) => {
+      const layers = e.layers;
+      layers.eachLayer((layer) => {
+        this.updatePolygonInBackend(layer);
+      });
+    });
+
+    // Listen for delete events
+    this.map.on(L.Draw.Event.DELETED, (e) => {
+      const layers = e.layers;
+      layers.eachLayer((layer) => {
+        if (window.pywebview?.api && layer.feature) {
+          window.pywebview.api.delete_drawing({
+            type: layer.feature.type,
+            name: layer.feature.properties.name
+          });
+        }
+      });
     });
   }
 
@@ -221,6 +240,7 @@ class MapManager {
     this.currentDrawingMode.enable();
     this.currentType = type; // Store the current type for finalization
   }
+
   finalizeDrawing(layer) {
     // Prompt user for polygon name
     const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)} ${this.drawnItems.getLayers().length + 1}`;
@@ -245,24 +265,7 @@ class MapManager {
     this.drawnItems.addLayer(layer);
 
     // Create enhanced popup content
-    const popupContent = `
-    <div style="min-width: 200px;">
-      <b>${polygonName}</b>
-      <div style="color: #666; font-size: 0.9em; margin-bottom: 8px;">${this.currentType.toUpperCase()}</div>
-      <div>Area: ${layer.feature.properties.area_km2.toFixed(6)} km²</div>
-      <div>Nodes: ${coordinates.length}</div>
-      <button class="rename-btn" style="margin-top: 8px; padding: 2px 6px; font-size: 0.8em;">
-        Rename
-      </button>
-      <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
-          ${coordinates.slice(0, 100).map(coord =>
-      `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
-    ).join('')}
-          ${coordinates.length > 100 ? '<div style="padding: 2px 0; color: #666;">...and ' + (coordinates.length - 100) + ' more</div>' : ''}
-      </div>
-    </div>`;
-
-    layer.bindPopup(popupContent);
+    layer.bindPopup(this.createPopupContent(layer));
 
     // Add event listener to rename button
     layer.on('popupopen', () => {
@@ -271,17 +274,48 @@ class MapManager {
         if (newName) {
           layer.feature.properties.name = newName;
           layer.setPopupContent(this.createPopupContent(layer)); // Refresh popup
+          this.updatePolygonInBackend(layer); // Update backend with new name
         }
       });
     });
 
-    // Send to backend if needed
+    // Send to backend
     this.sendDrawing(layer);
 
     // Reset drawing mode
     this.currentDrawingMode = null;
     this.currentType = null;
     this.isDrawing = false;
+  }
+
+  /**
+   * Updates a polygon in backend storage after editing
+   * @param {L.Polygon} layer - The edited polygon layer
+   */
+  updatePolygonInBackend(layer) {
+    if (!layer.feature || !window.pywebview?.api) return;
+
+    // Update coordinates in the layer's properties
+    layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+
+    // Update area calculations
+    const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
+    layer.feature.properties.area_m2 = area_m2;
+    layer.feature.properties.area_km2 = area_m2 / 1000000;
+
+    // Update popup content
+    layer.setPopupContent(this.createPopupContent(layer));
+
+    // Send updated data to backend
+    const featureData = {
+      type: layer.feature.type,
+      name: layer.feature.properties.name,
+      coordinates: layer.feature.properties.coordinates,
+      area_km2: layer.feature.properties.area_km2,
+      node_count: layer.feature.properties.coordinates.length
+    };
+
+    window.pywebview.api.update_drawing(featureData);
   }
 
   // Helper method to create popup content (extracted for reuse)
@@ -326,7 +360,6 @@ class MapManager {
     }
   }
 
-
   /**
    * Clear all drawings. Button handles that
    */
@@ -359,9 +392,9 @@ class MapManager {
   }
 
   /**
- * Redraws all polygons from stored data
- * @param {Array} polygons - Array of polygon data objects
- */
+   * Redraws all polygons from stored data
+   * @param {Array} polygons - Array of polygon data objects
+   */
   redrawPolygons(polygons) {
     // Clear existing drawings first
     this.drawnItems.clearLayers();
@@ -376,13 +409,12 @@ class MapManager {
         dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
       });
 
-      // Add metadata to the layer
+      // Add all original metadata to the layer
       polygon.feature = {
         type: polygonData.type,
         properties: {
-          name: polygonData.name,
-          coordinates: polygonData.coordinates,
-          area_km2: polygonData.area_km2
+          ...polygonData, // Spread all original properties
+          coordinates: polygonData.coordinates // Ensure coordinates are set
         }
       };
 
@@ -478,7 +510,6 @@ class MapManager {
 
     // send default coordinates to frontend
     this.sendLocation(0.0, 0.0);
-
   }
 
   /**
@@ -552,12 +583,6 @@ document
     panel.classList.toggle("hidden");
   });
 
-// Initialize the map when DOM is loaded
-// document.addEventListener("DOMContentLoaded", () => {
-//   window.mapManager = new MapManager();
-//   window.map = window.mapManager.map;
-// });
-
 document.addEventListener("DOMContentLoaded", function () {
   const headers = document.querySelectorAll(".map-group-header");
 
@@ -575,7 +600,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
 
 document.getElementById('captureScreenBtn').addEventListener('click', async () => {
   try {
@@ -601,7 +625,6 @@ document.getElementById('captureScreenBtn').addEventListener('click', async () =
 
   } catch (err) {
     console.error("Error capturing screen:", err);
-    alert("Failed to capture screen. Make sure you allow screen sharing.");
   }
 });
 
