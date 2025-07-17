@@ -7,6 +7,8 @@ from pathlib import Path
 import ttkbootstrap as tb
 import webview
 
+from rss_islandr.core.helpers import extract_dicts_from_string
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -55,13 +57,14 @@ class Api:
             self.map_ui.polygons.append(polygon)
             logging.debug(f"Added new polygon: {polygon}")
 
+        self.map_ui.map_polygons_tb.set(f"{self.map_ui.polygons}")
         return True
 
     def py_api_clear_polygons(self):
         """Clear all stored polygons"""
         logging.debug("Clearing all polygons from storage")
         self.map_ui.polygons = []  # Empty the list
-
+        self.map_ui.map_polygons_tb.set("")
         return True
 
     def py_api_delete_polygons(self, feature_data):
@@ -80,17 +83,31 @@ class Api:
 
     def py_api_send_polygons_to_js(self):
         """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
+        logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
 
 class MapUI:
-    def __init__(self, map_html: Path, style: tb.Style):
+    def __init__(self, map_html: Path, style: tb.Style, map_polygons_tb: tb.StringVar):
         self.__style = style
         self.map_html = map_html
         self.webview_process = None
         self.coordinates = None  # Stores latest latitude and longitude
-        self.polygons = []  # stores pologons as fetched from javascript
+        self.map_polygons_tb = map_polygons_tb
+        self.polygons = []
+
+    def update_polygons_from_stringvar(self):
+        """Explicitly update polygons from StringVar content"""
+        current_value = self.map_polygons_tb.get()
+
+        if current_value.strip():  # Only update if not empty
+            try:
+                extracted = extract_dicts_from_string(current_value)
+                if extracted:
+                    self.polygons = extracted
+                    logging.debug(f"Updated polygons from import: {self.polygons}")
+            except Exception as e:
+                logging.error(f"Error parsing polygons from StringVar: {e}")
 
     def show_map(self):
         """Launch the webview window in a separate process."""

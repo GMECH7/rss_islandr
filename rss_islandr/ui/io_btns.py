@@ -265,8 +265,12 @@ class ExportPDFReportBtn(IOBtns):
 class ExportScenarioBtn(IOBtns):
     """Implementation of button for exporting a scenario to a json file."""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
+        map_ui = kwargs.get("map_ui")
+        self.map_ui = map_ui
+        map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
+        self.map_polygons_tb = map_polygons_tb
 
     def on_btn_click(self):
         """ """
@@ -280,6 +284,7 @@ class ExportScenarioBtn(IOBtns):
             return
 
         try:
+            self.saved_scenario.update({"polygons_data": self.map_polygons_tb.get()})
             with open(file_path, "w") as scenario_file:
                 json.dump(self.saved_scenario, scenario_file, indent=4)
                 messagebox.showinfo("Success", "Scenario values exported!")
@@ -295,8 +300,12 @@ class ExportScenarioBtn(IOBtns):
 class ImportScenarioBtn(IOBtns):
     """Implementation of button for importing a scenario from a json file."""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable]):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
+        map_ui = kwargs.get("map_ui")
+        self.map_ui = map_ui
+        map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
+        self.map_polygons_tb = map_polygons_tb
 
     def on_btn_click(self):
         """ """
@@ -312,6 +321,8 @@ class ImportScenarioBtn(IOBtns):
                 scenario_data = json.load(file_inp)
             for ui_inp_var in self.ui_inp_vars:
                 self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
+            self.map_polygons_tb.set(scenario_data.get("polygons_data", ""))
+            self.map_ui.update_polygons_from_stringvar()  # Explicit update
             messagebox.showinfo("Success", "Scenario values imported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

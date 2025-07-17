@@ -3,7 +3,6 @@ import sys
 import threading
 import time
 from tkinter import messagebox
-from turtle import st
 
 import ttkbootstrap as tb
 from PIL import Image, ImageTk
@@ -63,7 +62,7 @@ class MainAppUI:
         self.__init__handle_geometry()
 
         self.map_open = True
-        self.map_ui = MapUI(MAP_DIR, tb_style)
+        self.map_ui = MapUI(MAP_DIR, tb_style, self.map_polygons_tb)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
         self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
@@ -282,9 +281,13 @@ class MainAppUI:
                 lat, lng = coords
                 self.__update_coordinates(lat, lng)
 
-            map_polygons_as_str = self.map_ui.get_polygons_data()
+            if self.map_polygons_tb.get() == "":
+                map_polygons_as_str = self.map_ui.get_polygons_data()
+            else:
+                map_polygons_as_str = self.map_polygons_tb.get()
 
             self.__update_polygons_data(map_polygons_as_str)
+
             time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
     def __update_coordinates(self, lat, lng) -> None:
@@ -328,6 +331,7 @@ class MainAppUI:
             )(
                 page,
                 map_polygons_tb=self.map_polygons_tb,
+                map_ui=self.map_ui,  # Pass the map_ui instance to HorizontalNavbar
             )
 
             site_to_site_app = SiteToSiteAssessmentUI(
@@ -381,10 +385,7 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(
-            self.__home_page,
-            map_polygons_tb=self.map_polygons_tb,
-        )
+        )(self.__home_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
         app_home = HomeUI(home_navbar_frame, home_frame)
 
         #: Site info app Create horizontal navbar and rest of frame per page to be displayed
@@ -393,10 +394,7 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(
-            self.__site_info_page,
-            map_polygons_tb=self.map_polygons_tb,
-        )
+        )(self.__site_info_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
             site_info_frame,

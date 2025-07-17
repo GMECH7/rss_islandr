@@ -71,8 +71,8 @@ class HorizontalNavbarBtns:
         """
         write_to_excel = ExportExcelReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
         write_to_pdf = ExportPDFReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
-        write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
-        read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars)
+        write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
+        read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
 
         menu_btn = tb.Menubutton(frame, text="File", style="Custom.Menubutton.TMenubutton")
         menu_btn.grid(row=0, column=0, sticky="w", padx=10)
