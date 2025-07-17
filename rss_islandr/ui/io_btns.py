@@ -319,10 +319,12 @@ class ImportScenarioBtn(IOBtns):
             for ui_inp_var in self.ui_inp_vars:
                 self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
             self.map_polygons_tb.set(scenario_data.get("polygons_data", ""))
+
             if self.map_ui is None:
                 raise ValueError("Map UI is not initialized.")
             else:
                 self.map_ui.update_polygons_from_stringvar()  # Explicit update
+                self.map_ui.update_coordinates()
             messagebox.showinfo("Success", "Scenario values imported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

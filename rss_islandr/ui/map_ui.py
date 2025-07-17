@@ -17,10 +17,10 @@ class Api:
     def __init__(self, map_ui_instance):
         self.map_ui = map_ui_instance
 
-    def py_api_coord_receiver(self, lat, lng):
+    def py_api_coord_receiver(self, lat: float, lng: float):
         """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-        logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+        logging.debug(f"Received from JavaScript: Latitude={lat}, Longitude={lng}")
 
     def py_api_polygons_receiver(self, polygon_data: PolygonDataDict):
         """
@@ -82,15 +82,34 @@ class Api:
         logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
+    def py_api_send_coordinates_to_js(self) -> tuple[float, float]:
+        """Return the latest coordinates to JavaScript"""
+        logging.info(f"adsadsa {self.map_ui.lat}, {self.map_ui.lng}")
+
+        return self.map_ui.lat, self.map_ui.lng
+
 
 class MapUI:
-    def __init__(self, map_html: Path, style: tb.Style, map_polygons_tb: tb.StringVar):
+    def __init__(self, map_html: Path, style: tb.Style, ui_inp_vars, map_polygons_tb: tb.StringVar):
         self.__style = style
         self.map_html = map_html
         self.webview_process = None
+        self.ui_inp_vars = ui_inp_vars
         self.coordinates = None
         self.map_polygons_tb = map_polygons_tb  # StringVar to hold polygon data as a string and 'live' throught app
         self.polygons = []  # list of PolygonDataDict used in class
+
+        self.lat = 0.0
+        self.lng = 0.0
+
+    def update_coordinates(self):
+        """
+        Update coordinates (self.coordinates) from StringVar content
+        This is used when a scenario is imported and the coordinates are not empty,
+        or have to be updated based on the saved information.
+        """
+        self.lat = self.ui_inp_vars.get("map_0_00").tk_var.get()
+        self.lng = self.ui_inp_vars.get("map_0_01").tk_var.get()
 
     def update_polygons_from_stringvar(self):
         """
@@ -122,6 +141,10 @@ class MapUI:
     def get_coordinates(self):
         """Retrieve the latest coordinates and reset them after reading."""
         coords = self.coordinates
+        try:
+            self.lat, self.lng = coords
+        except Exception:
+            pass
         self.coordinates = None  # Reset after reading
         return coords
 

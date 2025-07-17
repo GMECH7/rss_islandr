@@ -59,7 +59,7 @@ class MapManager {
         if (this.clickMarker && this.map.hasLayer(this.clickMarker)) {
           this.deleteMarker();
         } else {
-          this.setMarker(e.latlng.lat, e.latlng.lng);
+          this.setMarker(e.latlng.lat, e.latlng.lng, true);
         }
       }
     });
@@ -112,6 +112,7 @@ class MapManager {
       if (window.pywebview?.api) {
         console.log("✅ PyWebView is ready!");
         this.handlePyWebViewReady();
+        this.initializeFromBackend();
       } else {
         console.log("⏳ Waiting for PyWebView...");
         setTimeout(tryInit, 300); // Retry every 300ms
@@ -209,6 +210,26 @@ class MapManager {
         }
       });
     });
+  }
+
+  async initializeFromBackend() {
+    if (!window.pywebview?.api) {
+      console.warn("PyWebView API not available when trying to initialize coordinates");
+      return;
+    }
+
+    try {
+      const [lat, lng] = await window.pywebview.api.py_api_send_coordinates_to_js();
+      console.log(`Received initial coordinates: ${lat}, ${lng}`);
+
+      // Only set initial marker if coordinates are valid and not (0, 0)
+      if (lat !== 0 && lng !== 0 && !isNaN(lat) && !isNaN(lng)) {
+        // Don't send back to Python when we're just initializing
+        this.setMarker(lat, lng, false);
+      }
+    } catch (error) {
+      console.error("Error getting initial coordinates:", error);
+    }
   }
 
   startDrawing(type) {
@@ -467,7 +488,16 @@ class MapManager {
     }
   }
 
-  setMarker(lat, lng) {
+  setMarker(lat, lng, shouldSendToBackend = true) {
+    // Don't set marker if coordinates are (0, 0)
+    if (lat === 0 && lng === 0) {
+      if (this.clickMarker) {
+        this.map.removeLayer(this.clickMarker);
+        this.clickMarker = null;
+      }
+      return;
+    }
+
     if (this.clickMarker) {
       this.clickMarker.setLatLng([lat, lng]);
     } else {
@@ -477,7 +507,11 @@ class MapManager {
     this.map.setView([lat, lng]);
     document.getElementById("lat").value = lat.toFixed(5);
     document.getElementById("lng").value = lng.toFixed(5);
-    this.sendLocation(lat, lng);
+
+    // Only send to backend if flag is true
+    if (shouldSendToBackend) {
+      this.sendLocation(lat, lng);
+    }
   }
 
   updateMarker() {
@@ -490,7 +524,7 @@ class MapManager {
 
     if (!isNaN(lat) && !isNaN(lng)) {
       if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        this.setMarker(lat, lng);
+        this.setMarker(lat, lng, true);
       } else {
         alert(
           "Invalid coordinates:\nLatitude must be between -90 and 90\nLongitude must be between -180 and 180"
@@ -568,8 +602,6 @@ class MapManager {
     if (window.pywebview?.api) {
       console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
       window.pywebview.api.py_api_coord_receiver(formattedLat, formattedLng);
-    } else {
-      console.warn("PyWebView API not ready. Skipping coordinate send.");
     }
   }
 }

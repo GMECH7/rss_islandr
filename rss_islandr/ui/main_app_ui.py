@@ -62,7 +62,7 @@ class MainAppUI:
         self.__init__handle_geometry()
 
         self.map_open = True
-        self.map_ui = MapUI(MAP_DIR, tb_style, self.map_polygons_tb)
+        self.map_ui = MapUI(MAP_DIR, tb_style, self.ui_inp_vars, self.map_polygons_tb)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
         self.__islandr_logo_img = self.__islandr_logo_img.convert("RGBA")
@@ -291,7 +291,7 @@ class MainAppUI:
             time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
     def __update_coordinates(self, lat, lng) -> None:
-        """Callback function to update the coordinates label."""
+        """Callback function to update the coordinates"""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
         logging.debug(f"Updated Coordinates: {lat}, {lng}")
