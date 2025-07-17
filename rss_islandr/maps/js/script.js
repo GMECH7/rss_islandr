@@ -309,36 +309,6 @@ class MapManager {
     this.isDrawing = false;
   }
 
-  /**
-   * Updates a polygon in backend storage after editing
-   * @param {L.Polygon} layer - The edited polygon layer
-   */
-  // updatePolygonInBackend(layer) {
-  //   if (!layer.feature || !window.pywebview?.api) return;
-
-  //   // Update coordinates in the layer's properties
-  //   layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
-
-  //   // Update area calculations
-  //   const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-  //   layer.feature.properties.area_m2 = area_m2;
-  //   layer.feature.properties.area_km2 = area_m2 / 1000000;
-
-  //   // Update popup content
-  //   layer.setPopupContent(this.createPopupContent(layer));
-
-  //   // Send updated data to backend
-  //   const featureData = {
-  //     type: layer.feature.type,
-  //     name: layer.feature.properties.name,
-  //     coordinates: layer.feature.properties.coordinates,
-  //     area_km2: layer.feature.properties.area_km2,
-  //     node_count: layer.feature.properties.coordinates.length
-  //   };
-
-  //   window.pywebview.api.update_drawing(featureData);
-  // }
-
   // Helper method to create popup content (extracted for reuse)
   createPopupContent(layer) {
     return `
@@ -368,7 +338,7 @@ class MapManager {
    */
   sendDrawing(layer) {
     if (window.pywebview?.api) {
-      const featureData = {
+      const polygonDataToPy = {
         unique_id: layer.feature.unique_id,
         type: layer.feature.type,
         name: layer.feature.properties.name,
@@ -377,8 +347,8 @@ class MapManager {
         node_count: layer.feature.properties.coordinates.length
       };
 
-      console.log("Sending polygon data to pywebview:", featureData);
-      window.pywebview.api.py_api_polygons_receiver(featureData);
+      console.log("Sending polygon data to pywebview:", polygonDataToPy);
+      window.pywebview.api.py_api_polygons_receiver(polygonDataToPy);
     }
   }
 

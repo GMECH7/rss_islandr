@@ -29,6 +29,17 @@ class ReceptorParametersDict(TypedDict):
     parameter: dict[str, ParametersDict]
 
 
+class PolygonDataDict(TypedDict):
+    """Data structure to hold polygon information coming from JavaScript"""
+
+    unique_id: str
+    type: str
+    name: str
+    coordinates: list[list[float]]
+    area_km2: float
+    node_count: int
+
+
 @dataclass
 class UIInpVariable:
     frame_tag: str

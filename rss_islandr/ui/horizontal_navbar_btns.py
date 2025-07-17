@@ -65,14 +65,14 @@ class HorizontalNavbarBtns:
         self.toggle_button.grid()
         self.toggle_button.grid(row=0, column=23)
 
-    def file_menu_btn(self, frame: tb.Frame, *args, **kwargs) -> None:
+    def file_menu_btn(self, frame: tb.Frame, **kwargs) -> None:
         """
         File menu. Import and Export options.
         """
-        write_to_excel = ExportExcelReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
-        write_to_pdf = ExportPDFReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
-        write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
-        read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, *args, **kwargs)
+        write_to_excel = ExportExcelReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, **kwargs)
+        write_to_pdf = ExportPDFReportBtn(self.__ui_inp_vars, self.__ui_calc_vars, **kwargs)
+        write_to_json = ExportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, **kwargs)
+        read_from_json = ImportScenarioBtn(self.__ui_inp_vars, self.__ui_calc_vars, **kwargs)
 
         menu_btn = tb.Menubutton(frame, text="File", style="Custom.Menubutton.TMenubutton")
         menu_btn.grid(row=0, column=0, sticky="w", padx=10)

@@ -94,7 +94,7 @@ class IOBtns(ABC):
 class ExportExcelReportBtn(IOBtns):
     """Implementation of button for exporting to excel file"""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self._polygons_data = map_polygons_tb
@@ -230,7 +230,7 @@ class ExportExcelReportBtn(IOBtns):
 class ExportPDFReportBtn(IOBtns):
     """Implementation of button for exporting to pdf file"""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
@@ -265,10 +265,8 @@ class ExportPDFReportBtn(IOBtns):
 class ExportScenarioBtn(IOBtns):
     """Implementation of button for exporting a scenario to a json file."""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        map_ui = kwargs.get("map_ui")
-        self.map_ui = map_ui
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
 
@@ -300,10 +298,9 @@ class ExportScenarioBtn(IOBtns):
 class ImportScenarioBtn(IOBtns):
     """Implementation of button for importing a scenario from a json file."""
 
-    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], *args, **kwargs):
+    def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
-        map_ui = kwargs.get("map_ui")
-        self.map_ui = map_ui
+        self.map_ui = kwargs.get("map_ui")
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
 
@@ -322,7 +319,10 @@ class ImportScenarioBtn(IOBtns):
             for ui_inp_var in self.ui_inp_vars:
                 self.ui_inp_vars[ui_inp_var].tk_var.set(scenario_data[ui_inp_var])
             self.map_polygons_tb.set(scenario_data.get("polygons_data", ""))
-            self.map_ui.update_polygons_from_stringvar()  # Explicit update
+            if self.map_ui is None:
+                raise ValueError("Map UI is not initialized.")
+            else:
+                self.map_ui.update_polygons_from_stringvar()  # Explicit update
             messagebox.showinfo("Success", "Scenario values imported!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
