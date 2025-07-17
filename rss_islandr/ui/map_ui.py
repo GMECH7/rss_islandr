@@ -7,44 +7,42 @@ from pathlib import Path
 import ttkbootstrap as tb
 import webview
 
+from rss_islandr.core.datatypes import PolygonDataDict
+from rss_islandr.core.helpers import extract_dicts_from_string
+
 logging.basicConfig(level=logging.INFO)
 
 
 class Api:
     def __init__(self, map_ui_instance):
-        self.map_ui = map_ui_instance  # Reference to MapUI instance
+        self.map_ui = map_ui_instance
 
-    def py_api_coord_receiver(self, lat, lng):
+    def py_api_coord_receiver(self, lat: float, lng: float):
         """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-        logging.debug(f"Received from HTML: Latitude={lat}, Longitude={lng}")
+        logging.debug(f"Received from JavaScript: Latitude={lat}, Longitude={lng}")
 
-    def py_api_polygons_receiver(self, feature_data):
-        """Receive polygon data from JavaScript"""
+    def py_api_polygons_receiver(self, polygon_data: PolygonDataDict):
+        """
+        Receive polygon data from JavaScript.
 
-        logging.debug(f"Received polygon data: {feature_data}")
+        """
+        logging.debug(f"Received polygon data: {polygon_data}")
 
         # Ensure unique_id exists
-        if "unique_id" not in feature_data:
+        if "unique_id" not in polygon_data:
             logging.error("Received polygon without unique_id!")
             return False
 
         # Check if this polygon already exists
         existing_index = None
         for i, poly in enumerate(self.map_ui.polygons):
-            if poly.get("unique_id") == feature_data["unique_id"]:
+            if poly.get("unique_id") == polygon_data["unique_id"]:
                 existing_index = i
                 break
 
-        # Create the polygon data structure
-        polygon = {
-            "unique_id": feature_data["unique_id"],
-            "type": feature_data["type"],
-            "name": feature_data["name"],
-            "coordinates": feature_data["coordinates"],
-            "area_km2": feature_data["area_km2"],
-            "node_count": feature_data["node_count"],
-        }
+        # Create a copy to avoid modifying the original data
+        polygon = polygon_data.copy()
 
         if existing_index is not None:
             # Update existing polygon
@@ -55,24 +53,25 @@ class Api:
             self.map_ui.polygons.append(polygon)
             logging.debug(f"Added new polygon: {polygon}")
 
+        self.map_ui.map_polygons_tb.set(f"{self.map_ui.polygons}")
         return True
 
     def py_api_clear_polygons(self):
         """Clear all stored polygons"""
         logging.debug("Clearing all polygons from storage")
         self.map_ui.polygons = []  # Empty the list
-
+        self.map_ui.map_polygons_tb.set("")  # Clear the StringVar
         return True
 
-    def py_api_delete_polygons(self, feature_data):
-        """Delete a polygon from storage"""
-        logging.debug(f"Deleting polygon: {feature_data}")
+    def py_api_delete_polygons(self, polygon_data: PolygonDataDict):
+        """Delete a polygon from storage based on its unique_id and type"""
+        logging.debug(f"Deleting polygon: {polygon_data}")
 
-        # Remove the polygon by name and type
+        # Keep polygons that do not match the given polygon_data
         self.map_ui.polygons = [
             poly
             for poly in self.map_ui.polygons
-            if not (poly["name"] == feature_data["name"] and poly["type"] == feature_data["type"])
+            if not (poly["name"] == polygon_data["name"] and poly["type"] == polygon_data["type"])
         ]
 
         logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
@@ -80,17 +79,54 @@ class Api:
 
     def py_api_send_polygons_to_js(self):
         """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug(f"Polygons sent to js {self.map_ui.polygons}")
+        logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
+
+    def py_api_send_coordinates_to_js(self) -> tuple[float, float]:
+        """Return the latest coordinates to JavaScript"""
+        logging.info(f"adsadsa {self.map_ui.lat}, {self.map_ui.lng}")
+
+        return self.map_ui.lat, self.map_ui.lng
 
 
 class MapUI:
-    def __init__(self, map_html: Path, style: tb.Style):
+    def __init__(self, map_html: Path, style: tb.Style, ui_inp_vars, map_polygons_tb: tb.StringVar):
         self.__style = style
         self.map_html = map_html
         self.webview_process = None
-        self.coordinates = None  # Stores latest latitude and longitude
-        self.polygons = []  # stores pologons as fetched from javascript
+        self.ui_inp_vars = ui_inp_vars
+        self.coordinates = None
+        self.map_polygons_tb = map_polygons_tb  # StringVar to hold polygon data as a string and 'live' throught app
+        self.polygons = []  # list of PolygonDataDict used in class
+
+        self.lat = 0.0
+        self.lng = 0.0
+
+    def update_coordinates(self):
+        """
+        Update coordinates (self.coordinates) from StringVar content
+        This is used when a scenario is imported and the coordinates are not empty,
+        or have to be updated based on the saved information.
+        """
+        self.lat = self.ui_inp_vars.get("map_0_00").tk_var.get()
+        self.lng = self.ui_inp_vars.get("map_0_01").tk_var.get()
+
+    def update_polygons_from_stringvar(self):
+        """
+        Update polygons (self.polygons) from StringVar content
+        This is used when a scenario is imported and the polygon list is not empty,
+        or has to be updated based on the saved information.
+        """
+        map_polygons_value = self.map_polygons_tb.get()
+
+        if map_polygons_value != "":  # Only update if not empty
+            try:
+                extracted = extract_dicts_from_string(map_polygons_value)
+                if extracted:
+                    self.polygons = extracted
+                    logging.debug(f"Updated polygons from import: {self.polygons}")
+            except Exception as e:
+                logging.error(f"Error parsing polygons from StringVar: {e}")
 
     def show_map(self):
         """Launch the webview window in a separate process."""
@@ -105,6 +141,10 @@ class MapUI:
     def get_coordinates(self):
         """Retrieve the latest coordinates and reset them after reading."""
         coords = self.coordinates
+        try:
+            self.lat, self.lng = coords
+        except Exception:
+            pass
         self.coordinates = None  # Reset after reading
         return coords
 

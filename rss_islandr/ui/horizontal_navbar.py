@@ -20,12 +20,12 @@ class HorizontalNavbar:
         self.__rel_width = rel_width
         self.__horizontal_navbar = HorizontalNavbarBtns(ui_settings, ui_inp_vars, ui_calc_vars, widgets_reconfigured)
 
-    def __create_horizontal_navbar(self, parent_frame: tb.Frame, *args, **kwargs) -> tb.Frame:
+    def __create_horizontal_navbar(self, parent_frame: tb.Frame, **kwargs) -> tb.Frame:
         """Create a horizontal navbar."""
         nav_bar_frame = tb.Frame(parent_frame, style="HorizontalNavBar.TFrame")
         nav_bar_frame.place(relx=0, rely=0, relwidth=self.__rel_width, relheight=self.__rel_height)
         frame_distances(nav_bar_frame, 1, 24)
-        self.__horizontal_navbar.file_menu_btn(nav_bar_frame, *args, **kwargs)
+        self.__horizontal_navbar.file_menu_btn(nav_bar_frame, **kwargs)
         self.__horizontal_navbar.docs_menu_button(nav_bar_frame)
         self.__horizontal_navbar.toggle_skin_btn(nav_bar_frame)
 
@@ -38,9 +38,9 @@ class HorizontalNavbar:
 
         return child_frame
 
-    def __call__(self, parent_frame: tb.Frame, *args, **kwargs):
+    def __call__(self, parent_frame: tb.Frame, **kwargs):
         """ """
-        navbar_frame = self.__create_horizontal_navbar(parent_frame, *args, **kwargs)
+        navbar_frame = self.__create_horizontal_navbar(parent_frame, **kwargs)
         child_frame = self.__create_child_frame(parent_frame)
 
         return navbar_frame, child_frame

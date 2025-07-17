@@ -294,10 +294,12 @@ class SiteInfoUI(GeneralUITemplate):
         label = tb.Label(self.__site_info_frame, text="Latitude & Longitude")
         label.grid(column=0, row=1, sticky="we")
 
-        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var)
+        # Readonly entry values come from the map UI
+        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var, state="readonly")
         lat_entry.grid(column=1, row=1, sticky="we")
 
-        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var)
+        # Readonly entry values come from the map UI
+        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var, state="readonly")
         lng_entry.grid(column=2, row=1, sticky="we")
 
     def __operation_dates_widget(self):
