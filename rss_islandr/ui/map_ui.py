@@ -85,7 +85,7 @@ class Api:
 
     def py_api_send_coordinates_to_js(self) -> tuple[float, float]:
         """Return the latest coordinates to JavaScript"""
-        logging.info(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
+        logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
 
         return self.map_ui.lat, self.map_ui.lng
 
@@ -100,34 +100,36 @@ class MapUI:
         self.map_polygons_tb = map_polygons_tb  # StringVar to hold polygon data as a string and 'live' throught app
         self.polygons = []  # list of PolygonDataDict used in class
 
-        self.lat = 0.0
-        self.lng = 0.0
+        self.lat = None
+        self.lng = None
 
     def update_coordinates(self):
         """
-        Update coordinates (self.coordinates) from StringVar content
-        This is used when a scenario is imported and the coordinates are not empty,
-        or have to be updated based on the saved information.
+        Update coordinates (self.coordinates) from StringVar content.
+
+        This methood is called in the following cases:
+        1. When a scenario is imported.
+        2. When restoring defaults in the main app UI.
         """
         self.lat = self.ui_inp_vars.get("map_0_00").tk_var.get()
         self.lng = self.ui_inp_vars.get("map_0_01").tk_var.get()
 
     def update_polygons_from_stringvar(self):
         """
-        Update polygons (self.polygons) from StringVar content
-        This is used when a scenario is imported and the polygon list is not empty,
-        or has to be updated based on the saved information.
+        Update polygons (self.polygons) from StringVar content.
+
+        This methood is called in the following cases:
+        1. When a scenario is imported.
+        2. When restoring defaults in the main app UI.
         """
         map_polygons_value = self.map_polygons_tb.get()
 
-        if map_polygons_value != "":  # Only update if not empty
-            try:
-                extracted = extract_dicts_from_string(map_polygons_value)
-                if extracted:
-                    self.polygons = extracted
-                    logging.debug(f"Updated polygons from import: {self.polygons}")
-            except Exception as e:
-                logging.error(f"Error parsing polygons from StringVar: {e}")
+        try:
+            extracted = extract_dicts_from_string(map_polygons_value)
+            self.polygons = extracted
+            logging.debug(f"Updated polygons from import: {self.polygons}")
+        except Exception as e:
+            logging.error(f"Error parsing polygons from StringVar: {e}")
 
     def show_map(self):
         """Launch the webview window in a separate process."""

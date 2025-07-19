@@ -94,20 +94,20 @@ class MainAppUI:
 
         lat = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=tb.StringVar(value="0.0"),
+            tk_var=tb.StringVar(value=None),
             rel_pos=1,
             text_val="Latitude",
-            val_default="0.0",
+            val_default="",
             text_descr=None,
             excel_cell="C4",
         )
 
         lng = UIInpVariable(
             frame_tag="site_info_frame",
-            tk_var=tb.StringVar(value="0.0"),
+            tk_var=tb.StringVar(value=None),
             rel_pos=1,
             text_val="Longitude",
-            val_default="0.0",
+            val_default="",
             text_descr=None,
             excel_cell="D4",
         )
@@ -259,6 +259,11 @@ class MainAppUI:
         """ """
         result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
         if result == "Yes":
+            self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset latitude
+            self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset longitude
+            self.map_polygons_tb.set("")  # Clear polygons
+            self.map_ui.update_coordinates()
+            self.map_ui.update_polygons_from_stringvar()
             for tk_var_tag in self.ui_inp_vars:
                 val_default = self.ui_inp_vars[tk_var_tag].val_default
                 self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
