@@ -187,16 +187,36 @@ class MapManager {
     this.map.on(L.Draw.Event.EDITED, (e) => {
       const layers = e.layers;
       layers.eachLayer((layer) => {
-        // Update properties before sending
-        layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+        // Update geometry and metadata
+        const coords = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
         const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-        layer.feature.properties.area_m2 = area_m2;
-        layer.feature.properties.area_km2 = area_m2 / 1000000;
-        layer.feature.properties.node_count = layer.feature.properties.coordinates.length;
 
+        layer.feature.properties.coordinates = coords;
+        layer.feature.properties.area_m2 = area_m2;
+        layer.feature.properties.area_km2 = area_m2 / 1_000_000;
+        layer.feature.properties.node_count = coords.length;
+
+        // 🔥 Update popup content immediately after editing
+        layer.setPopupContent(this.createPopupContent(layer));
+
+        // Rebind rename handler (optional but good practice)
+        layer.off('popupopen'); // remove old handler if any
+        layer.on('popupopen', () => {
+          document.querySelector('.rename-btn')?.addEventListener('click', () => {
+            const newName = prompt("Enter new name:", layer.feature.properties.name);
+            if (newName) {
+              layer.feature.properties.name = newName;
+              layer.setPopupContent(this.createPopupContent(layer));
+              this.sendDrawing(layer);
+            }
+          });
+        });
+
+        // Send updated data to Python backend
         this.sendDrawing(layer);
       });
     });
+
 
     // Listen for delete events
     this.map.on(L.Draw.Event.DELETED, (e) => {
