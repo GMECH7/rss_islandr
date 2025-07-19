@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import contextlib
 import logging
 import subprocess
 import sys
@@ -84,7 +85,7 @@ class Api:
 
     def py_api_send_coordinates_to_js(self) -> tuple[float, float]:
         """Return the latest coordinates to JavaScript"""
-        logging.info(f"adsadsa {self.map_ui.lat}, {self.map_ui.lng}")
+        logging.info(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
 
         return self.map_ui.lat, self.map_ui.lng
 
@@ -141,10 +142,8 @@ class MapUI:
     def get_coordinates(self):
         """Retrieve the latest coordinates and reset them after reading."""
         coords = self.coordinates
-        try:
+        with contextlib.suppress(Exception):
             self.lat, self.lng = coords
-        except Exception:
-            pass
         self.coordinates = None  # Reset after reading
         return coords
 
