@@ -524,9 +524,9 @@ class MapManager {
   }
 
   setMarker(lat, lng, shouldSendToBackend = true) {
-    // Don't set marker if coordinates are (0, 0)
-    if ((lat === null || lat === '' || lat === 0) &&
-      (lng === null || lng === '' || lng === 0)) {
+    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`);
+    if ((lat === null || lat === '') &&
+      (lng === null || lng === '')) {
       if (this.clickMarker) {
         this.map.removeLayer(this.clickMarker);
         this.clickMarker = null;

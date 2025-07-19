@@ -83,9 +83,17 @@ class Api:
         logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
-    def py_api_send_coordinates_to_js(self) -> tuple[float, float]:
+    def py_api_send_coordinates_to_js(self) -> tuple[float | None, float | None]:
         """Return the latest coordinates to JavaScript"""
         logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
+        if self.map_ui.lat is None or self.map_ui.lat == "":
+            self.map_ui.lat = None
+        else:
+            self.map_ui.lat = float(self.map_ui.lat)
+        if self.map_ui.lng is None or self.map_ui.lng == "":
+            self.map_ui.lng = None
+        else:
+            self.map_ui.lng = float(self.map_ui.lng)
 
         return self.map_ui.lat, self.map_ui.lng
 
