@@ -1,13 +1,10 @@
 import json
-import locale
 
 import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
-
-locale.setlocale(locale.LC_ALL, "en_US.UTF-8")  # or 'C.UTF-8', 'en_GB.UTF-8', etc.
 
 
 class SiteInfoUI(GeneralUITemplate):

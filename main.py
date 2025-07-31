@@ -1,3 +1,4 @@
+import locale
 import logging
 
 import ttkbootstrap as tb
@@ -10,6 +11,7 @@ from rss_islandr.core.config_parser import (
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui import MainAppUI
 
+locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 logging.basicConfig(level=logging.INFO)
 
 
