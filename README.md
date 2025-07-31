@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a Python-based implementation of the **Risk Screening System (RSS)**, originally developed by the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
+This is a Python-based implementation of the **Risk Screening System (RSS)**, originally developed by the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
 
 The Risk Screening System (RSS) evaluates environmental risks using a risk equation composed of three key components:
 
@@ -12,37 +12,49 @@ The Risk Screening System (RSS) evaluates environmental risks using a risk equat
 
 This framework is commonly referred to as the **Source-Pathway-Receptor (SPR)** model.
 
+## References
+
+- **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
+- **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
+
 ---
 
 ## Codebase
 
-### Downloading the Repository
+### Downloading the repository
 
-To download the repository locally, use the following command:
+This is a private project in GitHub she maintaner hs to previously give access to the user wishing to download the repository locally. After getting access the following command has to be used:
 
 ```bash
 git clone https://github.com/GMECH7/rss_islandr.git
 ```
 
-### Installing dependencies and execution
+### Setup virtual environment & install dependencies
 
-#### 1. Setup virtual environment
+Navigate to the project directory:
 
-Follow these steps to set up the virtual environment:
-
-a. **Navigate to the project directory**:
-
-```bash
+```shell
 cd <local-project-directory>
 ```
 
-b. **Create a virtual environment**:
+#### 1. Using poetry
 
-```bash
-python -m venv islandr_venv
+If `poetry` is installed the following command can be used to setup the virtual environment and install all dependencies.
+
+```shell
+poetry install
 ```
 
-c. **Activate the Virtual Environment**:
+#### 2. Using pip
+
+In case that `poetry` is not installed, the following steps have to be followed:
+a. **Create virtual environment**
+
+```shell
+python -m venv .venv
+```
+
+b. **Activate the virtual environment**:
 
 - If you are using **Visual Studio Code (VSC)**, the virtual environment should activate automatically due to the presence of the `.vscode/settings.json` file.
 - Otherwise, activate the environment manually:
@@ -55,34 +67,10 @@ c. **Activate the Virtual Environment**:
     source islandr_venv/bin/activate
     ```
 
-d. Choose over **2a** and **2b** to install locally all dependencies (**2b** recommended)
-
-#### 2a. Install dependencies using pip (depends on `requirements.txt`)
-
-- **Install the required dependencies**:
+c. **Install dependencies using pip (depends on `requirements.txt`)**
 
 ```bash
 pip install -r requirements.txt
-```
-
-- **Update requirements.txt**:
-
-```bash
-pip freeze > requirements.txt
-```
-
-#### 2b. Install dependencies using poetry (depends on `poetry.lock`)
-
-- **Install the required dependencies**:
-
-```bash
-poetry install
-```
-
-- **Update poetry.lock**:
-
-```bash
-poetry lock
 ```
 
 #### Advantages & disadvantages of poetry over pip
@@ -125,11 +113,6 @@ poetry lock
      pip uninstall <package name>
      poetry show --tree # shows dependencies relationships
      ```
-
-## References
-
-- **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
-- **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
 
 ---
 
@@ -234,10 +217,15 @@ Opening the URL shows an **XML document** with many `<Layer>` entries. Look for:
 - <Title> helps identify what the layer represents
 ```
 
-## Updating polygons flowchart
+---
+
+## Flowcharts
+
+Below flowcharts showcasing the logic behind key software components are provided.
+
+### Design and update polygons on map
 
 ```mermaid
-%%{init: {'themeVariables': {'fontFamily': 'monospace'}}}%%
 %%{init: {'themeVariables': {'fontFamily': 'monospace'}}}%%
 graph LR
     %% Define CSS classes
@@ -246,17 +234,27 @@ graph LR
     classDef python_method fill:#4CAF50,color:white,stroke:#2a5f8a
     classDef variable fill:#9C27B0,color:white,stroke:#6A1B9A
 
-    subgraph "script.js"
+    subgraph js ["script.js"]
         JS["MapManager"]:::javascript
         JS -->|defines| sendDrawing["sendDrawing()"]:::javascript
     end
 
-    subgraph "main_app_ui.py"
+    subgraph map_ui ["map_ui.py"]
         Py["Api"]:::python
         MapUI["MapUI"]:::python
+        py_api_coord_receiver["py_api_coord_receiver()"]:::python_method
+        py_api_clear_polygons["py_api_clear_polygons()"]:::python_method
+        py_api_delete_polygons["py_api_delete_polygons()"]:::python_method
+        py_api_send_polygons_to_js["py_api_send_polygons_to_js()"]:::python_method
+        py_api_send_coordinates_to_js["py_api_send_coordinates_to_js()"]:::python_method
         py_api_polygons_receiver["py_api_polygons_receiver()"]:::python_method
 
         %% Relationships
+        Py -->|defines| py_api_coord_receiver
+        Py -->|defines| py_api_clear_polygons
+        Py -->|defines| py_api_delete_polygons
+        Py -->|defines| py_api_send_polygons_to_js
+        Py -->|defines| py_api_send_coordinates_to_js
         sendDrawing -->|links| py_api_polygons_receiver
         Py -->|defines| py_api_polygons_receiver
         Py -->|updates| MapUI
@@ -265,12 +263,17 @@ graph LR
         MapUI -->|defines| get_polygons_data["get_polygons_data()"]:::python_method
     end
 
-    subgraph "map_ui.py"
+    subgraph main_app_ui ["main_app_ui.py"]
         MainAppUI["MainAppUI"]:::python
-        MainAppUI -->|calls| run_webview
+        MainAppUI -->|defines| __toggle_map["__toggle_map()"]:::python_method
+        __toggle_map -->|calls| run_webview
         MainAppUI -->|defines| __monitor_map_changes["__monitor_map_changes()"]:::python_method
         __monitor_map_changes -->|calls| get_polygons_data
         MainAppUI -->|contains| tb.StringVar["map_polygons_tb<br>(tb.StringVar)"]:::variable
         __monitor_map_changes -.->|updates| tb.StringVar
     end
+
+    %% Style the subgraphs
+    style map_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
+    style main_app_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
 ```

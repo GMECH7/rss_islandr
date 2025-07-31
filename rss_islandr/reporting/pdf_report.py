@@ -127,7 +127,10 @@ class PDFReport:
         for var in ui_inp_vars:
             val = var.tk_var.get() if hasattr(var.tk_var, "get") else ""
             if var.text_val == "Latitude" or var.text_val == "Longitude":
-                val = f"{float(val):.4f}"
+                try:
+                    val = f"{float(val):.4f}"
+                except ValueError:
+                    val = ""
 
             table_data.append([Paragraph(var.text_val, self._styles["Normal"]), Paragraph(val, self._styles["Normal"])])
 
@@ -246,6 +249,7 @@ class PDFReport:
                 nodes = polygon_dict.get("node_count", 0)
 
                 # Add each coordinate pair with point numbering
+
                 for point_idx, coord in enumerate(coordinates, 1):
                     if len(coord) >= 2:  # Ensure we have both lat and long
                         if point_idx == 1:  # First row shows all info
