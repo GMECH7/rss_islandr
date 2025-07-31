@@ -1,0 +1,28 @@
+{
+    "recommendations": [
+        "ritwickdey.liveserver",
+        "akamud.vscode-theme-onedark",
+        "njpwerner.autodocstring",
+        "aaron-bond.better-comments",
+        "vivaxy.vscode-conventional-commits",
+        "tamasfe.even-better-toml",
+        "grapecity.gc-excelviewer",
+        "mhutchie.git-graph",
+        "shd101wyy.markdown-preview-enhanced",
+        "bierner.markdown-mermaid",
+        "goessner.mdmath",
+        "zhuangtongfa.material-theme",
+        "esbenp.prettier-vscode",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "donjayamanne.python-environment-manager",
+        "ms-python.vscode-python-envs",
+        "mechatroner.rainbow-csv",
+        "lextudio.restructuredtext",
+        "charliermarsh.ruff",
+        "gruntfuggly.todo-tree",
+        "oijaz.unicode-latex",
+        "vscode-icons-team.vscode-icons"
+    ]
+}

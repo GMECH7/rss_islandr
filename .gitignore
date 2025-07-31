@@ -138,7 +138,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-islandr_venv/
 .env
 .venv
 env/
