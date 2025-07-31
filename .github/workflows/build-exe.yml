@@ -2,7 +2,9 @@ name: Build EXE
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - "bugfix_exe*" # Matches branches like bugfix_exe_dates, bugfix_exe/feature-x, etc.
 
 jobs:
   build:
