@@ -1,6 +1,8 @@
 {
     //  "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python"  // macOS/Linux
-    "python.defaultInterpreterPath": "${workspaceFolder}\\islandr_venv\\Scripts\\python.exe", // Windows
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe", // Windows
+    //"python.defaultInterpreterPath": "${command:python.interpreterPath}",
+    // Optional: Auto-activate the environment on startup
     "python.terminal.activateEnvironment": true,
     "workbench.colorCustomizations": {
         "titleBar.activeBackground": "#3f60a8",

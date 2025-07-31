@@ -187,16 +187,36 @@ class MapManager {
     this.map.on(L.Draw.Event.EDITED, (e) => {
       const layers = e.layers;
       layers.eachLayer((layer) => {
-        // Update properties before sending
-        layer.feature.properties.coordinates = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
+        // Update geometry and metadata
+        const coords = layer.getLatLngs()[0].map(latlng => [latlng.lat, latlng.lng]);
         const area_m2 = L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]);
-        layer.feature.properties.area_m2 = area_m2;
-        layer.feature.properties.area_km2 = area_m2 / 1000000;
-        layer.feature.properties.node_count = layer.feature.properties.coordinates.length;
 
+        layer.feature.properties.coordinates = coords;
+        layer.feature.properties.area_m2 = area_m2;
+        layer.feature.properties.area_km2 = area_m2 / 1_000_000;
+        layer.feature.properties.node_count = coords.length;
+
+        // 🔥 Update popup content immediately after editing
+        layer.setPopupContent(this.createPopupContent(layer));
+
+        // Rebind rename handler (optional but good practice)
+        layer.off('popupopen'); // remove old handler if any
+        layer.on('popupopen', () => {
+          document.querySelector('.rename-btn')?.addEventListener('click', () => {
+            const newName = prompt("Enter new name:", layer.feature.properties.name);
+            if (newName) {
+              layer.feature.properties.name = newName;
+              layer.setPopupContent(this.createPopupContent(layer));
+              this.sendDrawing(layer);
+            }
+          });
+        });
+
+        // Send updated data to Python backend
         this.sendDrawing(layer);
       });
     });
+
 
     // Listen for delete events
     this.map.on(L.Draw.Event.DELETED, (e) => {
@@ -341,14 +361,29 @@ class MapManager {
       <button class="rename-btn" style="margin-top: 8px; padding: 2px 6px; font-size: 0.8em;">
         Rename
       </button>
-      <div class="coord-preview" style="max-height: 150px; overflow-y: auto; padding: 5px; background: #f5f5f5; border-radius: 3px; margin-top: 5px;">
-          ${layer.feature.properties.coordinates.slice(0, 100).map(coord =>
-      `<div style="padding: 2px 0; font-family: monospace;">${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}</div>`
+      <div style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.9em;">
+          <thead>
+            <tr style="background-color: #f0f0f0;">
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Latitude</th>
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Longitude</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${layer.feature.properties.coordinates.slice(0, 100).map(coord =>
+      `<tr>
+                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[0].toFixed(6)}</td>
+                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[1].toFixed(6)}</td>
+              </tr>`
     ).join('')}
-          ${layer.feature.properties.coordinates.length > 100 ?
-        '<div style="padding: 2px 0; color: #666;">...and ' +
-        (layer.feature.properties.coordinates.length - 100) +
-        ' more</div>' : ''}
+            ${layer.feature.properties.coordinates.length > 100 ?
+        `<tr>
+                <td colspan="2" style="padding: 4px; text-align: center; color: #666; font-style: italic;">
+                  ...and ${layer.feature.properties.coordinates.length - 100} more
+                </td>
+              </tr>` : ''}
+          </tbody>
+        </table>
       </div>
     </div>`;
   }
@@ -489,8 +524,9 @@ class MapManager {
   }
 
   setMarker(lat, lng, shouldSendToBackend = true) {
-    // Don't set marker if coordinates are (0, 0)
-    if (lat === 0 && lng === 0) {
+    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`);
+    if ((lat === null || lat === '') &&
+      (lng === null || lng === '')) {
       if (this.clickMarker) {
         this.map.removeLayer(this.clickMarker);
         this.clickMarker = null;
