@@ -115,19 +115,32 @@ class MapManager {
     this.crsSelector.addEventListener('change', () => this.updateCoordinateDisplay());
   }
 
+  // ✅ MODIFIED: This version enforces the correct loading order.
   initPyWebViewIntegration() {
-    const tryInit = () => {
+    // Make the inner function `async` so we can use `await`
+    const tryInit = async () => {
       if (window.pywebview?.api) {
         console.log("✅ PyWebView is ready!");
+
+        // 1. First, fetch the marker data and set the CRS dropdown.
+        // We 'await' this to guarantee it finishes before the next step.
+        console.log("Initializing marker and CRS setting...");
+        await this.initializeFromBackend();
+        console.log("...Marker and CRS initialization complete.");
+
+        // 2. ONLY AFTER the above is done, fetch and draw the polygons.
+        // The `handlePyWebViewReady` function will now run in a context
+        // where the CRS dropdown is already correctly set.
+        console.log("Initializing polygon drawing...");
         this.handlePyWebViewReady();
-        this.initializeFromBackend();
+
       } else {
         console.log("⏳ Waiting for PyWebView...");
-        setTimeout(tryInit, 300); // Retry every 300ms
+        setTimeout(tryInit, 300); // Retry if pywebview is not ready
       }
     };
 
-    tryInit(); // Start checking immediately
+    tryInit(); // Start the initialization process
   }
 
   // HELPER METHOD: Updates the coordinate input fields based on the current marker and selected CRS.
@@ -411,8 +424,26 @@ class MapManager {
     this.isDrawing = false;
   }
 
-  // Helper method to create popup content (extracted for reuse)
+  // Display polygons coordinates in the selected CRS
   createPopupContent(layer) {
+    const selectedCRS = this.crsSelector.value;
+    // The layer's internal coordinates are always stored in WGS84
+    const wgs84Coords = layer.feature.properties.coordinates;
+    let displayCoords = wgs84Coords;
+    let latHeader = "Latitude";
+    let lngHeader = "Longitude";
+
+    // If a different CRS is selected, convert the coordinates for display
+    if (selectedCRS !== 'EPSG:4326') {
+      latHeader = "X";
+      lngHeader = "Y";
+      displayCoords = wgs84Coords.map(coord => {
+        // coord is [lat, lng], proj4js needs [lng, lat]
+        const converted = proj4('EPSG:4326', selectedCRS, [coord[1], coord[0]]);
+        return [converted[0], converted[1]]; // Return as [X, Y]
+      });
+    }
+
     return `
     <div style="min-width: 200px;">
       <b>${layer.feature.properties.name}</b>
@@ -426,23 +457,23 @@ class MapManager {
         <table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.9em;">
           <thead>
             <tr style="background-color: #f0f0f0;">
-              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Latitude</th>
-              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Longitude</th>
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">${latHeader}</th>
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">${lngHeader}</th>
             </tr>
           </thead>
           <tbody>
-            ${layer.feature.properties.coordinates.slice(0, 100).map(coord =>
+            ${displayCoords.slice(0, 100).map(coord =>
       `<tr>
-                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[0].toFixed(6)}</td>
-                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[1].toFixed(6)}</td>
-              </tr>`
+                  <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[0].toFixed(selectedCRS === 'EPSG:4326' ? 6 : 2)}</td>
+                  <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[1].toFixed(selectedCRS === 'EPSG:4326' ? 6 : 2)}</td>
+                </tr>`
     ).join('')}
-            ${layer.feature.properties.coordinates.length > 100 ?
+            ${displayCoords.length > 100 ?
         `<tr>
-                <td colspan="2" style="padding: 4px; text-align: center; color: #666; font-style: italic;">
-                  ...and ${layer.feature.properties.coordinates.length - 100} more
-                </td>
-              </tr>` : ''}
+                  <td colspan="2" style="padding: 4px; text-align: center; color: #666; font-style: italic;">
+                    ...and ${displayCoords.length - 100} more
+                  </td>
+                </tr>` : ''}
           </tbody>
         </table>
       </div>
@@ -455,13 +486,26 @@ class MapManager {
    */
   sendDrawing(layer) {
     if (window.pywebview?.api) {
+      const selectedCRS = this.crsSelector.value;
+      const wgs84Coords = layer.feature.properties.coordinates;
+      let coordsToSend = wgs84Coords;
+
+      // If a different CRS is selected, convert the coordinates before sending
+      if (selectedCRS !== 'EPSG:4326') {
+        coordsToSend = wgs84Coords.map(coord => {
+          const converted = proj4('EPSG:4326', selectedCRS, [coord[1], coord[0]]);
+          return [converted[0], converted[1]]; // [X, Y]
+        });
+      }
+
       const polygonDataToPy = {
         unique_id: layer.feature.unique_id,
         type: layer.feature.type,
         name: layer.feature.properties.name,
-        coordinates: layer.feature.properties.coordinates,
+        coordinates: coordsToSend, // Use the (potentially) converted coordinates
+        crs: selectedCRS,          // Add the CRS information
         area_km2: layer.feature.properties.area_km2,
-        node_count: layer.feature.properties.coordinates.length
+        node_count: coordsToSend.length
       };
 
       console.log("Sending polygon data to pywebview:", polygonDataToPy);
@@ -500,6 +544,54 @@ class MapManager {
     }
   }
 
+  // /**
+  //  * Redraws all polygons from stored data
+  //  * @param {Array} polygons - Array of polygon data objects
+  //  */
+  // redrawPolygons(polygons) {
+  //   // Clear existing drawings first
+  //   this.drawnItems.clearLayers();
+
+  //   // Redraw each polygon
+  //   polygons.forEach(polygonData => {
+  //     // Create a new polygon layer
+  //     const polygon = L.polygon(polygonData.coordinates, {
+  //       color: this.getColorForType(polygonData.type),
+  //       fillColor: this.getColorForType(polygonData.type),
+  //       fillOpacity: 0.01,
+  //       dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
+  //     });
+
+  //     // Add all original metadata to the layer
+  //     polygon.feature = {
+  //       unique_id: polygonData.unique_id,
+  //       type: polygonData.type,
+  //       properties: {
+  //         ...polygonData,
+  //         coordinates: polygonData.coordinates
+  //       }
+  //     };
+
+  //     // Add to feature group
+  //     this.drawnItems.addLayer(polygon);
+
+  //     // Bind popup with working rename functionality
+  //     polygon.bindPopup(this.createPopupContent(polygon));
+
+  //     // Reattach rename event handler
+  //     polygon.on('popupopen', () => {
+  //       document.querySelector('.rename-btn')?.addEventListener('click', () => {
+  //         const newName = prompt("Enter new name:", polygon.feature.properties.name);
+  //         if (newName) {
+  //           polygon.feature.properties.name = newName;
+  //           polygon.setPopupContent(this.createPopupContent(polygon));
+  //           this.sendDrawing(polygon);
+  //         }
+  //       });
+  //     });
+  //   });
+  // }
+
   /**
    * Redraws all polygons from stored data
    * @param {Array} polygons - Array of polygon data objects
@@ -510,31 +602,41 @@ class MapManager {
 
     // Redraw each polygon
     polygons.forEach(polygonData => {
-      // Create a new polygon layer
-      const polygon = L.polygon(polygonData.coordinates, {
+      const savedCoords = polygonData.coordinates;
+      const savedCRS = polygonData.crs || 'EPSG:4326'; // Default to WGS84 if crs is missing
+      let leafletCoords;
+
+      // Convert coordinates to WGS84 [lat, lng] for Leaflet to draw
+      if (savedCRS === 'EPSG:4326') {
+        leafletCoords = savedCoords;
+      } else {
+        leafletCoords = savedCoords.map(coord => {
+          const converted = proj4(savedCRS, 'EPSG:4326', [coord[0], coord[1]]);
+          return [converted[1], converted[0]]; // Return as [lat, lng]
+        });
+      }
+
+      const polygon = L.polygon(leafletCoords, {
         color: this.getColorForType(polygonData.type),
         fillColor: this.getColorForType(polygonData.type),
         fillOpacity: 0.01,
-        dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
+        dashArray: polygonData.type.includes('pathway') ? '5, 5' : undefined
       });
 
-      // Add all original metadata to the layer
+      // CRITICAL: The internal feature properties should always store the canonical WGS84 coordinates
       polygon.feature = {
         unique_id: polygonData.unique_id,
         type: polygonData.type,
         properties: {
           ...polygonData,
-          coordinates: polygonData.coordinates
+          coordinates: leafletCoords // Store the converted WGS84 coordinates
         }
       };
 
-      // Add to feature group
       this.drawnItems.addLayer(polygon);
-
-      // Bind popup with working rename functionality
       polygon.bindPopup(this.createPopupContent(polygon));
 
-      // Reattach rename event handler
+      // Re-attach event handler for renaming
       polygon.on('popupopen', () => {
         document.querySelector('.rename-btn')?.addEventListener('click', () => {
           const newName = prompt("Enter new name:", polygon.feature.properties.name);
@@ -594,7 +696,7 @@ class MapManager {
       }
       return;
     }
-    console.log("lelos kanelos")
+
     if (this.clickMarker) {
       this.clickMarker.setLatLng([lat, lng]);
     } else {
