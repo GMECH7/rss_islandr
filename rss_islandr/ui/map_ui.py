@@ -20,15 +20,12 @@ class Api:
 
     def py_api_coord_receiver(self, lat: float, lng: float, crs: str):
         """Receive coordinates from JavaScript"""
-
-        logging.info(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
-        self.map_ui.coordinates = (lat, lng)  # Store received coordinates
-        logging.debug(f"Received from JavaScript: Latitude={lat}, Longitude={lng}")
+        self.map_ui.coordinates = (lat, lng, crs)  # Store received coordinates
+        logging.debug(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
 
     def py_api_polygons_receiver(self, polygon_data: PolygonDataDict):
         """
         Receive polygon data from JavaScript.
-
         """
         logging.debug(f"Received polygon data: {polygon_data}")
 
@@ -85,19 +82,22 @@ class Api:
         logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
-    def py_api_send_coordinates_to_js(self) -> tuple[float | None, float | None]:
+    def py_api_send_coordinates_to_js(self) -> tuple[float | None, float | None, str]:
         """Return the latest coordinates to JavaScript"""
         logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
         if self.map_ui.lat is None or self.map_ui.lat == "":
             self.map_ui.lat = None
+            self.map_ui.crs = "EPSG:4326"
         else:
             self.map_ui.lat = float(self.map_ui.lat)
+
         if self.map_ui.lng is None or self.map_ui.lng == "":
             self.map_ui.lng = None
+            self.map_ui.crs = "EPSG:4326"
         else:
             self.map_ui.lng = float(self.map_ui.lng)
 
-        return self.map_ui.lat, self.map_ui.lng
+        return self.map_ui.lat, self.map_ui.lng, self.map_ui.crs
 
 
 class MapUI:
@@ -112,6 +112,7 @@ class MapUI:
 
         self.lat = None
         self.lng = None
+        self.crs = "EPSG:4326"
 
     def update_coordinates(self):
         """
@@ -123,6 +124,7 @@ class MapUI:
         """
         self.lat = self.ui_inp_vars.get("map_0_00").tk_var.get()
         self.lng = self.ui_inp_vars.get("map_0_01").tk_var.get()
+        self.crs = self.ui_inp_vars.get("map_0_02").tk_var.get()
 
     def update_polygons_from_stringvar(self):
         """
@@ -155,7 +157,7 @@ class MapUI:
         """Retrieve the latest coordinates and reset them after reading."""
         coords = self.coordinates
         with contextlib.suppress(Exception):
-            self.lat, self.lng = coords
+            self.lat, self.lng, self.crs = coords
         self.coordinates = None  # Reset after reading
         return coords
 

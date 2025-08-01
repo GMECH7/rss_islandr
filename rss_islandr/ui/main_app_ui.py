@@ -95,7 +95,7 @@ class MainAppUI:
         lat = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=tb.StringVar(value=None),
-            rel_pos=1,
+            rel_pos=2,
             text_val="Latitude",
             val_default="",
             text_descr=None,
@@ -105,14 +105,24 @@ class MainAppUI:
         lng = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=tb.StringVar(value=None),
-            rel_pos=1,
+            rel_pos=2,
             text_val="Longitude",
             val_default="",
             text_descr=None,
             excel_cell="D4",
         )
 
-        self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng})
+        crs = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=tb.StringVar(value=None),
+            rel_pos=1,
+            text_val="CRS",
+            val_default="",
+            text_descr=None,
+            excel_cell="D4",
+        )
+
+        self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng, "map_0_02": crs})
 
     def __init__populate_frame_infos_dict(self):
         """ """
@@ -261,6 +271,7 @@ class MainAppUI:
         if result == "Yes":
             self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset latitude
             self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset longitude
+            self.ui_inp_vars.get("map_0_02").tk_var.set(None)  # Reset longitude
             self.map_polygons_tb.set("")  # Clear polygons
             self.map_ui.update_coordinates()
             self.map_ui.update_polygons_from_stringvar()
@@ -283,8 +294,8 @@ class MainAppUI:
         while self.map_open:
             coords = self.map_ui.get_coordinates()
             if coords is not None:
-                lat, lng = coords
-                self.__update_coordinates(lat, lng)
+                lat, lng, crs = coords
+                self.__update_coordinates(lat, lng, crs)
 
             if self.map_polygons_tb.get() == "":
                 map_polygons_as_str = self.map_ui.get_polygons_data()
@@ -295,11 +306,12 @@ class MainAppUI:
 
             time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
 
-    def __update_coordinates(self, lat, lng) -> None:
+    def __update_coordinates(self, lat, lng, crs) -> None:
         """Callback function to update the coordinates"""
         self.ui_inp_vars["map_0_00"].tk_var.set(lat)
         self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        logging.debug(f"Updated Coordinates: {lat}, {lng}")
+        self.ui_inp_vars["map_0_02"].tk_var.set(crs)
+        logging.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
 
     def __update_polygons_data(self, map_polygons_as_str: str) -> None:
         """Callback function to update polygons data"""

@@ -264,6 +264,7 @@ class MapManager {
     });
   }
 
+
   async initializeFromBackend() {
     if (!window.pywebview?.api) {
       console.warn("PyWebView API not available when trying to initialize coordinates");
@@ -271,14 +272,42 @@ class MapManager {
     }
 
     try {
-      const [lat, lng] = await window.pywebview.api.py_api_send_coordinates_to_js();
-      console.log(`Received initial coordinates: ${lat}, ${lng}`);
+      // Expecting [coord1, coord2, crs] from your Python function
+      const [coord1, coord2, crs] = await window.pywebview.api.py_api_send_coordinates_to_js();
+      console.log(`Received initial state: ${coord1}, ${coord2} in ${crs}`);
 
-      // Only set initial marker if coordinates are valid and not (0, 0)
-      if (lat !== 0 && lng !== 0 && !isNaN(lat) && !isNaN(lng)) {
-        // Don't send back to Python when we're just initializing
+      // Exit if the data is invalid or represents a default (0,0) state
+      if (!crs || (parseFloat(coord1) === 0 && parseFloat(coord2) === 0)) {
+        return;
+      }
+
+      // --- This is the new, important logic ---
+
+      // 1. Set the CRS dropdown to match the loaded value.
+      this.crsSelector.value = crs;
+
+      let lat, lng;
+
+      // 2. Convert the coordinates to WGS84 Lat/Lon for Leaflet, if necessary.
+      if (crs === 'EPSG:4326') {
+        // If the CRS is WGS84, the values are already lat and lon.
+        lat = parseFloat(coord1);
+        lng = parseFloat(coord2);
+      } else {
+        // If it's a projected CRS (like GGRS87), convert X/Y back to Lat/Lon.
+        const x = parseFloat(coord1);
+        const y = parseFloat(coord2);
+        const converted = proj4(crs, 'EPSG:4326', [x, y]); // Inverse projection
+        lng = converted[0];
+        lat = converted[1];
+      }
+
+      // 3. Call setMarker with the guaranteed WGS84 coordinates.
+      if (!isNaN(lat) && !isNaN(lng)) {
+        // The `false` flag prevents sending the data back to Python in a loop.
         this.setMarker(lat, lng, false);
       }
+
     } catch (error) {
       console.error("Error getting initial coordinates:", error);
     }
@@ -565,7 +594,7 @@ class MapManager {
       }
       return;
     }
-
+    console.log("lelos kanelos")
     if (this.clickMarker) {
       this.clickMarker.setLatLng([lat, lng]);
     } else {
