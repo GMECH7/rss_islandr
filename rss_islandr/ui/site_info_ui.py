@@ -97,7 +97,7 @@ class SiteInfoUI(GeneralUITemplate):
             rel_pos=3,
             text_val="Site area [km\u00b2]",
             text_descr=None,
-            excel_cell="C5",
+            excel_cell="H5",
             pdf_table_name="Site information",
         )
 
@@ -291,18 +291,18 @@ class SiteInfoUI(GeneralUITemplate):
         label = tb.Label(self.__site_info_frame, text="CRS type")
         label.grid(column=0, row=1, sticky="we")
 
-        crs_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_02"].tk_var, state="readonly")
+        crs_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var, state="readonly")
         crs_entry.grid(column=1, row=1, sticky="we", columnspan=2)
 
         label = tb.Label(self.__site_info_frame, text="Latitude & Longitude")
         label.grid(column=0, row=2, sticky="we")
 
         # Readonly entry values come from the map UI
-        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var, state="readonly")
+        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var, state="readonly")
         lat_entry.grid(column=1, row=2, sticky="we")
 
         # Readonly entry values come from the map UI
-        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var, state="readonly")
+        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_02"].tk_var, state="readonly")
         lng_entry.grid(column=2, row=2, sticky="we")
 
     def __operation_dates_widget(self):

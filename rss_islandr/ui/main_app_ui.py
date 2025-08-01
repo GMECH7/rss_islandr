@@ -92,6 +92,16 @@ class MainAppUI:
     def __init__lat_lng_vars(self):
         """Definition of langtitude and longtitude variables which are updated from the map app."""
 
+        crs = UIInpVariable(
+            frame_tag="site_info_frame",
+            tk_var=tb.StringVar(value=None),
+            rel_pos=1,
+            text_val="CRS",
+            val_default="",
+            text_descr=None,
+            excel_cell="C4",
+        )
+
         lat = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=tb.StringVar(value=None),
@@ -99,7 +109,7 @@ class MainAppUI:
             text_val="Latitude",
             val_default="",
             text_descr=None,
-            excel_cell="C4",
+            excel_cell="C5",
         )
 
         lng = UIInpVariable(
@@ -109,20 +119,10 @@ class MainAppUI:
             text_val="Longitude",
             val_default="",
             text_descr=None,
-            excel_cell="D4",
+            excel_cell="D5",
         )
 
-        crs = UIInpVariable(
-            frame_tag="site_info_frame",
-            tk_var=tb.StringVar(value=None),
-            rel_pos=1,
-            text_val="CRS",
-            val_default="",
-            text_descr=None,
-            excel_cell="D4",
-        )
-
-        self.ui_inp_vars.update({"map_0_00": lat, "map_0_01": lng, "map_0_02": crs})
+        self.ui_inp_vars.update({"map_0_00": crs, "map_0_01": lat, "map_0_02": lng})
 
     def __init__populate_frame_infos_dict(self):
         """ """
@@ -269,9 +269,9 @@ class MainAppUI:
         """ """
         result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
         if result == "Yes":
-            self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset latitude
-            self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset longitude
+            self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset latitude
             self.ui_inp_vars.get("map_0_02").tk_var.set(None)  # Reset longitude
+            self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset longitude
             self.map_polygons_tb.set("")  # Clear polygons
             self.map_ui.update_coordinates()
             self.map_ui.update_polygons_from_stringvar()
@@ -308,9 +308,9 @@ class MainAppUI:
 
     def __update_coordinates(self, lat, lng, crs) -> None:
         """Callback function to update the coordinates"""
-        self.ui_inp_vars["map_0_00"].tk_var.set(lat)
-        self.ui_inp_vars["map_0_01"].tk_var.set(lng)
-        self.ui_inp_vars["map_0_02"].tk_var.set(crs)
+        self.ui_inp_vars["map_0_01"].tk_var.set(lat)
+        self.ui_inp_vars["map_0_02"].tk_var.set(lng)
+        self.ui_inp_vars["map_0_00"].tk_var.set(crs)
         logging.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
 
     def __update_polygons_data(self, map_polygons_as_str: str) -> None:
