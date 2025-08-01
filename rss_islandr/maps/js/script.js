@@ -10,6 +10,11 @@ class MapManager {
     this.drawnItems = new L.FeatureGroup(); // Store all drawn items (Leaflet)
     this.currentDrawingMode = null; // Track current drawing mode
     this.isDrawing = false; // Track if drawing is in progress
+
+    // Define CRS and get selector element
+    this.crsSelector = document.getElementById('crs-select');
+    proj4.defs('EPSG:2100', '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=-199.87,74.79,246.62,0,0,0,0 +units=m +no_defs');
+
     // initialization methods
     this.initMap();
     this.initLayers();
@@ -105,6 +110,9 @@ class MapManager {
         this.cancelDrawing();
       }
     });
+
+    // Add event listener for the CRS dropdown
+    this.crsSelector.addEventListener('change', () => this.updateCoordinateDisplay());
   }
 
   initPyWebViewIntegration() {
@@ -120,6 +128,30 @@ class MapManager {
     };
 
     tryInit(); // Start checking immediately
+  }
+
+  // HELPER METHOD: Updates the coordinate input fields based on the current marker and selected CRS.
+  updateCoordinateDisplay() {
+    if (!this.clickMarker) return; // Exit if no marker is set
+
+    const lat = this.clickMarker.getLatLng().lat;
+    const lng = this.clickMarker.getLatLng().lng;
+    const selectedCRS = this.crsSelector.value;
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+
+    if (selectedCRS === 'EPSG:4326') {
+      latInput.value = lat.toFixed(6);
+      lngInput.value = lng.toFixed(6);
+      latInput.placeholder = "Latitude";
+      lngInput.placeholder = "Longitude";
+    } else {
+      const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+      latInput.value = converted[0].toFixed(2); // This is now X
+      lngInput.value = converted[1].toFixed(2); // This is now Y
+      latInput.placeholder = "X Coordinate";
+      lngInput.placeholder = "Y Coordinate";
+    }
   }
 
   handlePyWebViewReady() {
@@ -523,10 +555,10 @@ class MapManager {
     }
   }
 
+  // ✅ MODIFIED: setMarker now uses the helper function to display coordinates.
   setMarker(lat, lng, shouldSendToBackend = true) {
-    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`);
-    if ((lat === null || lat === '') &&
-      (lng === null || lng === '')) {
+
+    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`); if ((lat === null || lat === '') && (lng === null || lng === '')) {
       if (this.clickMarker) {
         this.map.removeLayer(this.clickMarker);
         this.clickMarker = null;
@@ -541,35 +573,50 @@ class MapManager {
     }
 
     this.map.setView([lat, lng]);
-    document.getElementById("lat").value = lat.toFixed(5);
-    document.getElementById("lng").value = lng.toFixed(5);
 
-    // Only send to backend if flag is true
+    // Update display based on current dropdown selection
+    this.updateCoordinateDisplay();
+
     if (shouldSendToBackend) {
       this.sendLocation(lat, lng);
     }
   }
 
+  // updateMarker now performs inverse projection when reading from inputs.
   updateMarker() {
-    const latInput = document.getElementById("lat").value.trim();
-    const lngInput = document.getElementById("lng").value.trim();
+    const latInput = document.getElementById("lat").value.trim(); // This input could be Latitude or X
+    const lngInput = document.getElementById("lng").value.trim(); // This input could be Longitude or Y
+    const selectedCRS = this.crsSelector.value;
+    let lat, lng;
 
-    // Try to parse DMS (Degrees, Minutes, Seconds) format if needed
-    const lat = this.parseCoordinate(latInput, true);
-    const lng = this.parseCoordinate(lngInput, false);
-
-    if (!isNaN(lat) && !isNaN(lng)) {
-      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        this.setMarker(lat, lng, true);
+    try {
+      if (selectedCRS === 'EPSG:4326') {
+        // Original logic for parsing Lat/Lon or DMS
+        lat = this.parseCoordinate(latInput, true);
+        lng = this.parseCoordinate(lngInput, false);
       } else {
-        alert(
-          "Invalid coordinates:\nLatitude must be between -90 and 90\nLongitude must be between -180 and 180"
-        );
+        // New logic for projected coordinates (e.g., GGRS87)
+        const x = parseFloat(latInput);
+        const y = parseFloat(lngInput);
+
+        if (isNaN(x) || isNaN(y)) {
+          throw new Error("Please enter valid numeric X and Y coordinates.");
+        }
+
+        // Convert from the selected CRS back to WGS84
+        const converted = proj4(selectedCRS, 'EPSG:4326', [x, y]);
+        lng = converted[0];
+        lat = converted[1];
       }
-    } else {
-      alert(
-        "Please enter valid latitude and longitude in decimal degrees format."
-      );
+
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        throw new Error("Coordinates are invalid or out of bounds.");
+      }
+
+      this.setMarker(lat, lng, true);
+
+    } catch (error) {
+      alert(error.message);
     }
   }
 
