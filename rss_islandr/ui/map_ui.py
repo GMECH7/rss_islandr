@@ -18,8 +18,10 @@ class Api:
     def __init__(self, map_ui_instance):
         self.map_ui = map_ui_instance
 
-    def py_api_coord_receiver(self, lat: float, lng: float):
+    def py_api_coord_receiver(self, lat: float, lng: float, crs: str):
         """Receive coordinates from JavaScript"""
+
+        logging.info(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
         self.map_ui.coordinates = (lat, lng)  # Store received coordinates
         logging.debug(f"Received from JavaScript: Latitude={lat}, Longitude={lng}")
 

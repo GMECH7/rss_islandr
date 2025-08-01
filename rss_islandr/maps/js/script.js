@@ -574,11 +574,22 @@ class MapManager {
 
     this.map.setView([lat, lng]);
 
-    // Update display based on current dropdown selection
+    // Update UI display based on current dropdown selection
     this.updateCoordinateDisplay();
 
     if (shouldSendToBackend) {
-      this.sendLocation(lat, lng);
+      const selectedCRS = this.crsSelector.value;
+
+      if (selectedCRS === 'EPSG:4326') {
+        // If WGS84, send the original lat/lng
+        this.sendLocation(lat, lng, selectedCRS);
+      } else {
+        // If another CRS, convert first, then send
+        const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+        const x = converted[0];
+        const y = converted[1];
+        this.sendLocation(x, y, selectedCRS);
+      }
     }
   }
 
@@ -677,14 +688,16 @@ class MapManager {
     return NaN;
   }
 
-  sendLocation(lat, lng) {
+  sendLocation(coord1, coord2, crs) {
     // Format coordinates to 4 decimal places
-    const formattedLat = parseFloat(lat).toFixed(4);
-    const formattedLng = parseFloat(lng).toFixed(4);
+    const formattedCoord1 = parseFloat(coord1).toFixed(4);
+    const formattedCoord2 = parseFloat(coord2).toFixed(4);
 
     if (window.pywebview?.api) {
-      console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
-      window.pywebview.api.py_api_coord_receiver(formattedLat, formattedLng);
+      console.log(`Sending coordinates to Python: ${formattedCoord1}, ${formattedCoord2} (${crs})`);
+
+      // Pass all three pieces of information to the Python API
+      window.pywebview.api.py_api_coord_receiver(formattedCoord1, formattedCoord2, crs);
     }
   }
 }
