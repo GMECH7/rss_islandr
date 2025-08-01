@@ -112,7 +112,7 @@ class MapUI:
 
         self.lat = None
         self.lng = None
-        self.crs = "EPSG:4326"
+        self.crs = None
 
     def update_coordinates(self):
         """
@@ -122,9 +122,9 @@ class MapUI:
         1. When a scenario is imported.
         2. When restoring defaults in the main app UI.
         """
+        self.crs = self.ui_inp_vars.get("map_0_00").tk_var.get()
         self.lat = self.ui_inp_vars.get("map_0_01").tk_var.get()
         self.lng = self.ui_inp_vars.get("map_0_02").tk_var.get()
-        self.crs = self.ui_inp_vars.get("map_0_00").tk_var.get()
 
     def update_polygons_from_stringvar(self):
         """

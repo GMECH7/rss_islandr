@@ -308,9 +308,9 @@ class MainAppUI:
 
     def __update_coordinates(self, lat, lng, crs) -> None:
         """Callback function to update the coordinates"""
+        self.ui_inp_vars["map_0_00"].tk_var.set(crs)
         self.ui_inp_vars["map_0_01"].tk_var.set(lat)
         self.ui_inp_vars["map_0_02"].tk_var.set(lng)
-        self.ui_inp_vars["map_0_00"].tk_var.set(crs)
         logging.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
 
     def __update_polygons_data(self, map_polygons_as_str: str) -> None:

@@ -112,7 +112,22 @@ class MapManager {
     });
 
     // Add event listener for the CRS dropdown
-    this.crsSelector.addEventListener('change', () => this.updateCoordinateDisplay());
+    //this.crsSelector.addEventListener('change', () => this.updateCoordinateDisplay());
+
+    this.crsSelector.addEventListener('change', () => {
+      // Updates the marker coordinate display
+      this.updateCoordinateDisplay();
+
+      // Updates any open polygon popups
+      this.drawnItems.eachLayer(layer => {
+        if (layer.isPopupOpen()) {
+          layer.setPopupContent(this.createPopupContent(layer));
+        }
+      });
+
+      // Notifies the backend of the change for persistence
+      this.sendCRSChangeToBackend();
+    });
   }
 
   // ✅ MODIFIED: This version enforces the correct loading order.
@@ -829,6 +844,36 @@ class MapManager {
 
       // Pass all three pieces of information to the Python API
       window.pywebview.api.py_api_coord_receiver(formattedCoord1, formattedCoord2, crs);
+    }
+  }
+
+  // Add this new method to your MapManager class
+  sendCRSChangeToBackend() {
+    const selectedCRS = this.crsSelector.value;
+
+    if (window.pywebview?.api) {
+      let coord1 = '';
+      let coord2 = '';
+
+      // Check if a marker exists to get its coordinates
+      if (this.clickMarker) {
+        // Get the marker's base WGS84 coordinates
+        const lat = this.clickMarker.getLatLng().lat;
+        const lng = this.clickMarker.getLatLng().lng;
+
+        // Convert the coordinates to the newly selected system
+        if (selectedCRS === 'EPSG:4326') {
+          coord1 = lat;
+          coord2 = lng;
+        } else {
+          const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+          coord1 = converted[0]; // This is the X value
+          coord2 = converted[1]; // This is the Y value
+        }
+      }
+
+      // Call the existing receiver. If no marker exists, coord1 and coord2 will be null.
+      window.pywebview.api.py_api_coord_receiver(coord1, coord2, selectedCRS);
     }
   }
 }
