@@ -115,20 +115,24 @@ class MapManager {
     this.crsSelector.addEventListener('change', () => {
       // 1. Update the marker's coordinate display in the UI.
       const selectedCRS = this.crsSelector.value;
-      console.log(`--- CRS CHANGE TO: ${selectedCRS} ---`); // <-- LOG 1
+      console.log(`--- CRS CHANGE TO: ${selectedCRS} ---`);
       this.updateCoordinateDisplay();
-
 
       // 2. Notify the backend of the new CRS and the marker's location in that CRS.
       // This makes the marker's state and the session CRS persistent.
       this.sendCRSChangeToBackend();
 
-      // 3. Update the visual display of any currently open popups for immediate feedback.
+      // 3. Update the visual display of popups for immediate feedback.
       this.drawnItems.eachLayer(layer => {
+        const newContent = this.createPopupContent(layer);
+        //layer.closePopup();
         if (layer.isPopupOpen()) {
-          const newContent = this.createPopupContent(layer);
-          layer.closePopup();
+          console.log("Popup is open, updating content...");
           layer.bindPopup(newContent).openPopup();
+        }
+        else {
+          console.log("Popup is closed, updating content...");
+          layer.bindPopup(newContent);
         }
       });
 
@@ -136,13 +140,12 @@ class MapManager {
       // This loop ensures the exported/saved data is always correct.
       console.log("CRS changed. Re-sending all polygon data to backend...");
       this.drawnItems.eachLayer(layer => {
-        console.log(`[Save Loop] About to call sendDrawing for:`, layer.feature.properties.name); // <-- LOG 3
+        console.log(`[Save Loop] About to call sendDrawing for:`, layer.feature.properties.name);
         this.sendDrawing(layer);
       });
     });
   }
 
-  // ✅ MODIFIED: This version enforces the correct loading order.
   initPyWebViewIntegration() {
     // Make the inner function `async` so we can use `await`
     const tryInit = async () => {
@@ -312,7 +315,7 @@ class MapManager {
     }
 
     try {
-      // Expecting [coord1, coord2, crs] from your Python function
+      // Expecting [coord1, coord2, crs] from Python function
       const [coord1, coord2, crs] = await window.pywebview.api.py_api_send_coordinates_to_js();
       console.log(`Received initial state: ${coord1}, ${coord2} in ${crs}`);
 
@@ -322,11 +325,8 @@ class MapManager {
         return;
       }
 
-      // --- This is the new, important logic ---
-
       // 1. Set the CRS dropdown to match the loaded value.
       this.crsSelector.value = crs;
-
       let lat, lng;
 
       // 2. Convert the coordinates to WGS84 Lat/Lon for Leaflet, if necessary.
