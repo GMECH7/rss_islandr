@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/leaflet_draw.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.10.0/proj4.js"></script>
 </head>
 
 <body>
@@ -30,6 +31,13 @@
             <button id="clearDrawingsBtn" class="draw-btn">
                 <i class="fas fa-trash-alt"></i> Clear All Drawings
             </button>
+        </div>
+        <div class="crs-selector" style="margin-bottom: 5px;">
+            <label for="crs-select" style="font-size: 0.9em; margin-right: 5px;">Coordinate System:</label>
+            <select id="crs-select">
+                <option value="EPSG:4326">WGS84 (Lat/Lon)</option>
+                <option value="EPSG:2100">Greek Grid / GGRS87</option>
+            </select>
         </div>
         <div class="coordinates">
             <div class="coordinates-input-group">

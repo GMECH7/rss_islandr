@@ -10,6 +10,11 @@ class MapManager {
     this.drawnItems = new L.FeatureGroup(); // Store all drawn items (Leaflet)
     this.currentDrawingMode = null; // Track current drawing mode
     this.isDrawing = false; // Track if drawing is in progress
+
+    // Define CRS and get selector element
+    this.crsSelector = document.getElementById('crs-select');
+    proj4.defs('EPSG:2100', '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=-199.87,74.79,246.62,0,0,0,0 +units=m +no_defs');
+
     // initialization methods
     this.initMap();
     this.initLayers();
@@ -105,21 +110,91 @@ class MapManager {
         this.cancelDrawing();
       }
     });
+
+    // Add event listener for the CRS dropdown
+    this.crsSelector.addEventListener('change', () => {
+      // 1. Update the marker's coordinate display in the UI.
+      const selectedCRS = this.crsSelector.value;
+      console.log(`--- CRS CHANGE TO: ${selectedCRS} ---`);
+      this.updateCoordinateDisplay();
+
+      // 2. Notify the backend of the new CRS and the marker's location in that CRS.
+      // This makes the marker's state and the session CRS persistent.
+      this.sendCRSChangeToBackend();
+
+      // 3. Update the visual display of popups for immediate feedback.
+      this.drawnItems.eachLayer(layer => {
+        const newContent = this.createPopupContent(layer);
+        //layer.closePopup();
+        if (layer.isPopupOpen()) {
+          console.log("Popup is open, updating content...");
+          layer.bindPopup(newContent).openPopup();
+        }
+        else {
+          console.log("Popup is closed, updating content...");
+          layer.bindPopup(newContent);
+        }
+      });
+
+      // 4. Resave every polygon to the backend with the new CRS.
+      // This loop ensures the exported/saved data is always correct.
+      console.log("CRS changed. Re-sending all polygon data to backend...");
+      this.drawnItems.eachLayer(layer => {
+        console.log(`[Save Loop] About to call sendDrawing for:`, layer.feature.properties.name);
+        this.sendDrawing(layer);
+      });
+    });
   }
 
   initPyWebViewIntegration() {
-    const tryInit = () => {
+    // Make the inner function `async` so we can use `await`
+    const tryInit = async () => {
       if (window.pywebview?.api) {
         console.log("✅ PyWebView is ready!");
+
+        // 1. First, fetch the marker data and set the CRS dropdown.
+        // We 'await' this to guarantee it finishes before the next step.
+        console.log("Initializing marker and CRS setting...");
+        await this.initializeFromBackend();
+        console.log("...Marker and CRS initialization complete.");
+
+        // 2. ONLY AFTER the above is done, fetch and draw the polygons.
+        // The `handlePyWebViewReady` function will now run in a context
+        // where the CRS dropdown is already correctly set.
+        console.log("Initializing polygon drawing...");
         this.handlePyWebViewReady();
-        this.initializeFromBackend();
+
       } else {
         console.log("⏳ Waiting for PyWebView...");
-        setTimeout(tryInit, 300); // Retry every 300ms
+        setTimeout(tryInit, 300); // Retry if pywebview is not ready
       }
     };
 
-    tryInit(); // Start checking immediately
+    tryInit(); // Start the initialization process
+  }
+
+  // HELPER METHOD: Updates the coordinate input fields based on the current marker and selected CRS.
+  updateCoordinateDisplay() {
+    if (!this.clickMarker) return; // Exit if no marker is set
+
+    const lat = this.clickMarker.getLatLng().lat;
+    const lng = this.clickMarker.getLatLng().lng;
+    const selectedCRS = this.crsSelector.value;
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+
+    if (selectedCRS === 'EPSG:4326') {
+      latInput.value = lat.toFixed(6);
+      lngInput.value = lng.toFixed(6);
+      latInput.placeholder = "Latitude";
+      lngInput.placeholder = "Longitude";
+    } else {
+      const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+      latInput.value = converted[0].toFixed(2); // This is now X
+      lngInput.value = converted[1].toFixed(2); // This is now Y
+      latInput.placeholder = "X Coordinate";
+      lngInput.placeholder = "Y Coordinate";
+    }
   }
 
   handlePyWebViewReady() {
@@ -232,6 +307,7 @@ class MapManager {
     });
   }
 
+
   async initializeFromBackend() {
     if (!window.pywebview?.api) {
       console.warn("PyWebView API not available when trying to initialize coordinates");
@@ -239,14 +315,40 @@ class MapManager {
     }
 
     try {
-      const [lat, lng] = await window.pywebview.api.py_api_send_coordinates_to_js();
-      console.log(`Received initial coordinates: ${lat}, ${lng}`);
+      // Expecting [coord1, coord2, crs] from Python function
+      const [coord1, coord2, crs] = await window.pywebview.api.py_api_send_coordinates_to_js();
+      console.log(`Received initial state: ${coord1}, ${coord2} in ${crs}`);
 
-      // Only set initial marker if coordinates are valid and not (0, 0)
-      if (lat !== 0 && lng !== 0 && !isNaN(lat) && !isNaN(lng)) {
-        // Don't send back to Python when we're just initializing
+      // Exit if the data is invalid or represents a default (0,0) state
+      if (!crs || (parseFloat(coord1) === 0 && parseFloat(coord2) === 0)) {
+        console.log("Exited early: No valid coordinates or CRS received.");
+        return;
+      }
+
+      // 1. Set the CRS dropdown to match the loaded value.
+      this.crsSelector.value = crs;
+      let lat, lng;
+
+      // 2. Convert the coordinates to WGS84 Lat/Lon for Leaflet, if necessary.
+      if (crs === 'EPSG:4326') {
+        // If the CRS is WGS84, the values are already lat and lon.
+        lat = parseFloat(coord1);
+        lng = parseFloat(coord2);
+      } else {
+        // If it's a projected CRS (like GGRS87), convert X/Y back to Lat/Lon.
+        const x = parseFloat(coord1);
+        const y = parseFloat(coord2);
+        const converted = proj4(crs, 'EPSG:4326', [x, y]); // Inverse projection
+        lng = converted[0];
+        lat = converted[1];
+      }
+
+      // 3. Call setMarker with the guaranteed WGS84 coordinates.
+      if (!isNaN(lat) && !isNaN(lng)) {
+        // The `false` flag prevents sending the data back to Python in a loop.
         this.setMarker(lat, lng, false);
       }
+
     } catch (error) {
       console.error("Error getting initial coordinates:", error);
     }
@@ -350,8 +452,26 @@ class MapManager {
     this.isDrawing = false;
   }
 
-  // Helper method to create popup content (extracted for reuse)
+  // Display polygons coordinates in the selected CRS
   createPopupContent(layer) {
+    const selectedCRS = this.crsSelector.value;
+    // The layer's internal coordinates are always stored in WGS84
+    const wgs84Coords = layer.feature.properties.coordinates;
+    let displayCoords = wgs84Coords;
+    let latHeader = "Latitude";
+    let lngHeader = "Longitude";
+
+    // If a different CRS is selected, convert the coordinates for display
+    if (selectedCRS !== 'EPSG:4326') {
+      latHeader = "X";
+      lngHeader = "Y";
+      displayCoords = wgs84Coords.map(coord => {
+        // coord is [lat, lng], proj4js needs [lng, lat]
+        const converted = proj4('EPSG:4326', selectedCRS, [coord[1], coord[0]]);
+        return [converted[0], converted[1]]; // Return as [X, Y]
+      });
+    }
+
     return `
     <div style="min-width: 200px;">
       <b>${layer.feature.properties.name}</b>
@@ -365,23 +485,23 @@ class MapManager {
         <table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.9em;">
           <thead>
             <tr style="background-color: #f0f0f0;">
-              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Latitude</th>
-              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">Longitude</th>
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">${latHeader}</th>
+              <th style="padding: 4px; text-align: left; border-bottom: 1px solid #ddd;">${lngHeader}</th>
             </tr>
           </thead>
           <tbody>
-            ${layer.feature.properties.coordinates.slice(0, 100).map(coord =>
+            ${displayCoords.slice(0, 100).map(coord =>
       `<tr>
-                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[0].toFixed(6)}</td>
-                <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[1].toFixed(6)}</td>
-              </tr>`
+                  <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[0].toFixed(selectedCRS === 'EPSG:4326' ? 6 : 2)}</td>
+                  <td style="padding: 4px; border-bottom: 1px solid #eee;">${coord[1].toFixed(selectedCRS === 'EPSG:4326' ? 6 : 2)}</td>
+                </tr>`
     ).join('')}
-            ${layer.feature.properties.coordinates.length > 100 ?
+            ${displayCoords.length > 100 ?
         `<tr>
-                <td colspan="2" style="padding: 4px; text-align: center; color: #666; font-style: italic;">
-                  ...and ${layer.feature.properties.coordinates.length - 100} more
-                </td>
-              </tr>` : ''}
+                  <td colspan="2" style="padding: 4px; text-align: center; color: #666; font-style: italic;">
+                    ...and ${displayCoords.length - 100} more
+                  </td>
+                </tr>` : ''}
           </tbody>
         </table>
       </div>
@@ -394,14 +514,28 @@ class MapManager {
    */
   sendDrawing(layer) {
     if (window.pywebview?.api) {
+      const selectedCRS = this.crsSelector.value;
+      const wgs84Coords = layer.feature.properties.coordinates;
+      let coordsToSend = wgs84Coords;
+
+      // If a different CRS is selected, convert the coordinates before sending
+      if (selectedCRS !== 'EPSG:4326') {
+        coordsToSend = wgs84Coords.map(coord => {
+          const converted = proj4('EPSG:4326', selectedCRS, [coord[1], coord[0]]);
+          return [converted[0], converted[1]]; // [X, Y]
+        });
+      }
+
       const polygonDataToPy = {
         unique_id: layer.feature.unique_id,
         type: layer.feature.type,
         name: layer.feature.properties.name,
-        coordinates: layer.feature.properties.coordinates,
+        coordinates: coordsToSend, // Use the (potentially) converted coordinates
+        crs: selectedCRS,          // Add the CRS information
         area_km2: layer.feature.properties.area_km2,
-        node_count: layer.feature.properties.coordinates.length
+        node_count: coordsToSend.length
       };
+      console.log(`[sendDrawing] DATA PACKET for '${layer.feature.properties.name}':`, polygonDataToPy); // <-- LOG 4
 
       console.log("Sending polygon data to pywebview:", polygonDataToPy);
       window.pywebview.api.py_api_polygons_receiver(polygonDataToPy);
@@ -449,31 +583,41 @@ class MapManager {
 
     // Redraw each polygon
     polygons.forEach(polygonData => {
-      // Create a new polygon layer
-      const polygon = L.polygon(polygonData.coordinates, {
+      const savedCoords = polygonData.coordinates;
+      const savedCRS = polygonData.crs || 'EPSG:4326'; // Default to WGS84 if crs is missing
+      let leafletCoords;
+
+      // Convert coordinates to WGS84 [lat, lng] for Leaflet to draw
+      if (savedCRS === 'EPSG:4326') {
+        leafletCoords = savedCoords;
+      } else {
+        leafletCoords = savedCoords.map(coord => {
+          const converted = proj4(savedCRS, 'EPSG:4326', [coord[0], coord[1]]);
+          return [converted[1], converted[0]]; // Return as [lat, lng]
+        });
+      }
+
+      const polygon = L.polygon(leafletCoords, {
         color: this.getColorForType(polygonData.type),
         fillColor: this.getColorForType(polygonData.type),
         fillOpacity: 0.01,
-        dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
+        dashArray: polygonData.type.includes('pathway') ? '5, 5' : undefined
       });
 
-      // Add all original metadata to the layer
+      // CRITICAL: The internal feature properties should always store the canonical WGS84 coordinates
       polygon.feature = {
         unique_id: polygonData.unique_id,
         type: polygonData.type,
         properties: {
           ...polygonData,
-          coordinates: polygonData.coordinates
+          coordinates: leafletCoords // Store the converted WGS84 coordinates
         }
       };
 
-      // Add to feature group
       this.drawnItems.addLayer(polygon);
-
-      // Bind popup with working rename functionality
       polygon.bindPopup(this.createPopupContent(polygon));
 
-      // Reattach rename event handler
+      // Re-attach event handler for renaming
       polygon.on('popupopen', () => {
         document.querySelector('.rename-btn')?.addEventListener('click', () => {
           const newName = prompt("Enter new name:", polygon.feature.properties.name);
@@ -523,10 +667,10 @@ class MapManager {
     }
   }
 
+  // ✅ MODIFIED: setMarker now uses the helper function to display coordinates.
   setMarker(lat, lng, shouldSendToBackend = true) {
-    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`);
-    if ((lat === null || lat === '') &&
-      (lng === null || lng === '')) {
+
+    console.log(`Setting marker at: ${lat}, ${lng} ${typeof lat} ${typeof lng}`); if ((lat === null || lat === '') && (lng === null || lng === '')) {
       if (this.clickMarker) {
         this.map.removeLayer(this.clickMarker);
         this.clickMarker = null;
@@ -541,35 +685,61 @@ class MapManager {
     }
 
     this.map.setView([lat, lng]);
-    document.getElementById("lat").value = lat.toFixed(5);
-    document.getElementById("lng").value = lng.toFixed(5);
 
-    // Only send to backend if flag is true
+    // Update UI display based on current dropdown selection
+    this.updateCoordinateDisplay();
+
     if (shouldSendToBackend) {
-      this.sendLocation(lat, lng);
+      const selectedCRS = this.crsSelector.value;
+
+      if (selectedCRS === 'EPSG:4326') {
+        // If WGS84, send the original lat/lng
+        this.sendLocation(lat, lng, selectedCRS);
+      } else {
+        // If another CRS, convert first, then send
+        const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+        const x = converted[0];
+        const y = converted[1];
+        this.sendLocation(x, y, selectedCRS);
+      }
     }
   }
 
+  // updateMarker now performs inverse projection when reading from inputs.
   updateMarker() {
-    const latInput = document.getElementById("lat").value.trim();
-    const lngInput = document.getElementById("lng").value.trim();
+    const latInput = document.getElementById("lat").value.trim(); // This input could be Latitude or X
+    const lngInput = document.getElementById("lng").value.trim(); // This input could be Longitude or Y
+    const selectedCRS = this.crsSelector.value;
+    let lat, lng;
 
-    // Try to parse DMS (Degrees, Minutes, Seconds) format if needed
-    const lat = this.parseCoordinate(latInput, true);
-    const lng = this.parseCoordinate(lngInput, false);
-
-    if (!isNaN(lat) && !isNaN(lng)) {
-      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-        this.setMarker(lat, lng, true);
+    try {
+      if (selectedCRS === 'EPSG:4326') {
+        // Original logic for parsing Lat/Lon or DMS
+        lat = this.parseCoordinate(latInput, true);
+        lng = this.parseCoordinate(lngInput, false);
       } else {
-        alert(
-          "Invalid coordinates:\nLatitude must be between -90 and 90\nLongitude must be between -180 and 180"
-        );
+        // New logic for projected coordinates (e.g., GGRS87)
+        const x = parseFloat(latInput);
+        const y = parseFloat(lngInput);
+
+        if (isNaN(x) || isNaN(y)) {
+          throw new Error("Please enter valid numeric X and Y coordinates.");
+        }
+
+        // Convert from the selected CRS back to WGS84
+        const converted = proj4(selectedCRS, 'EPSG:4326', [x, y]);
+        lng = converted[0];
+        lat = converted[1];
       }
-    } else {
-      alert(
-        "Please enter valid latitude and longitude in decimal degrees format."
-      );
+
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        throw new Error("Coordinates are invalid or out of bounds.");
+      }
+
+      this.setMarker(lat, lng, true);
+
+    } catch (error) {
+      alert(error.message);
     }
   }
 
@@ -630,14 +800,46 @@ class MapManager {
     return NaN;
   }
 
-  sendLocation(lat, lng) {
+  sendLocation(coord1, coord2, crs) {
     // Format coordinates to 4 decimal places
-    const formattedLat = parseFloat(lat).toFixed(4);
-    const formattedLng = parseFloat(lng).toFixed(4);
+    const formattedCoord1 = parseFloat(coord1).toFixed(4);
+    const formattedCoord2 = parseFloat(coord2).toFixed(4);
 
     if (window.pywebview?.api) {
-      console.log("Sending coordinates to pywebview:", formattedLat, formattedLng);
-      window.pywebview.api.py_api_coord_receiver(formattedLat, formattedLng);
+      console.log(`Sending coordinates to Python: ${formattedCoord1}, ${formattedCoord2} (${crs})`);
+
+      // Pass all three pieces of information to the Python API
+      window.pywebview.api.py_api_coord_receiver(formattedCoord1, formattedCoord2, crs);
+    }
+  }
+
+  // Add this new method to your MapManager class
+  sendCRSChangeToBackend() {
+    const selectedCRS = this.crsSelector.value;
+
+    if (window.pywebview?.api) {
+      let coord1 = '';
+      let coord2 = '';
+
+      // Check if a marker exists to get its coordinates
+      if (this.clickMarker) {
+        // Get the marker's base WGS84 coordinates
+        const lat = this.clickMarker.getLatLng().lat;
+        const lng = this.clickMarker.getLatLng().lng;
+
+        // Convert the coordinates to the newly selected system
+        if (selectedCRS === 'EPSG:4326') {
+          coord1 = lat;
+          coord2 = lng;
+        } else {
+          const converted = proj4('EPSG:4326', selectedCRS, [lng, lat]);
+          coord1 = converted[0]; // This is the X value
+          coord2 = converted[1]; // This is the Y value
+        }
+      }
+
+      // Call the existing receiver. If no marker exists, coord1 and coord2 will be null.
+      window.pywebview.api.py_api_coord_receiver(coord1, coord2, selectedCRS);
     }
   }
 }

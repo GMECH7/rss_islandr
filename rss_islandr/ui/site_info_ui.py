@@ -44,7 +44,7 @@ class SiteInfoUI(GeneralUITemplate):
         date_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__date_assessed,
-            rel_pos=3,
+            rel_pos=4,
             text_val="Assessment date",
             text_descr=None,
             excel_cell="C3",
@@ -55,7 +55,7 @@ class SiteInfoUI(GeneralUITemplate):
         date_oper_start_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__date_oper_start_var,
-            rel_pos=8,
+            rel_pos=9,
             text_val="Operation start date",
             text_descr=None,
             excel_cell="M3",
@@ -65,7 +65,7 @@ class SiteInfoUI(GeneralUITemplate):
         date_oper_end_var = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__date_oper_end_var,
-            rel_pos=8,
+            rel_pos=9,
             text_val="Operation end date",
             text_descr=None,
             excel_cell="M4",
@@ -94,10 +94,10 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_site_area = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__site_area,
-            rel_pos=2,
+            rel_pos=3,
             text_val="Site area [km\u00b2]",
             text_descr=None,
-            excel_cell="C5",
+            excel_cell="H5",
             pdf_table_name="Site information",
         )
 
@@ -117,7 +117,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_activity = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__activity_var,
-            rel_pos=4,
+            rel_pos=5,
             text_val="Activity/industry",
             text_descr=None,
             drop_options=self.__activity_options,
@@ -128,7 +128,7 @@ class SiteInfoUI(GeneralUITemplate):
         ui_var_site_status = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__site_status_var,
-            rel_pos=7,
+            rel_pos=8,
             text_val="Site status",
             text_descr=None,
             drop_options=self.site_status_options,
@@ -160,7 +160,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_var_soil_type_1 = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__soil_type_1_var,
-            rel_pos=5,
+            rel_pos=6,
             text_val="Soil type",
             val_default=self.__soil_type_1_options[0],
             text_descr=None,
@@ -175,7 +175,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_var_soil_type_2 = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__soil_type_2_var,
-            rel_pos=5,
+            rel_pos=6,
             text_val="Soil type (specific)",
             val_default=self.__soil_type_2_options[0],
             text_descr=None,
@@ -209,7 +209,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_var_land_use_1 = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__land_use_1_var,
-            rel_pos=6,
+            rel_pos=7,
             text_val="Land use",
             val_default=self.__land_use_1_options[0],
             text_descr=None,
@@ -224,7 +224,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__ui_var_land_use_2 = UIInpVariable(
             frame_tag="site_info_frame",
             tk_var=self.__land_use_2_var,
-            rel_pos=6,
+            rel_pos=7,
             text_val="Land use (specific)",
             val_default=self.__land_use_2_options[0],
             text_descr=None,
@@ -288,21 +288,27 @@ class SiteInfoUI(GeneralUITemplate):
 
     def __lan_lng_widget(self):
         """Langtitude & longtitude widget (it cannot be handled by self.gt_entry_widget)"""
-        label = tb.Label(self.__site_info_frame, text="Latitude & Longitude")
+        label = tb.Label(self.__site_info_frame, text="CRS type")
         label.grid(column=0, row=1, sticky="we")
 
-        # Readonly entry values come from the map UI
-        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var, state="readonly")
-        lat_entry.grid(column=1, row=1, sticky="we")
+        crs_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_00"].tk_var, state="readonly")
+        crs_entry.grid(column=1, row=1, sticky="we", columnspan=2)
+
+        label = tb.Label(self.__site_info_frame, text="Latitude & Longitude")
+        label.grid(column=0, row=2, sticky="we")
 
         # Readonly entry values come from the map UI
-        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var, state="readonly")
-        lng_entry.grid(column=2, row=1, sticky="we")
+        lat_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_01"].tk_var, state="readonly")
+        lat_entry.grid(column=1, row=2, sticky="we")
+
+        # Readonly entry values come from the map UI
+        lng_entry = tb.Entry(self.__site_info_frame, textvariable=self.ui_inp_vars["map_0_02"].tk_var, state="readonly")
+        lng_entry.grid(column=2, row=2, sticky="we")
 
     def __operation_dates_widget(self):
         """Operation start and end dates (it cannot be handled by self.gt_date_entry_widget)"""
         self.__start_end_oper_label = tb.Label(self.__site_info_frame, text="")
-        self.__start_end_oper_label.grid(row=8, column=0, sticky="ew")
+        self.__start_end_oper_label.grid(row=9, column=0, sticky="ew")
         #: Creation of start of operation date widget and binding and tracing
         self.__start_date_entry = tb.DateEntry(
             self.__site_info_frame,
@@ -313,7 +319,7 @@ class SiteInfoUI(GeneralUITemplate):
         self.__date_oper_start_var.trace_add(
             "write", lambda *args: self.update_date_entry_trace(self.__date_oper_start_var, self.__start_date_entry)
         )
-        self.__start_date_entry.grid(row=8, column=1, sticky="ew")
+        self.__start_date_entry.grid(row=9, column=1, sticky="ew")
         self.__start_date_entry.bind(
             "<FocusOut>",
             lambda event: self.update_date_var_bind(event, self.__start_date_entry, "odat_0_00"),
