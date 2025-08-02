@@ -87,13 +87,11 @@ class Api:
         logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
         if self.map_ui.lat is None or self.map_ui.lat == "":
             self.map_ui.lat = None
-            self.map_ui.crs = "EPSG:4326"
         else:
             self.map_ui.lat = float(self.map_ui.lat)
 
         if self.map_ui.lng is None or self.map_ui.lng == "":
             self.map_ui.lng = None
-            self.map_ui.crs = "EPSG:4326"
         else:
             self.map_ui.lng = float(self.map_ui.lng)
 

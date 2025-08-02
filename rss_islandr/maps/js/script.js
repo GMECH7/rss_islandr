@@ -112,21 +112,27 @@ class MapManager {
     });
 
     // Add event listener for the CRS dropdown
-    //this.crsSelector.addEventListener('change', () => this.updateCoordinateDisplay());
-
     this.crsSelector.addEventListener('change', () => {
-      // Updates the marker coordinate display
+      // 1. Update the marker's coordinate display in the UI.
       this.updateCoordinateDisplay();
 
-      // Updates any open polygon popups
+      // 2. Notify the backend of the new CRS and the marker's location in that CRS.
+      // This makes the marker's state and the session CRS persistent.
+      this.sendCRSChangeToBackend();
+
+      // 3. Update the visual display of any currently open popups for immediate feedback.
       this.drawnItems.eachLayer(layer => {
         if (layer.isPopupOpen()) {
           layer.setPopupContent(this.createPopupContent(layer));
         }
       });
 
-      // Notifies the backend of the change for persistence
-      this.sendCRSChangeToBackend();
+      // 4. Resave every polygon to the backend with the new CRS.
+      // This loop ensures the exported/saved data is always correct.
+      console.log("CRS changed. Re-sending all polygon data to backend...");
+      this.drawnItems.eachLayer(layer => {
+        this.sendDrawing(layer);
+      });
     });
   }
 
@@ -306,6 +312,7 @@ class MapManager {
 
       // Exit if the data is invalid or represents a default (0,0) state
       if (!crs || (parseFloat(coord1) === 0 && parseFloat(coord2) === 0)) {
+        console.log("Exited early: No valid coordinates or CRS received.");
         return;
       }
 
@@ -558,54 +565,6 @@ class MapManager {
       this.isDrawing = false;
     }
   }
-
-  // /**
-  //  * Redraws all polygons from stored data
-  //  * @param {Array} polygons - Array of polygon data objects
-  //  */
-  // redrawPolygons(polygons) {
-  //   // Clear existing drawings first
-  //   this.drawnItems.clearLayers();
-
-  //   // Redraw each polygon
-  //   polygons.forEach(polygonData => {
-  //     // Create a new polygon layer
-  //     const polygon = L.polygon(polygonData.coordinates, {
-  //       color: this.getColorForType(polygonData.type),
-  //       fillColor: this.getColorForType(polygonData.type),
-  //       fillOpacity: 0.01,
-  //       dashArray: polygonData.type.includes('pathway') ? '5,5' : undefined
-  //     });
-
-  //     // Add all original metadata to the layer
-  //     polygon.feature = {
-  //       unique_id: polygonData.unique_id,
-  //       type: polygonData.type,
-  //       properties: {
-  //         ...polygonData,
-  //         coordinates: polygonData.coordinates
-  //       }
-  //     };
-
-  //     // Add to feature group
-  //     this.drawnItems.addLayer(polygon);
-
-  //     // Bind popup with working rename functionality
-  //     polygon.bindPopup(this.createPopupContent(polygon));
-
-  //     // Reattach rename event handler
-  //     polygon.on('popupopen', () => {
-  //       document.querySelector('.rename-btn')?.addEventListener('click', () => {
-  //         const newName = prompt("Enter new name:", polygon.feature.properties.name);
-  //         if (newName) {
-  //           polygon.feature.properties.name = newName;
-  //           polygon.setPopupContent(this.createPopupContent(polygon));
-  //           this.sendDrawing(polygon);
-  //         }
-  //       });
-  //     });
-  //   });
-  // }
 
   /**
    * Redraws all polygons from stored data
