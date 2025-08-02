@@ -27,7 +27,7 @@ class Api:
         """
         Receive polygon data from JavaScript.
         """
-        logging.debug(f"Received polygon data: {polygon_data}")
+        logging.info(f"Received polygon data: {polygon_data}")
 
         # Ensure unique_id exists
         if "unique_id" not in polygon_data:

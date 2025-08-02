@@ -114,7 +114,10 @@ class MapManager {
     // Add event listener for the CRS dropdown
     this.crsSelector.addEventListener('change', () => {
       // 1. Update the marker's coordinate display in the UI.
+      const selectedCRS = this.crsSelector.value;
+      console.log(`--- CRS CHANGE TO: ${selectedCRS} ---`); // <-- LOG 1
       this.updateCoordinateDisplay();
+
 
       // 2. Notify the backend of the new CRS and the marker's location in that CRS.
       // This makes the marker's state and the session CRS persistent.
@@ -123,7 +126,9 @@ class MapManager {
       // 3. Update the visual display of any currently open popups for immediate feedback.
       this.drawnItems.eachLayer(layer => {
         if (layer.isPopupOpen()) {
-          layer.setPopupContent(this.createPopupContent(layer));
+          const newContent = this.createPopupContent(layer);
+          layer.closePopup();
+          layer.bindPopup(newContent).openPopup();
         }
       });
 
@@ -131,6 +136,7 @@ class MapManager {
       // This loop ensures the exported/saved data is always correct.
       console.log("CRS changed. Re-sending all polygon data to backend...");
       this.drawnItems.eachLayer(layer => {
+        console.log(`[Save Loop] About to call sendDrawing for:`, layer.feature.properties.name); // <-- LOG 3
         this.sendDrawing(layer);
       });
     });
@@ -529,6 +535,7 @@ class MapManager {
         area_km2: layer.feature.properties.area_km2,
         node_count: coordsToSend.length
       };
+      console.log(`[sendDrawing] DATA PACKET for '${layer.feature.properties.name}':`, polygonDataToPy); // <-- LOG 4
 
       console.log("Sending polygon data to pywebview:", polygonDataToPy);
       window.pywebview.api.py_api_polygons_receiver(polygonDataToPy);
