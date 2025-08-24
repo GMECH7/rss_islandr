@@ -263,6 +263,31 @@ body, .coordinates input, .coordinates-button {
     opacity: 0.8;
 }
 
+/* Drawing Controls */
+.cors-controls {
+    margin-top: 0px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.cors-drop {
+    margin: 0px;
+    padding: 4px 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #f5f5f5;
+}
+
+.cors-drop:hover {
+    opacity: 0.8;
+}
+
 /* Screenshot Button */
 .screenshot-btn {
     position: fixed;

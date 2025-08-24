@@ -32,11 +32,19 @@
                 <i class="fas fa-trash-alt"></i> Clear All Drawings
             </button>
         </div>
-        <div class="crs-selector" style="margin-bottom: 5px;">
-            <label for="crs-select" style="font-size: 0.9em; margin-right: 5px;">Coordinate System:</label>
-            <select id="crs-select">
-                <option value="EPSG:4326">WGS84 (Lat/Lon)</option>
-                <option value="EPSG:2100">Greek Grid / GGRS87</option>
+        <div class="cors-controls">
+            <label for="crs-select">Coordinate System</label>
+            <select id="crs-select" class="cors-drop">
+                <option value="EPSG:4326">Global - WGS84 (EPSG:4326)</option>
+                <option value="EPSG:2100">Greece - GGRS87 / TM87 (EPSG:2100)</option>
+                <option value="EPSG:3067">Finland - ETRS-TM35FIN (EPSG:3067)</option>
+                <option value="EPSG:2154">France - RGF93 / Lambert-93 (EPSG:2154)</option>
+                <option value="EPSG:6312">Cyprus - Local TM (EPSG:6312)</option>
+                <option value="EPSG:28992">Netherlands - Amersfoort / RD New (EPSG:28992)</option>
+                <option value="EPSG:9135">Kosovo - KOSOVAREF01 (EPSG:9135)</option>
+                <option value="EPSG:2180">Poland - ETRS89 / Poland CS92 (EPSG:2180)</option>
+                <option value="EPSG:25832">Germany - ETRS89 / UTM Zone 32N (EPSG:25832)</option>
+                <option value="EPSG:25833">Germany - ETRS89 / UTM Zone 33N (EPSG:25833)</option>
             </select>
         </div>
         <div class="coordinates">
