@@ -23,6 +23,7 @@
         "charliermarsh.ruff",
         "gruntfuggly.todo-tree",
         "oijaz.unicode-latex",
-        "vscode-icons-team.vscode-icons"
+        "vscode-icons-team.vscode-icons",
+        "miguelsolorio.fluent-icons"
     ]
 }

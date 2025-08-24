@@ -13,7 +13,33 @@ class MapManager {
 
     // Define CRS and get selector element
     this.crsSelector = document.getElementById('crs-select');
+
+    // Greece - (EPSG:2100)
     proj4.defs('EPSG:2100', '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=0 +ellps=GRS80 +towgs84=-199.87,74.79,246.62,0,0,0,0 +units=m +no_defs');
+
+    // Finland - ETRS89 / TM35FIN (EPSG:3067)
+    proj4.defs('EPSG:3067', '+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // France - RGF93 / Lambert-93 (EPSG:2154)
+    proj4.defs('EPSG:2154', '+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // Cyprus - Cyprus Local Transverse Mercator (EPSG:6312)
+    proj4.defs('EPSG:6312', '+proj=tmerc +lat_0=0 +lon_0=33 +k=0.9999 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // Netherlands - Amersfoort / RD New (EPSG:28992)
+    proj4.defs('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs');
+
+    // Kosovo - Kosovo Reference System (KOSOVAREF01) - EPSG:9135
+    proj4.defs('EPSG:9135', '+proj=lcc +lat_0=41.5 +lon_0=20.83333333333333 +lat_1=41.5 +lat_2=41.5 +x_0=500000 +y_0=500000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // Poland - ETRS89 / Poland CS92 (EPSG:2180)
+    proj4.defs('EPSG:2180', '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // Germany - ETRS89 / UTM zone 32N (EPSG:25832) - for western Germany
+    proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
+
+    // Germany - ETRS89 / UTM zone 33N (EPSG:25833) - for eastern Germany
+    proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 
     // initialization methods
     this.initMap();
@@ -335,7 +361,7 @@ class MapManager {
         lat = parseFloat(coord1);
         lng = parseFloat(coord2);
       } else {
-        // If it's a projected CRS (like GGRS87), convert X/Y back to Lat/Lon.
+        // If it's a projected CRS, convert X/Y back to Lat/Lon.
         const x = parseFloat(coord1);
         const y = parseFloat(coord2);
         const converted = proj4(crs, 'EPSG:4326', [x, y]); // Inverse projection
@@ -718,7 +744,7 @@ class MapManager {
         lat = this.parseCoordinate(latInput, true);
         lng = this.parseCoordinate(lngInput, false);
       } else {
-        // New logic for projected coordinates (e.g., GGRS87)
+
         const x = parseFloat(latInput);
         const y = parseFloat(lngInput);
 
