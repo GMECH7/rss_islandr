@@ -1,13 +1,18 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.21.1"
+version = "1.21.2"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
 
 # Custom tool section for release version
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.2"
+pytest-cov = "^7.0.0"
+
 [tool.islandr]
-release_version = "1.8.1" # Release version for clients
+release_version = "1.8.2" # Release version for clients
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.14"
@@ -16,6 +21,29 @@ xlwings = "^0.33.12"
 pywebview = "^5.4"
 pyinstaller = "^6.13.0"
 reportlab = "^4.4.1"
+
+
+[tool.pytest.ini_options]
+pythonpath = ["rss_islandr", "tests"]
+addopts = """
+    --cov=rss_islandr
+    --cov-report=lcov:.cov_files/lcov.info 
+    --cov-report=xml:.cov_files/coverage.xml
+    --cov-report=html:.cov_files/html
+    --cov-report=term
+    --cov-branch
+"""
+
+[tool.coverage.run]
+data_file = ".cov_files/.coverage" # Redirect .coverage file here
+source = ["rss_islandr"] # Only measure coverage here
+omit = [
+    "tests/*",             # Ignore test files
+    "main.py",             # Ignore main entry point
+    "generate_version.py", # Ignore version generation script
+    "*/__init__.py",
+]
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
