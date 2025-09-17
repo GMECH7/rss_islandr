@@ -69,7 +69,7 @@ class MainAppUI:
         self.__islandr_logo_img = ImageTk.PhotoImage(self.__islandr_logo_img)
 
         # Store references to navigation buttons - used for restyling buttons when pressed
-        self.__nav_buttons_references = {}
+        self._nav_buttons_references = {}
 
     def __init__frame_families(self):
         """Definition of frame aliases"""
@@ -324,12 +324,12 @@ class MainAppUI:
         Create vertical navbar buttons
         """
         nav_bar_frame = self.__create_vertical_navbar()
-        self.__nav_buttons_references["home"] = self.__create_home_btn(nav_bar_frame)
+        self._nav_buttons_references["home"] = self.__create_home_btn(nav_bar_frame)
         self.__create_map_btn(nav_bar_frame)
-        self.__nav_buttons_references["site_info"] = self.__create_site_info_btn(nav_bar_frame)
-        self.__nav_buttons_references["on_site_on_site"] = self.__create_on_site_on_site_btn(nav_bar_frame)
-        self.__nav_buttons_references["on_site_off_site"] = self.__create_on_site_off_site_btn(nav_bar_frame)
-        self.__nav_buttons_references["off_site_on_site"] = self.__create_off_site_on_site_btn(nav_bar_frame)
+        self._nav_buttons_references["site_info"] = self.__create_site_info_btn(nav_bar_frame)
+        self._nav_buttons_references["on_site_on_site"] = self.__create_on_site_on_site_btn(nav_bar_frame)
+        self._nav_buttons_references["on_site_off_site"] = self.__create_on_site_off_site_btn(nav_bar_frame)
+        self._nav_buttons_references["off_site_on_site"] = self.__create_off_site_on_site_btn(nav_bar_frame)
         self.__create_restore_vars_btn(nav_bar_frame)
 
     def __create_assessment_apps(self) -> list[SiteToSiteAssessmentUI]:
@@ -372,7 +372,7 @@ class MainAppUI:
     def create_ui(self) -> None:
         """ """
         self.__create_vertical_navbar_buttons()
-        self.__btns_cc = BtnsChangeColour(self.ui_settings, self.__nav_buttons_references)
+        self.__btns_cc = BtnsChangeColour(self.ui_settings, self._nav_buttons_references)
 
         #: Create pages (frames) for each main page
         self.__map_page = tb.Frame(self.root)
