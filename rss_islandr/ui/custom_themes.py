@@ -42,7 +42,7 @@ class CustomThemes:
 
     def custom_notebook(self):
         """Custom styles for Notebook widgets"""
-        background_color = self.__style.colors.get("bg")
+        background_color = self.__style.colors.get("bg")  # type: ignore
         self.__style.configure("Custom.TNotebook", background=self.__ui_bg_color_1, borderwidth=0.0)
 
         #: Style for inactive tabs
@@ -56,18 +56,16 @@ class CustomThemes:
 
     def custom_labels(self):
         """Custom styles for label widgets"""
-        background_color = self.__style.colors.get("bg")
+        background_color = self.__style.colors.get("bg")  # type: ignore
         self.__style.configure(
             "Title.TLabel",
             background=background_color,  # Background color
-            # foreground=self.__ui_font_color_1,  # Font color
             font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),
             relief="flat",
         )
 
         self.__style.configure(
             "General.TLabel",
-            # background=self.__ui_bg_color_1,
             foreground=self.__ui_font_color_1,
             font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),
         )
@@ -81,7 +79,7 @@ class CustomThemes:
         )
 
     def custom_frame(self):
-        background_color = self.__style.colors.get("bg")
+        background_color = self.__style.colors.get("bg")  # type: ignore
         self.__style.configure(
             "HorizontalNavBar.TFrame",
             background=background_color,
@@ -101,7 +99,7 @@ class CustomThemes:
 
     def custom_buttons(self):
         """ """
-        background_color = self.__style.colors.get("bg")
+        background_color = self.__style.colors.get("bg")  # type: ignore
         self.__style.configure(
             "Custom.Menubutton.TMenubutton",  # Custom style name
             background=background_color,  # Use the theme's background color

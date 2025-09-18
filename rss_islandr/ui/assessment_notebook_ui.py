@@ -11,7 +11,7 @@ from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariab
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
-Image.CUBIC = Image.BICUBIC
+Image.CUBIC = Image.BICUBIC  # type: ignore
 
 
 class AssessmentNoteBookUI(GeneralUITemplate):
@@ -120,7 +120,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
         # TODO I have altered the dynamic calculation. I must see how to do that in the future
-        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
+        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"  # noqa: ERA001
         excel_cell_risk = f"{parent_excel_col}9" if parent_excel_row == 7 else f"{parent_excel_col}17"
 
         return excel_cell, excel_cell_risk

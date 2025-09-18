@@ -349,7 +349,7 @@ class PopupImage(IOBtns):
         self.popup_window = tk.Toplevel(frame)
 
         # Resize Image to Fit Popup Window
-        resized_image = self.original_image.resize((1800, 908), Image.LANCZOS)
+        resized_image = self.original_image.resize((1800, 908), Image.LANCZOS)  # type: ignore
         self.photo = ImageTk.PhotoImage(resized_image)
 
         label = tk.Label(self.popup_window, image=self.photo)

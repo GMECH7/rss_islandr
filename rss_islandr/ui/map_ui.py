@@ -176,7 +176,7 @@ class MapUI:
             str(self.map_html),
             width=1600,
             height=900,
-            background_color=self.__style.colors.bg,
+            background_color=self.__style.colors.bg,  # type: ignore
             js_api=api_instance,  # Attach the JavaScript API
         )
 
