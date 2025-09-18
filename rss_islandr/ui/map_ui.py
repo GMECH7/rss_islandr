@@ -181,6 +181,7 @@ class MapUI:
             background_color=self.__style.colors.bg,
             js_api=api_instance,  # Attach the JavaScript API
         )
+
         logging.debug("Webview started. Waiting for coordinates...")
         # Set the webview settings to avoid opening devtools when debugging is True
         webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False

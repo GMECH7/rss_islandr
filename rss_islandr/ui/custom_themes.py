@@ -61,22 +61,22 @@ class CustomThemes:
             "Title.TLabel",
             background=background_color,  # Background color
             # foreground=self.__ui_font_color_1,  # Font color
-            font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),  # Font type
+            font=(self.__ui_settings.ui_title_font_type, self.__ui_settings.ui_title_font_size, "bold"),
             relief="flat",
         )
 
         self.__style.configure(
             "General.TLabel",
-            background=self.__ui_bg_color_1,
+            # background=self.__ui_bg_color_1,
             foreground=self.__ui_font_color_1,
-            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),  # Font type
+            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),
         )
 
         self.__style.configure(
             "EntryWidget.TLabel",
             background=self.__ui_bg_color_1,
             foreground=self.__ui_font_color_1,
-            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),  # Font type
+            font=(self.__ui_settings.ui_font_type, self.__ui_settings.ui_font_size, "bold"),
             borderwidth=0,  # Border width
         )
 
