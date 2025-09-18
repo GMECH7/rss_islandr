@@ -183,7 +183,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Home Page",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__btns_cc.show_page(self.__home_page, "home"),
+            command=lambda: self.__btns_cc.show_page(self._home_page, "home"),
         )
         btn_home.grid(row=0, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_home] = "ui_btn_bg_color_1"
@@ -207,7 +207,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Site info",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__btns_cc.show_page(self.__site_info_page, "site_info"),
+            command=lambda: self.__btns_cc.show_page(self._site_info_page, "site_info"),
         )
         btn_site_info.grid(row=2, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_site_info] = "ui_btn_bg_color_1"
@@ -220,7 +220,7 @@ class MainAppUI:
             nav_bar_frame,
             text="On-site to on-site",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__btns_cc.show_page(self.__site_to_site_page, "on_site_on_site"),
+            command=lambda: self.__btns_cc.show_page(self._on_site_on_site_page, "on_site_on_site"),
         )
         btn_on_site_on_site.grid(row=3, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_on_site_on_site] = "ui_btn_bg_color_1"
@@ -233,7 +233,7 @@ class MainAppUI:
             nav_bar_frame,
             text="On-site to off-site",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__btns_cc.show_page(self.__site_to_off_site_page, "on_site_off_site"),
+            command=lambda: self.__btns_cc.show_page(self._on_site_off_site_page, "on_site_off_site"),
         )
         btn_on_site_off_site.grid(row=4, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_on_site_off_site] = "ui_btn_bg_color_1"
@@ -246,7 +246,7 @@ class MainAppUI:
             nav_bar_frame,
             text="Off-site to on-site",
             style=self.ui_settings.ui_btn_bg_color_1,
-            command=lambda: self.__btns_cc.show_page(self.__off_site_to_site_page, "off_site_on_site"),
+            command=lambda: self.__btns_cc.show_page(self._off_site_on_site_page, "off_site_on_site"),
         )
         btn_off_site_on_site.grid(row=5, column=0, sticky="nsew")
         self.widgets_reconfigured[btn_off_site_on_site] = "ui_btn_bg_color_1"
@@ -340,7 +340,7 @@ class MainAppUI:
             3. Off-site to on-site
         """
         site_to_site_apps = []
-        for page in [self.__site_to_site_page, self.__site_to_off_site_page, self.__off_site_to_site_page]:
+        for page in [self._on_site_on_site_page, self._on_site_off_site_page, self._off_site_on_site_page]:
             app_navbar_frame, app_frame = HorizontalNavbar(
                 self.ui_settings,
                 self.ui_inp_vars,
@@ -375,20 +375,20 @@ class MainAppUI:
         self.__btns_cc = BtnsChangeColour(self.ui_settings, self._nav_buttons_references)
 
         #: Create pages (frames) for each main page
-        self.__map_page = tb.Frame(self.root)
-        self.__home_page = tb.Frame(self.root)
-        self.__site_info_page = tb.Frame(self.root)
-        self.__site_to_site_page = tb.Frame(self.root)
-        self.__site_to_off_site_page = tb.Frame(self.root)
-        self.__off_site_to_site_page = tb.Frame(self.root)
+        self._map_page = tb.Frame(self.root)
+        self._home_page = tb.Frame(self.root)
+        self._site_info_page = tb.Frame(self.root)
+        self._on_site_on_site_page = tb.Frame(self.root)
+        self._on_site_off_site_page = tb.Frame(self.root)
+        self._off_site_on_site_page = tb.Frame(self.root)
 
         for self.page in [
-            self.__map_page,
-            self.__home_page,
-            self.__site_info_page,
-            self.__site_to_site_page,
-            self.__site_to_off_site_page,
-            self.__off_site_to_site_page,
+            self._map_page,
+            self._home_page,
+            self._site_info_page,
+            self._on_site_on_site_page,
+            self._on_site_off_site_page,
+            self._off_site_on_site_page,
         ]:
             self.page.place(
                 relx=self.__frames_xstart,
@@ -403,7 +403,7 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.__home_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
+        )(self._home_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
         app_home = HomeUI(home_navbar_frame, home_frame)
 
         #: Site info app Create horizontal navbar and rest of frame per page to be displayed
@@ -412,7 +412,7 @@ class MainAppUI:
             self.ui_inp_vars,
             self.ui_calc_vars,
             self.widgets_reconfigured,
-        )(self.__site_info_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
+        )(self._site_info_page, map_polygons_tb=self.map_polygons_tb, map_ui=self.map_ui)
         app_site_info = SiteInfoUI(
             site_info_navbar_frame,
             site_info_frame,
@@ -431,7 +431,7 @@ class MainAppUI:
         for scenario_id, site_to_site_app in zip(self.__scenario_ids, site_to_site_apps):
             site_to_site_app.ui(scenario_id)
 
-        self.__btns_cc.show_page(self.__home_page, "home")
+        self.__btns_cc.show_page(self._home_page, "home")
 
     def on_closing(self):
         """Cleaning up resources"""

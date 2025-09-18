@@ -1,19 +1,27 @@
 import sys
-import time
 
 import pytest
 import ttkbootstrap as tb
 
+from rss_islandr.core.config_parser import settings
+from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui.main_app_ui import MainAppUI
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def app():
-    root = tb.Window()
+    # SETUP: Perform the same setup as main(), but without mainloop()
+    ui_settings = read_skin_details(settings, "dark")
+    theme = ui_settings.ui_ttkbootstrap_theme  # always start with the dark theme
+    root = tb.Window(themename=theme)
     main = MainAppUI(root)
     main.create_ui()
+    root.update_idletasks()
+
+    # YIELD: Hand over the created app object to the test function
     yield main
-    time.sleep(2)  # Allow time for cleanup
+
+    # TEARDOWN: This code runs after the test is finished
     root.destroy()
 
 
@@ -22,8 +30,34 @@ def test_ui_initialization(app):
     assert hasattr(app, "create_ui")
 
 
-def test_site_info_button_click(app):
+def test_home_page(app):
+    app._nav_buttons_references["home"].invoke()
+    app.root.update()
+    assert app._home_page.winfo_viewable() == 1
+
+
+def test_click_site_info(app):
     app._nav_buttons_references["site_info"].invoke()
+    app.root.update()
+    assert app._site_info_page.winfo_viewable() == 1
+
+
+def test_click_on_site_on_site(app):
+    app._nav_buttons_references["on_site_on_site"].invoke()
+    app.root.update()
+    assert app._on_site_on_site_page.winfo_viewable() == 1
+
+
+def test_click_on_site_off_site(app):
+    app._nav_buttons_references["on_site_off_site"].invoke()
+    app.root.update()
+    assert app._on_site_off_site_page.winfo_viewable() == 1
+
+
+def test_click_off_site_on_site(app):
+    app._nav_buttons_references["off_site_on_site"].invoke()
+    app.root.update()
+    assert app._off_site_on_site_page.winfo_viewable() == 1
 
 
 if __name__ == "__main__":
