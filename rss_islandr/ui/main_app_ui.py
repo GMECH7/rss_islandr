@@ -29,8 +29,6 @@ from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 from rss_islandr.ui.site_to_site_assessment_ui import SiteToSiteAssessmentUI
 
-logging.basicConfig(level=logging.INFO)
-
 
 class MainAppUI:
     """Implementation of main UI"""

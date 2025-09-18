@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 import ttkbootstrap as tb
@@ -400,16 +401,19 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def ui(self, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
+            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
+            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
+            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)

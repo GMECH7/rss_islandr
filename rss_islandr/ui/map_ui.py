@@ -11,8 +11,6 @@ import webview
 from rss_islandr.core.datatypes import PolygonDataDict
 from rss_islandr.core.helpers import extract_dicts_from_string
 
-logging.basicConfig(level=logging.INFO)
-
 
 class Api:
     def __init__(self, map_ui_instance):

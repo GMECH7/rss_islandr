@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import logging
 from typing import Optional
 
 import ttkbootstrap as tb
@@ -24,8 +23,6 @@ from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.reporting.custom_doc_template import CustomDocTemplate
 from rss_islandr.reporting.numbered_canvas import NumberedCanvas
-
-logging.basicConfig(level=logging.INFO)
 
 
 class PDFReport:

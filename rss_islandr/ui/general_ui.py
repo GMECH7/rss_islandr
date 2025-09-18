@@ -98,7 +98,7 @@ class GeneralUITemplate:
     def gt_new_frame_wo(self, parent_frame: tb.Frame, frame_tag: str) -> tb.Frame:
         """Create new frame without title (used in risk meters)"""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
-        frame = tb.Frame(parent_frame, style="Custom.TFrame")
+        frame = tb.Frame(parent_frame, name=frame_tag.lower(), style="Custom.TFrame")
         frame.place(
             relx=rel_x,
             rely=rel_y,
