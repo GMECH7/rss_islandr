@@ -21,6 +21,7 @@ from reportlab.platypus import (
 from rss_islandr.core.config_parser import ISLANDR_LOGO, font_size_pdf_1, font_size_pdf_2, font_size_pdf_3
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.helpers import extract_dicts_from_string
+from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.reporting.custom_doc_template import CustomDocTemplate
 from rss_islandr.reporting.numbered_canvas import NumberedCanvas
 
@@ -296,6 +297,7 @@ class PDFReport:
             self.story.append(Paragraph("Error displaying polygon data", self._styles["Normal"]))
 
     # Update the __call__ method to use the new polygon method
+    @logger_decorator
     def __call__(
         self,
         ui_inp_vars: dict[str, UIInpVariable],

@@ -2,8 +2,10 @@
 import ttkbootstrap as tb
 
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable, UISettings
+from rss_islandr.core.logger_config import logger_decorator
 
 
+@logger_decorator
 def frame_distances(frame: tb.Frame, n_rows: int, n_cols: int) -> None:
     """Configure frame in a grid."""
     for i in range(n_rows):
@@ -50,6 +52,7 @@ class GeneralUITemplate:
     def __str__(self):
         return str(__class__.__name__)
 
+    @logger_decorator
     def frame_limits(self, frame_tag: str) -> tuple:
         """ """
         rel_x = self.frame_geometry_dict[frame_tag].x_l
@@ -78,6 +81,7 @@ class GeneralUITemplate:
         title_label = tb.Label(title_frame, text=frame_title, anchor="center", justify="center", style="Title.TLabel")
         title_label.grid(row=0, column=0, sticky="nsew")
 
+    @logger_decorator
     def gt_new_frame(self, parent_frame: tb.Frame, frame_tag: str, frame_title: str) -> tb.Frame:
         """Create new frame with title (used in forms)"""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
@@ -95,6 +99,7 @@ class GeneralUITemplate:
 
         return frame
 
+    @logger_decorator
     def gt_new_frame_wo(self, parent_frame: tb.Frame, frame_tag: str) -> tb.Frame:
         """Create new frame without title (used in risk meters)"""
         rel_x, rel_y, rel_w, rel_h, n_rows, n_cols = self.frame_limits(frame_tag)
@@ -109,6 +114,7 @@ class GeneralUITemplate:
 
         return frame
 
+    @logger_decorator
     def gt_entry_widget(self, frame: tb.Frame, entry_key: str, column_span: int = 1) -> None:
         """Create an entry widget"""
         label = tb.Label(frame, text=self.ui_inp_vars[entry_key].text_val)
@@ -117,6 +123,7 @@ class GeneralUITemplate:
         entry = tb.Entry(frame, textvariable=self.ui_inp_vars[entry_key].tk_var, justify="left")
         entry.grid(row=self.ui_inp_vars[entry_key].rel_pos, column=1, columnspan=column_span, sticky="we")
 
+    @logger_decorator
     def gt_combobox_widget(self, frame: tb.Frame, dropdown_key: str, column_span: int = 1) -> None:
         """Create a combobox widget (dropdown list)"""
         label = tb.Label(frame, text=self.ui_inp_vars[dropdown_key].text_val)
@@ -130,6 +137,7 @@ class GeneralUITemplate:
 
         combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=1, columnspan=column_span, sticky="we")
 
+    @logger_decorator
     def gt_nested_combobox_widget(self, frame: tb.Frame, dropdown_key: str, column_span: int = 1) -> None:
         """Create a combobox widget (dropdown list)."""
         label = tb.Label(frame, text=self.ui_inp_vars[dropdown_key].text_val)
@@ -152,6 +160,7 @@ class GeneralUITemplate:
 
         combobox.grid(row=self.ui_inp_vars[dropdown_key].rel_pos, column=2, columnspan=column_span, sticky="we")
 
+    @logger_decorator
     def gt_meter_widget(self, frame: tb.Frame, meter_widget_text: str) -> tb.Meter:
         """Create a meter widget and place it in a frame"""
         meter_widget = tb.Meter(
@@ -170,6 +179,7 @@ class GeneralUITemplate:
 
         return meter_widget
 
+    @logger_decorator
     def gt_date_entry_widget(self, frame: tb.Frame, date_key: str, column_span: int = 1) -> None:
         """
         Create a date entry widget doing the following:
@@ -188,6 +198,7 @@ class GeneralUITemplate:
         date_entry.bind("<FocusOut>", lambda event: self.update_date_var_bind(event, date_entry, date_key))
         self.__widgets_reconfigured[date_entry] = "ui_bg_color_1"
 
+    @logger_decorator
     def update_date_var_bind(self, event, date_entry: tb.DateEntry, date_key: str):
         """update_date_var_bind_bind"""
         date = date_entry.entry.get()
@@ -195,6 +206,7 @@ class GeneralUITemplate:
         date_entry.entry.delete(0, "end")
         date_entry.entry.insert(0, date)
 
+    @logger_decorator
     def update_date_entry_trace(self, date_var: tb.StringVar, date_entry: tb.DateEntry):
         """Update the DateEntry widget when the underlying tb.StringVar changes (eg. when importing scenario)."""
         new_date = date_var.get()

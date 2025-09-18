@@ -9,6 +9,7 @@ from rss_islandr.assessment import risk_calc, risk_color_assignment
 from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTORS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
+from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
 Image.CUBIC = Image.BICUBIC  # type: ignore
@@ -398,22 +399,23 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         return frame_tags_titles
 
+    @logger_decorator
     def ui(self, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
-            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
-            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
-            logging.info(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)

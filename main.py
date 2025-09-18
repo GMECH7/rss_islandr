@@ -14,7 +14,7 @@ from rss_islandr.ui import MainAppUI
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
 
-setup_logger(logging.INFO)
+setup_logger(logging.DEBUG)
 
 
 def main():

@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 
 from rss_islandr.core.datatypes import UISettings
+from rss_islandr.core.logger_config import logger_decorator
 
 
 class CustomThemes:
@@ -40,6 +41,7 @@ class CustomThemes:
         except AttributeError:
             raise ValueError("Color not found in style.colors")
 
+    @logger_decorator
     def custom_notebook(self):
         """Custom styles for Notebook widgets"""
         background_color = self.__style.colors.get("bg")  # type: ignore
@@ -54,6 +56,7 @@ class CustomThemes:
             foreground=[("selected", self.__ui_font_color_2)],
         )
 
+    @logger_decorator
     def custom_labels(self):
         """Custom styles for label widgets"""
         background_color = self.__style.colors.get("bg")  # type: ignore
@@ -78,6 +81,7 @@ class CustomThemes:
             borderwidth=0,  # Border width
         )
 
+    @logger_decorator
     def custom_frame(self):
         background_color = self.__style.colors.get("bg")  # type: ignore
         self.__style.configure(
@@ -97,6 +101,7 @@ class CustomThemes:
             foreground=self.__ui_font_color_1,
         )
 
+    @logger_decorator
     def custom_buttons(self):
         """ """
         background_color = self.__style.colors.get("bg")  # type: ignore
@@ -114,6 +119,7 @@ class CustomThemes:
             foreground=[("active", self.__ui_font_color_2)],
         )
 
+    @logger_decorator
     def custom_combobox(self):
         """Not currently USED"""
         self.__style.layout(
@@ -160,6 +166,7 @@ class CustomThemes:
             arrowcolor=self.__ui_bg_color_2,
         )
 
+    @logger_decorator
     def __call__(self):
         """ """
         self.custom_notebook()

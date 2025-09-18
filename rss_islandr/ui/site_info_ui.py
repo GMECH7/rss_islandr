@@ -5,6 +5,7 @@ from general_ui import GeneralUITemplate
 
 from rss_islandr.core.config_parser import DROPDOWN_LISTS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
+from rss_islandr.core.logger_config import logger_decorator
 
 
 class SiteInfoUI(GeneralUITemplate):
@@ -246,6 +247,7 @@ class SiteInfoUI(GeneralUITemplate):
         #: Update the second combobox widget (normally done in site_info_frame method)
         self.gt_nested_combobox_widget(self.__site_info_frame, "ndro_0_02", 1)
 
+    @logger_decorator
     def update_date_widgets(self, *args):
         selected_option = self.__site_status_var.get()
 
@@ -264,6 +266,7 @@ class SiteInfoUI(GeneralUITemplate):
             self.__start_end_oper_label.config(text="")
             self.__end_date_entry.grid_remove()
 
+    @logger_decorator
     def site_info_frame(self) -> None:
         """
         Inputs frame for main-specific inputs.
@@ -341,6 +344,7 @@ class SiteInfoUI(GeneralUITemplate):
         )
         self.__widgets_reconfigured[self.__end_date_entry] = "ui_bg_color_1"
 
+    @logger_decorator
     def ui(self):
         """ """
         self.site_info_frame()

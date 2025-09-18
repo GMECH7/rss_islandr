@@ -10,17 +10,20 @@ import webview
 
 from rss_islandr.core.datatypes import PolygonDataDict
 from rss_islandr.core.helpers import extract_dicts_from_string
+from rss_islandr.core.logger_config import logger_decorator
 
 
 class Api:
     def __init__(self, map_ui_instance):
         self.map_ui = map_ui_instance
 
+    @logger_decorator
     def py_api_coord_receiver(self, lat: float, lng: float, crs: str):
         """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng, crs)  # Store received coordinates
         logging.debug(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
 
+    @logger_decorator
     def py_api_polygons_receiver(self, polygon_data: PolygonDataDict):
         """
         Receive polygon data from JavaScript.
@@ -54,6 +57,7 @@ class Api:
         self.map_ui.map_polygons_tb.set(f"{self.map_ui.polygons}")
         return True
 
+    @logger_decorator
     def py_api_clear_polygons(self):
         """Clear all stored polygons"""
         logging.debug("Clearing all polygons from storage")
@@ -61,6 +65,7 @@ class Api:
         self.map_ui.map_polygons_tb.set("")  # Clear the StringVar
         return True
 
+    @logger_decorator
     def py_api_delete_polygons(self, polygon_data: PolygonDataDict):
         """Delete a polygon from storage based on its unique_id and type"""
         logging.debug(f"Deleting polygon: {polygon_data}")
@@ -75,11 +80,13 @@ class Api:
         logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
         return True
 
+    @logger_decorator
     def py_api_send_polygons_to_js(self):
         """Return all stored polygons to JavaScript for redrawing"""
         logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
+    @logger_decorator
     def py_api_send_coordinates_to_js(self) -> tuple[float | None, float | None, str]:
         """Return the latest coordinates to JavaScript"""
         logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
@@ -110,6 +117,7 @@ class MapUI:
         self.lng = None
         self.crs = None
 
+    @logger_decorator
     def update_coordinates(self):
         """
         Update coordinates (self.coordinates) from StringVar content.
@@ -122,6 +130,7 @@ class MapUI:
         self.lat = self.ui_inp_vars.get("map_0_01").tk_var.get()
         self.lng = self.ui_inp_vars.get("map_0_02").tk_var.get()
 
+    @logger_decorator
     def update_polygons_from_stringvar(self):
         """
         Update polygons (self.polygons) from StringVar content.
@@ -139,10 +148,12 @@ class MapUI:
         except Exception as e:
             logging.error(f"Error parsing polygons from StringVar: {e}")
 
+    @logger_decorator
     def show_map(self):
         """Launch the webview window in a separate process."""
         self.webview_process = subprocess.Popen([sys.executable, __file__, "--webview"])
 
+    @logger_decorator
     def close_map(self):
         """Terminate the webview process."""
         if self.webview_process:
@@ -168,6 +179,7 @@ class MapUI:
 
         return map_polygons_as_str
 
+    @logger_decorator
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
         api_instance = Api(self)  # Create API instance linked to MapUI
@@ -184,4 +196,4 @@ class MapUI:
         # Set the webview settings to avoid opening devtools when debugging is True
         webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
         webview.settings["ALLOW_DOWNLOADS"] = True
-        webview.start(debug=True)
+        webview.start(debug=False)

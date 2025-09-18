@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import ttkbootstrap as tb
 
+from rss_islandr.core.logger_config import logger_decorator
+
 
 class HomeUI:
     def __init__(self, parent_navbar_frame: tb.Frame, parent_frame: tb.Frame):
@@ -18,6 +20,7 @@ class HomeUI:
         self.__parent_navbar_frame = parent_navbar_frame
         self.__parent_frame = parent_frame
 
+    @logger_decorator
     def ui(self, islandr_logo_img):
         """No functionality is added in the main page."""
         background_label = tb.Label(self.__parent_frame, image=islandr_logo_img)
