@@ -1,5 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+import webview
+
+# Automatically find the path to the pywebview library
+webview_dir = os.path.dirname(webview.__file__)
+webview_lib_path = os.path.join(webview_dir, 'lib')
+
 
 a = Analysis(
     ['main.py'],
@@ -22,7 +29,8 @@ a = Analysis(
     ('rss_islandr\\templates\\report_template.xlsx', 'templates'),
     ('rss_islandr\\data', 'data'),
     ('rss_islandr\\static', 'static'),
-    ('rss_islandr\\maps', 'maps')
+    ('rss_islandr\\maps', 'maps'),
+    (webview_lib_path, 'webview/lib')
     ],
     binaries=[],
     hookspath=[],

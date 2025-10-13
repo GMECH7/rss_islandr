@@ -4,6 +4,7 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
+from tkinter import messagebox
 
 import ttkbootstrap as tb
 import webview
@@ -183,17 +184,23 @@ class MapUI:
     def run_webview(self):
         """Run the webview window (to be called in a separate process)."""
         api_instance = Api(self)  # Create API instance linked to MapUI
-        webview.create_window(
-            "Maps Viewer",
-            str(self.map_html),
-            width=1600,
-            height=900,
-            background_color=self.__style.colors.bg,  # type: ignore
-            js_api=api_instance,  # Attach the JavaScript API
-        )
+        try:
+            webview.create_window(
+                "Maps Viewer",
+                str(self.map_html),
+                width=1600,
+                height=900,
+                background_color=self.__style.colors.bg,  # type: ignore
+                js_api=api_instance,  # Attach the JavaScript API
+            )
 
-        logging.debug("Webview started. Waiting for coordinates...")
-        # Set the webview settings to avoid opening devtools when debugging is True
-        webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
-        webview.settings["ALLOW_DOWNLOADS"] = True
-        webview.start(debug=False)
+            logging.debug("Webview started. Waiting for coordinates...")
+            # Set the webview settings to avoid opening devtools when debugging is True
+            webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
+            webview.settings["ALLOW_DOWNLOADS"] = True
+            webview.start(debug=False)
+        except Exception as e:
+            messagebox.showerror(
+                "Map Error",
+                f"Could not load the map component. Please check your antivirus settings or contact support.\n\nError: {e}",
+            )

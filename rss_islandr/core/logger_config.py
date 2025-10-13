@@ -33,7 +33,7 @@ def setup_logger(loger_level=logging.INFO):
     is_executable = getattr(sys, "frozen", False)
 
     logger = logging.getLogger()
-    if is_executable:
+    if is_executable:  # Running as .exe, disable logging
         logger.addHandler(logging.NullHandler())
         logger.setLevel(logging.CRITICAL + 1)
 
