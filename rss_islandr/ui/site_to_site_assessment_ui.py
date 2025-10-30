@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 
 from rss_islandr.core.datatypes import FramePlacing, TkWidgets, UICalcVariable, UIInpVariable, UISettings
+from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.ui.assessment_notebook_ui import AssessmentNoteBookUI
 from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.general_ui import frame_distances
@@ -108,6 +109,7 @@ class SiteToSiteAssessmentUI:
         self.__nav_buttons_references["pathways"] = self.__create_pathways_btn(nav_bar_frame, pages[1])
         self.__nav_buttons_references["receptors"] = self.__create_receptors_btn(nav_bar_frame, pages[2])
 
+    @logger_decorator
     def ui(self, scenario_id: str) -> None:
         """ """
         self.__source_frame = tb.Frame(self.__parent_frame)

@@ -1,6 +1,8 @@
 from core.config_parser import risk_limits_color
+from core.logger_config import logger_decorator
 
 
+@logger_decorator
 def risk_calc(weight_values: list[float]) -> float:
     """
     Calculates the risk value based on the provided weight values.
@@ -20,6 +22,7 @@ def risk_calc(weight_values: list[float]) -> float:
     return risk_value
 
 
+@logger_decorator
 def risk_color_assignment(value: float) -> str:
     """
     Assigns a color based on the risk value.

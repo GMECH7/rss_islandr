@@ -1,7 +1,7 @@
 {
     "receptor_aliases": {
         "SL": "Soil",
-        "GW": "Ground water",
+        "GW": "Groundwater",
         "SW": "Surface water",
         "AR": "Air",
         "SD": "Sediment"

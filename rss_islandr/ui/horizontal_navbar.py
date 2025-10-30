@@ -3,6 +3,8 @@ from core.datatypes import TkWidgets, UICalcVariable, UIInpVariable, UISettings
 from general_ui import frame_distances
 from horizontal_navbar_btns import HorizontalNavbarBtns
 
+from rss_islandr.core.logger_config import logger_decorator
+
 
 class HorizontalNavbar:
     """Horizontal navbar definition."""
@@ -38,6 +40,7 @@ class HorizontalNavbar:
 
         return child_frame
 
+    @logger_decorator
     def __call__(self, parent_frame: tb.Frame, **kwargs):
         """ """
         navbar_frame = self.__create_horizontal_navbar(parent_frame, **kwargs)

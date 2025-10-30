@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 import ttkbootstrap as tb
@@ -8,9 +9,10 @@ from rss_islandr.assessment import risk_calc, risk_color_assignment
 from rss_islandr.core.config_parser import RECEPTOR_FACTORS_JSON_DIR, RISK_FACTORS_JSON_DIR
 from rss_islandr.core.datatypes import FramePlacing, UICalcVariable, UIInpVariable, UISettings
 from rss_islandr.core.exceptions import ExcelRowColNotFoundError
+from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
-Image.CUBIC = Image.BICUBIC
+Image.CUBIC = Image.BICUBIC  # type: ignore
 
 
 class AssessmentNoteBookUI(GeneralUITemplate):
@@ -119,7 +121,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
         # TODO I have altered the dynamic calculation. I must see how to do that in the future
-        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
+        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"  # noqa: ERA001
         excel_cell_risk = f"{parent_excel_col}9" if parent_excel_row == 7 else f"{parent_excel_col}17"
 
         return excel_cell, excel_cell_risk
@@ -397,19 +399,23 @@ class AssessmentNoteBookUI(GeneralUITemplate):
                 frame_tags_titles.append((frame_tag, frame_title, meter_widget_text))
         return frame_tags_titles
 
+    @logger_decorator
     def ui(self, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
+            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)

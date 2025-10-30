@@ -6,7 +6,7 @@ from pathlib import Path
 # Define the base directory
 if getattr(sys, "frozen", False):  # noqa: SIM108
     # Running in a PyInstaller bundle
-    PROJECT_DIR = Path(sys._MEIPASS)
+    PROJECT_DIR = Path(sys._MEIPASS)  # type: ignore[attr-defined]
 else:
     MODULE_DIR = Path(__file__).parent
     PROJECT_DIR = MODULE_DIR.resolve().parent

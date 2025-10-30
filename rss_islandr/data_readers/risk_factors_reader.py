@@ -1,6 +1,8 @@
 import json
 from typing import Optional
 
+from rss_islandr.core.logger_config import logger_decorator
+
 
 class RisksDataFetcher:
     """Fetches risk data from risk_factors.json file."""
@@ -22,6 +24,7 @@ class RisksDataFetcher:
 
         return severity
 
+    @logger_decorator
     def getter(self, main_key: str, mechanism_key: Optional[str] = None, severity_key: Optional[str] = None):
         if mechanism_key is None and severity_key is not None:
             raise Exception
@@ -47,6 +50,7 @@ class ReceptorFactorsFetcher:
     def __get_parameter(self, pathway_key: str, parameter_key: str):
         return self.__data[pathway_key]["parameter"][parameter_key]
 
+    @logger_decorator
     def getter(self, pathway_key: str, parameter_key: Optional[str] = None):
         if parameter_key is not None:
             return self.__get_parameter(pathway_key, parameter_key)
@@ -61,5 +65,6 @@ class ReceptorAliases:
         with open(json_file, "r") as file_inp:
             self.__data = json.load(file_inp)  # Load JSON into a Python dictionary
 
+    @logger_decorator
     def getter(self) -> dict:
         return self.__data["receptor_aliases"]

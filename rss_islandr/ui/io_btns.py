@@ -18,8 +18,7 @@ from rss_islandr.core.config_parser import (
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.reporting import PDFReport
-
-logging.basicConfig(level=logging.INFO)
+from rss_islandr.core.logger_config import logger_decorator
 
 
 class IOBtns(ABC):
@@ -177,6 +176,7 @@ class ExportExcelReportBtn(IOBtns):
                 sheet.range(f"D{row_idx}").value = coord[1]
                 row_idx += 1
 
+    @logger_decorator
     def on_btn_click(self):
         """ """
         self.access_vars()
@@ -220,6 +220,7 @@ class ExportExcelReportBtn(IOBtns):
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
+    @logger_decorator
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """
         btn = tb.Button(frame, text="Write to Excel", command=self.on_btn_click)
@@ -235,6 +236,7 @@ class ExportPDFReportBtn(IOBtns):
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
 
+    @logger_decorator
     def on_btn_click(self):
         """ """
         selected_image_files = self.add_maps_prompt("pdf")
@@ -257,6 +259,7 @@ class ExportPDFReportBtn(IOBtns):
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
+    @logger_decorator
     def btn(self, frame: tb.Frame):
         """ """
         pass
@@ -270,6 +273,7 @@ class ExportScenarioBtn(IOBtns):
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
 
+    @logger_decorator
     def on_btn_click(self):
         """ """
         self.access_vars()
@@ -304,6 +308,7 @@ class ImportScenarioBtn(IOBtns):
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self.map_polygons_tb = map_polygons_tb
 
+    @logger_decorator
     def on_btn_click(self):
         """ """
         file_path = filedialog.askopenfilename(
@@ -329,6 +334,7 @@ class ImportScenarioBtn(IOBtns):
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
+    @logger_decorator
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """
         btn = tb.Button(frame, text="Read scenario", command=self.on_btn_click)
@@ -351,12 +357,13 @@ class PopupImage(IOBtns):
         self.popup_window = tk.Toplevel(frame)
 
         # Resize Image to Fit Popup Window
-        resized_image = self.original_image.resize((1800, 908), Image.LANCZOS)
+        resized_image = self.original_image.resize((1800, 908), Image.LANCZOS)  # type: ignore
         self.photo = ImageTk.PhotoImage(resized_image)
 
         label = tk.Label(self.popup_window, image=self.photo)
         label.pack(padx=10, pady=10)
 
+    @logger_decorator
     def on_btn_click(self, frame: tb.Frame):
         """Opens or closes the popup window with the image."""
         if self.popup_window and tk.Toplevel.winfo_exists(self.popup_window):

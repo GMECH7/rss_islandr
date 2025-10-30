@@ -3,7 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.vba
-
+islandr__with_webview.spec
+islandr__without_webview.spec
 # C extensions
 *.so
 

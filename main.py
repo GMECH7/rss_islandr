@@ -8,11 +8,13 @@ from rss_islandr.core.config_parser import (
     app_title,
     settings,
 )
+from rss_islandr.core.logger_config import setup_logger
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui import MainAppUI
 
 locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
-logging.basicConfig(level=logging.INFO)
+
+setup_logger(logging.INFO)
 
 
 def main():

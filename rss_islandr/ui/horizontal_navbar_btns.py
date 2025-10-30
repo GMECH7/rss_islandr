@@ -8,6 +8,7 @@ from custom_themes import CustomThemes
 from io_btns import ExportExcelReportBtn, ExportPDFReportBtn, ExportScenarioBtn, ImportScenarioBtn, PopupImage
 
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.core.logger_config import logger_decorator
 
 
 class HorizontalNavbarBtns:
@@ -26,6 +27,7 @@ class HorizontalNavbarBtns:
         self.__ui_calc_vars = ui_calc_vars
         self.__widgets_reconfigured = widgets_reconfigured
 
+    @logger_decorator
     def toggle_theme(self):
         """Switch theme (dark-light)"""
 
@@ -52,6 +54,7 @@ class HorizontalNavbarBtns:
         for key, value in ui_settings_changed.__dict__.items():
             setattr(self.ui_settings, key, value)
 
+    @logger_decorator
     def toggle_skin_btn(self, frame: tb.Frame):
         """Button used for switching between light and dark skin."""
 
@@ -65,6 +68,7 @@ class HorizontalNavbarBtns:
         self.toggle_button.grid()
         self.toggle_button.grid(row=0, column=23)
 
+    @logger_decorator
     def file_menu_btn(self, frame: tb.Frame, **kwargs) -> None:
         """
         File menu. Import and Export options.
@@ -85,6 +89,7 @@ class HorizontalNavbarBtns:
         menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
         menu_btn["menu"] = menu
 
+    @logger_decorator
     def docs_menu_button(self, frame: tb.Frame) -> None:
         """
         Various documents displayed in popup menus.
