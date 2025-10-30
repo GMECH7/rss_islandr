@@ -28,7 +28,7 @@ class HomeUI:
 
         disclaimer_label = tb.Label(
             self.__parent_frame,
-            text="Funded by the European Union, Grant agreement n°1001112889",
+            text="Funded by the European Union, Grant agreement n°1001112889\nEU Soil monitoring law article 13  annex V compliant",
             style="General.TLabel",
         )
         disclaimer_label.pack(side=tb.BOTTOM, anchor="e", pady=10, padx=10)

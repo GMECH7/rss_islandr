@@ -200,7 +200,5 @@ class MapUI:
             webview.settings["ALLOW_DOWNLOADS"] = True
             webview.start(debug=False)
         except Exception as e:
-            messagebox.showerror(
-                "Map Error",
-                f"Could not load the map component. Please check your antivirus settings or contact support.\n\nError: {e}",
-            )
+            msg = f"Could not load the map component. Please contact support.\n\nError: {e}"
+            messagebox.showerror("Map Error", msg)

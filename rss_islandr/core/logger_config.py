@@ -25,7 +25,7 @@ def setup_logger(loger_level=logging.INFO):
     """
     Configures a logger to print to the console and a file.
 
-    Format: LEVEL | YYYY-MM-DD HH:MM:s (UTC) | MESSAGE
+    Format: LEVEL | YYYY-MM-DD HH:MM:s (local) | MESSAGE
 
     - Development (running .py script): Logs to console and file.
     - Production (running .exe): Logs are disabled.
@@ -45,7 +45,7 @@ def setup_logger(loger_level=logging.INFO):
 
         # Create a formatter with the specified UTC time format
         stream_formatter = logging.Formatter(
-            f"%(asctime)s (UTC):: %(levelname)-5s :: {RESET_COLOR}%(message)s{RESET_COLOR}",
+            f"%(asctime)s :: %(levelname)-5s :: {RESET_COLOR}%(message)s{RESET_COLOR}",
             "%Y-%m-%d %H:%M:%S",
         )
 
