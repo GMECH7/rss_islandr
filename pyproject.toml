@@ -47,6 +47,7 @@ exclude = ["**/__pycache__"]
 
 [tool.ruff.lint]
 # select = ["E", "F", "I"]
+ignore = ["D419"] # Empty docstrings
 
 [tool.pytest.ini_options]
 pythonpath = ["rss_islandr", "tests"]
