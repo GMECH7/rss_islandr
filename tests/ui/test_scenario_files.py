@@ -1,20 +1,21 @@
 import json
 import sys
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
 import pytest
 
+from rss_islandr.ui import dialogs
 from rss_islandr.ui.io_btns import ExportScenarioBtn, ImportScenarioBtn
 
 POLYGONS = "[{'unique_id': 'a', 'type': 'polygon', 'name': 'P1', 'coordinates': [[1.0, 2.0]], 'area_km2': 1.2}]"
 
 
 @pytest.fixture
-def dialogs(monkeypatch):
+def shown(monkeypatch):
     """Replace the message boxes by recorders. Returns the recorded (info, error) messages."""
     info, errors = [], []
-    monkeypatch.setattr(messagebox, "showinfo", lambda *args, **kwargs: info.append(args))
-    monkeypatch.setattr(messagebox, "showerror", lambda *args, **kwargs: errors.append(args))
+    monkeypatch.setattr(dialogs, "show_info", lambda *args, **kwargs: info.append(args))
+    monkeypatch.setattr(dialogs, "show_error", lambda *args, **kwargs: errors.append(args))
     return info, errors
 
 
@@ -38,7 +39,7 @@ def _import(app, monkeypatch, file):
     ).on_btn_click()
 
 
-def test_scenario_is_saved_with_inputs_results_and_polygons(app, dialogs, monkeypatch, tmp_path):
+def test_scenario_is_saved_with_inputs_results_and_polygons(app, shown, monkeypatch, tmp_path):
     """
     Steps:
     1. Enter a site name, a toxicity and an extent, and set a polygon.
@@ -62,10 +63,10 @@ def test_scenario_is_saved_with_inputs_results_and_polygons(app, dialogs, monkey
     assert float(saved["IN_on-on_frame"]) == pytest.approx(0.7)
     assert saved["polygons_data"] == POLYGONS
     assert set(app.ui_inp_vars) <= set(saved)
-    assert len(dialogs[0]) == 1 and dialogs[1] == []
+    assert len(shown[0]) == 1 and shown[1] == []
 
 
-def test_imported_scenario_restores_inputs_results_and_polygons(app, dialogs, monkeypatch, tmp_path):
+def test_imported_scenario_restores_inputs_results_and_polygons(app, shown, monkeypatch, tmp_path):
     """
     Steps:
     1. Enter a site name, a toxicity and an extent, set a polygon and export the scenario.
@@ -92,10 +93,10 @@ def test_imported_scenario_restores_inputs_results_and_polygons(app, dialogs, mo
     assert float(app.ui_calc_vars["IN_on-on_frame"].tk_var.get()) == pytest.approx(0.7)
     assert app.map_polygons_tb.get() == POLYGONS
     assert app.map_ui.polygons[0]["name"] == "P1"
-    assert dialogs[1] == []
+    assert shown[1] == []
 
 
-def test_import_of_an_incomplete_file_shows_an_error(app, dialogs, monkeypatch, tmp_path):
+def test_import_of_an_incomplete_file_shows_an_error(app, shown, monkeypatch, tmp_path):
     """
     Steps:
     1. Create a scenario file that has no input values.
@@ -109,11 +110,11 @@ def test_import_of_an_incomplete_file_shows_an_error(app, dialogs, monkeypatch, 
 
     _import(app, monkeypatch, file)
 
-    assert dialogs[0] == []
-    assert len(dialogs[1]) == 1
+    assert shown[0] == []
+    assert len(shown[1]) == 1
 
 
-def test_import_of_a_file_that_is_not_json_shows_an_error(app, dialogs, monkeypatch, tmp_path):
+def test_import_of_a_file_that_is_not_json_shows_an_error(app, shown, monkeypatch, tmp_path):
     """
     Steps:
     1. Create a text file that is not JSON.
@@ -128,11 +129,11 @@ def test_import_of_a_file_that_is_not_json_shows_an_error(app, dialogs, monkeypa
 
     _import(app, monkeypatch, file)
 
-    assert len(dialogs[1]) == 1
+    assert len(shown[1]) == 1
     assert app.ui_inp_vars["val_0_00"].tk_var.get() == "Test site"
 
 
-def test_cancelled_dialogs_do_nothing(app, dialogs, monkeypatch, tmp_path):
+def test_cancelled_dialogs_do_nothing(app, shown, monkeypatch, tmp_path):
     """
     Steps:
     1. Export a scenario and cancel the file dialog.
@@ -146,7 +147,7 @@ def test_cancelled_dialogs_do_nothing(app, dialogs, monkeypatch, tmp_path):
     _export(app, monkeypatch, "")
     _import(app, monkeypatch, "")
 
-    assert dialogs == ([], [])
+    assert shown == ([], [])
     assert app.ui_inp_vars["val_0_00"].tk_var.get() == "Test site"
     assert list(tmp_path.iterdir()) == []
 

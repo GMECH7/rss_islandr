@@ -7,7 +7,7 @@ import re
 import tkinter as tk
 from abc import ABC, abstractmethod
 from datetime import datetime
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
 import ttkbootstrap as tb
 from openpyxl import Workbook, load_workbook
@@ -22,6 +22,7 @@ from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.reporting import PDFReport
+from rss_islandr.ui import dialogs
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class IOBtns(ABC):
         """
         Prompt to ask user if they want to add maps images to the Excel/PDF report.
         """
-        add_maps = messagebox.askyesno("Add Maps", f"Do you want to add maps images to the {report_type} report?")
+        add_maps = dialogs.ask_yes_no("Add Maps", f"Do you want to add maps images to the {report_type} report?")
 
         if add_maps:
             selected_image_files = list(
@@ -80,7 +81,7 @@ class IOBtns(ABC):
             )
         else:
             selected_image_files = []
-            messagebox.showinfo("No Images Selected", "No images were selected. Proceeding without maps.")
+            dialogs.show_info("No Images Selected", "No images were selected. Proceeding without maps.")
 
         return selected_image_files
 
@@ -213,9 +214,9 @@ class ExportExcelReportBtn(IOBtns):
             self.__save_maps_as_imgs(workbook, selected_image_files)
             self.__save_polygons_data(workbook)
             workbook.save(file_path)
-            messagebox.showinfo("Success", "Values written to Excel successfully!")
+            dialogs.show_info("Success", "Values written to Excel successfully!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            dialogs.show_error("Error", f"An error occurred: {e}")
 
     @logger_decorator
     def btn(self, frame: tb.Frame) -> tb.Button:
@@ -252,9 +253,9 @@ class ExportPDFReportBtn(IOBtns):
         try:
             pdf_report = PDFReport(file_path)
             pdf_report(self.ui_inp_vars, self.ui_calc_vars, self.map_polygons_tb, selected_image_files)
-            messagebox.showinfo("Success", "PDF report exported!")
+            dialogs.show_info("Success", "PDF report exported!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            dialogs.show_error("Error", f"An error occurred: {e}")
 
     @logger_decorator
     def btn(self, frame: tb.Frame):
@@ -285,9 +286,9 @@ class ExportScenarioBtn(IOBtns):
             self.saved_scenario.update({"polygons_data": self.map_polygons_tb.get()})
             with open(file_path, "w") as scenario_file:
                 json.dump(self.saved_scenario, scenario_file, indent=4)
-                messagebox.showinfo("Success", "Scenario values exported!")
+                dialogs.show_info("Success", "Scenario values exported!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            dialogs.show_error("Error", f"An error occurred: {e}")
 
     def btn(self, frame: tb.Frame) -> tb.Button:
         """ """
@@ -326,9 +327,9 @@ class ImportScenarioBtn(IOBtns):
             else:
                 self.map_ui.update_polygons_from_stringvar()  # Explicit update
                 self.map_ui.update_coordinates()
-            messagebox.showinfo("Success", "Scenario values imported!")
+            dialogs.show_info("Success", "Scenario values imported!")
         except Exception as e:
-            messagebox.showerror("Error", f"An error occurred: {e}")
+            dialogs.show_error("Error", f"An error occurred: {e}")
 
     @logger_decorator
     def btn(self, frame: tb.Frame) -> tb.Button:

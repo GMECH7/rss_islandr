@@ -6,7 +6,6 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from tkinter import messagebox
 
 import ttkbootstrap as tb
 import webview
@@ -14,6 +13,7 @@ import webview
 from rss_islandr.core.datatypes import PolygonDataDict
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
+from rss_islandr.ui import dialogs
 
 logger = logging.getLogger(__name__)
 
@@ -296,7 +296,7 @@ class MapUI:
                     logger.error(f"Map process ended with return code {completed.returncode}")
             except Exception as e:
                 logger.error(f"Could not start the map process: {e}")
-                messagebox.showerror("Map Error", f"Could not load the map component.\n\nError: {e}")
+                dialogs.show_error("Map Error", f"Could not load the map component.\n\nError: {e}")
                 return
 
             self.__read_map_state(result_file)
@@ -342,4 +342,4 @@ class MapUI:
             webview.start(debug=False)
         except Exception as e:
             msg = f"Could not load the map component. Please contact support.\n\nError: {e}"
-            messagebox.showerror("Map Error", msg)
+            dialogs.show_error("Map Error", msg)

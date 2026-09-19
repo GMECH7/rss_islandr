@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
 import pytest
 import ttkbootstrap as tb
@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 from PIL import Image
 
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.ui import dialogs
 from rss_islandr.ui.io_btns import ExportExcelReportBtn
 
 POLYGONS = (
@@ -41,12 +42,12 @@ def export(root, tmp_path, monkeypatch):
     ui_calc_vars = {"IN_on-on_frame": UICalcVariable(tb.StringVar(value="0.35"), "C9")}
     errors = []
 
-    monkeypatch.setattr(messagebox, "showinfo", lambda *args, **kwargs: None)
-    monkeypatch.setattr(messagebox, "showerror", lambda *args, **kwargs: errors.append(args))
+    monkeypatch.setattr(dialogs, "show_info", lambda *args, **kwargs: None)
+    monkeypatch.setattr(dialogs, "show_error", lambda *args, **kwargs: errors.append(args))
 
     def run(image_files=(), polygons=POLYGONS, target=None):
         target = target or tmp_path / "report.xlsx"
-        monkeypatch.setattr(messagebox, "askyesno", lambda *args, **kwargs: bool(image_files))
+        monkeypatch.setattr(dialogs, "ask_yes_no", lambda *args, **kwargs: bool(image_files))
         monkeypatch.setattr(filedialog, "askopenfilenames", lambda **kwargs: [str(f) for f in image_files])
         monkeypatch.setattr(filedialog, "asksaveasfilename", lambda **kwargs: str(target))
         button = ExportExcelReportBtn(ui_inp_vars, ui_calc_vars, map_polygons_tb=tb.StringVar(value=polygons))

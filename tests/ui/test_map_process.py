@@ -174,7 +174,7 @@ def test_map_process_that_cannot_start_shows_an_error(app, clean_map, monkeypatc
 
     monkeypatch.setattr(sys, "platform", "linux")
     monkeypatch.setattr(map_ui.subprocess, "run", cannot_start)
-    monkeypatch.setattr(map_ui.messagebox, "showerror", lambda *args, **kwargs: errors.append(args))
+    monkeypatch.setattr(map_ui.dialogs, "show_error", lambda *args, **kwargs: errors.append(args))
 
     clean_map.run_webview()
 

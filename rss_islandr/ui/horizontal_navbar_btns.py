@@ -1,4 +1,4 @@
-from tkinter import Menu, messagebox
+from tkinter import Menu
 
 import ttkbootstrap as tb
 from core.config_parser import settings
@@ -10,6 +10,7 @@ from io_btns import ExportExcelReportBtn, ExportPDFReportBtn, ExportScenarioBtn,
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.core.version import get_version
+from rss_islandr.ui import dialogs
 
 
 class HorizontalNavbarBtns:
@@ -104,7 +105,7 @@ class HorizontalNavbarBtns:
         menu = Menu(menu_btn, tearoff=0)
         menu.add_command(
             label=f"Version {version}",
-            command=lambda: messagebox.showinfo("About RSS-ISLANDR", f"RSS-ISLANDR\nVersion {version}"),
+            command=lambda: dialogs.show_info("About RSS-ISLANDR", f"RSS-ISLANDR\nVersion {version}"),
         )
         menu_btn["menu"] = menu
 

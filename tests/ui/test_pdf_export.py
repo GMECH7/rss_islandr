@@ -1,5 +1,5 @@
 import sys
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
 import pytest
 import ttkbootstrap as tb
@@ -7,6 +7,7 @@ from PIL import Image
 from pypdf import PdfReader
 
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
+from rss_islandr.ui import dialogs
 from rss_islandr.ui.io_btns import ExportPDFReportBtn, IOBtns
 
 POLYGONS = (
@@ -37,12 +38,12 @@ def export(root, tmp_path, monkeypatch):
     }
     ui_calc_vars = {"IN_on-on_frame": UICalcVariable(tb.StringVar(value="0.35"), "C9")}
     errors = []
-    monkeypatch.setattr(messagebox, "showinfo", lambda *args, **kwargs: None)
-    monkeypatch.setattr(messagebox, "showerror", lambda *args, **kwargs: errors.append(args))
+    monkeypatch.setattr(dialogs, "show_info", lambda *args, **kwargs: None)
+    monkeypatch.setattr(dialogs, "show_error", lambda *args, **kwargs: errors.append(args))
 
     def run(image_files=(), polygons="", target=None, variables=None):
         target = tmp_path / "report.pdf" if target is None else target
-        monkeypatch.setattr(messagebox, "askyesno", lambda *args, **kwargs: bool(image_files))
+        monkeypatch.setattr(dialogs, "ask_yes_no", lambda *args, **kwargs: bool(image_files))
         monkeypatch.setattr(filedialog, "askopenfilenames", lambda **kwargs: [str(f) for f in image_files])
         monkeypatch.setattr(filedialog, "asksaveasfilename", lambda **kwargs: str(target))
         button = ExportPDFReportBtn(
@@ -220,12 +221,12 @@ def test_map_images_are_offered_only_on_request(monkeypatch):
     - The second time the list has the two selected files.
     """
     infos = []
-    monkeypatch.setattr(messagebox, "showinfo", lambda *args, **kwargs: infos.append(args))
-    monkeypatch.setattr(messagebox, "askyesno", lambda *args, **kwargs: False)
+    monkeypatch.setattr(dialogs, "show_info", lambda *args, **kwargs: infos.append(args))
+    monkeypatch.setattr(dialogs, "ask_yes_no", lambda *args, **kwargs: False)
     assert IOBtns.add_maps_prompt("pdf") == []
     assert len(infos) == 1
 
-    monkeypatch.setattr(messagebox, "askyesno", lambda *args, **kwargs: True)
+    monkeypatch.setattr(dialogs, "ask_yes_no", lambda *args, **kwargs: True)
     monkeypatch.setattr(filedialog, "askopenfilenames", lambda **kwargs: ("a.png", "b.png"))
     assert IOBtns.add_maps_prompt("pdf") == ["a.png", "b.png"]
 

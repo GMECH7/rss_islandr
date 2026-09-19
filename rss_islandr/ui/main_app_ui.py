@@ -1,10 +1,8 @@
 import logging
 import sys
-from tkinter import messagebox
 
 import ttkbootstrap as tb
 from PIL import Image, ImageTk
-from ttkbootstrap.dialogs import Messagebox
 
 from rss_islandr.core.config_parser import (
     ISLANDR_LOGO,
@@ -18,6 +16,7 @@ from rss_islandr.core.config_parser import (
 )
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
+from rss_islandr.ui import dialogs
 from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.general_ui import frame_distances
@@ -264,8 +263,7 @@ class MainAppUI:
 
     def __restore_all(self) -> None:
         """ """
-        result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
-        if result == "Yes":
+        if dialogs.ask_yes_no("Confirmation", "Are you sure you want to restore defaults?"):
             self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset latitude
             self.ui_inp_vars.get("map_0_02").tk_var.set(None)  # Reset longitude
             self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset longitude
@@ -275,7 +273,7 @@ class MainAppUI:
             for tk_var_tag in self.ui_inp_vars:
                 val_default = self.ui_inp_vars[tk_var_tag].val_default
                 self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
-            messagebox.showinfo("Success", "Values restored!")
+            dialogs.show_info("Success", "Values restored!")
         else:
             pass
 

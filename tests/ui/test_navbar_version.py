@@ -1,9 +1,9 @@
 import sys
-from tkinter import messagebox
 
 import pytest
 
 from rss_islandr.core.version import get_version
+from rss_islandr.ui import dialogs
 
 
 def _version_menu_buttons(widget):
@@ -45,7 +45,7 @@ def test_version_entry_opens_a_window_with_the_version(app, monkeypatch):
     - A window "About RSS-ISLANDR" is shown with the application name and the version.
     """
     shown = []
-    monkeypatch.setattr(messagebox, "showinfo", lambda *args, **kwargs: shown.append(args))
+    monkeypatch.setattr(dialogs, "show_info", lambda *args, **kwargs: shown.append(args))
     button = next(_version_menu_buttons(app.root))
 
     button.nametowidget(button.cget("menu")).invoke(0)
