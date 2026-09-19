@@ -21,12 +21,29 @@ def project(tmp_path, monkeypatch):
 
 
 def test_generated_files_are_found_but_not_the_venv_or_sources(project):
+    """
+    Steps:
+    1. Create a project folder with `dist/`, `build/`, a log file, a source file, a `__pycache__` folder and a .venv
+       with its own `__pycache__`.
+    2. Search the generated files.
+
+    Expected result:
+    - Only `dist`, `build`, the log file and the `__pycache__` of the source folder are found.
+    """
     found = {path.relative_to(project).as_posix() for path in clean.find_generated(project)}
 
     assert found == {"dist", "build", "rss_islandr.log", "package/__pycache__"}
 
 
 def test_dry_run_removes_nothing(project):
+    """
+    Steps:
+    1. Create the project folder.
+    2. Run `clean --dry-run`.
+
+    Expected result:
+    - It returns 0 and every file and folder still exists.
+    """
     assert clean.main(["--dry-run"]) == 0
 
     assert (project / "dist" / "installer.deb").exists()
@@ -34,6 +51,15 @@ def test_dry_run_removes_nothing(project):
 
 
 def test_clean_removes_generated_files_only(project):
+    """
+    Steps:
+    1. Create the project folder.
+    2. Run `clean`.
+
+    Expected result:
+    - `dist/`, `build/`, the log file and the source `__pycache__` are removed. The source file, the .venv (with its
+      `__pycache__`) and the README remain.
+    """
     assert clean.main([]) == 0
 
     assert not (project / "dist").exists()
@@ -46,6 +72,14 @@ def test_clean_removes_generated_files_only(project):
 
 
 def test_clean_of_a_clean_project_does_nothing(tmp_path, monkeypatch):
+    """
+    Steps:
+    1. Use an empty project folder.
+    2. Run `clean`.
+
+    Expected result:
+    - It returns 0 without an error.
+    """
     monkeypatch.setattr(clean, "ROOT_DIR", tmp_path)
 
     assert clean.main([]) == 0

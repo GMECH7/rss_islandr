@@ -57,6 +57,15 @@ def export(root, tmp_path, monkeypatch):
 
 
 def test_values_are_written_with_the_right_types(export):
+    """
+    Steps:
+    1. Prepare UI variables with text, an ISO date, numeric text, a risk value 0.35 and an empty text.
+    2. Export the Excel report (no map images).
+
+    Expected result:
+    - In the first scenario sheet the text stays text, the date is a real date, the numeric text is a number and the
+      risk 0.35 keeps the template's percentage format. The empty text leaves the cell empty.
+    """
     target, errors = export()
     assert errors == []
 
@@ -72,6 +81,14 @@ def test_values_are_written_with_the_right_types(export):
 
 
 def test_scenario_values_go_only_to_their_sheet(export):
+    """
+    Steps:
+    1. Prepare a value of the on-site to on-site scenario and values that belong to no scenario.
+    2. Export the Excel report.
+
+    Expected result:
+    - The scenario value is only in the first sheet. The other values are in all three scenario sheets.
+    """
     target, _ = export()
 
     workbook = load_workbook(target)
@@ -84,6 +101,13 @@ def test_scenario_values_go_only_to_their_sheet(export):
 
 
 def test_polygons_are_written_to_the_coordinates_sheet(export):
+    """
+    Steps:
+    1. Export the Excel report with one polygon (three nodes, area 1.2 km²).
+
+    Expected result:
+    - The coordinates sheet has the polygon name, the node numbers 1 to 3, the coordinates of a node and the area.
+    """
     target, _ = export()
 
     sheet = load_workbook(target).worksheets[4]
@@ -94,6 +118,15 @@ def test_polygons_are_written_to_the_coordinates_sheet(export):
 
 
 def test_map_images_are_added_below_each_other(export, tmp_path):
+    """
+    Steps:
+    1. Create two PNG images of different sizes.
+    2. Export the Excel report with both images.
+
+    Expected result:
+    - No error is shown. The maps sheet has two images, the first at the top and the second below it, and the aspect
+      ratio of the first is kept.
+    """
     image_files = []
     for i, size in enumerate([(800, 500), (600, 600)]):
         image_file = tmp_path / f"map{i}.png"
@@ -113,6 +146,13 @@ def test_map_images_are_added_below_each_other(export, tmp_path):
 
 
 def test_error_is_reported_when_file_cannot_be_written(export, tmp_path):
+    """
+    Steps:
+    1. Export the Excel report to a file in a folder that does not exist.
+
+    Expected result:
+    - No file is created and exactly one error message ('Error') is shown.
+    """
     target, errors = export(target=tmp_path / "missing_folder" / "report.xlsx")
 
     assert not target.exists()

@@ -188,7 +188,7 @@ pip install -r requirements.txt
 | `rss_islandr/` | The app: `app.py` (start-up and command line options), `ui/`, `core/`, `assessment/`, `reporting/`, `data/` (weights as JSON), `maps/` (Leaflet map), `templates/` (Excel template), `self_test.py` |
 | `dev_scripts/` | Scripts used while developing. Each one is a Poetry command (see below) |
 | `build_installer/` | Everything that creates the installers: the `rss-build` code, `docker/` (Ubuntu 24.04 build image and script), `installer/islandr.iss` (Inno Setup script of the Windows installer) and the PyInstaller hook |
-| `tests/` | The tests, in one folder per part of the code: `app/`, `assessment/`, `build_installer/`, `core/`, `dev_scripts/`, `ui/` |
+| `tests/` | The tests, in one folder per part of the code: `app/`, `assessment/`, `build_installer/`, `conventions/`, `core/`, `dev_scripts/`, `ui/` |
 | `main.py`, `islandr.spec` | Entry point of the app and the PyInstaller specification |
 | `pyproject.toml`, `poetry.lock` | Dependencies (Poetry), the commands below and the version of the app |
 
@@ -209,7 +209,7 @@ Run all commands from the project folder after `poetry install --with build,dev`
 ### Running, testing and building
 
 - **Run the application:** `poetry run islandr` (or `python main.py`).
-- **Run the tests:** `poetry run pytest`.
+- **Run the tests:** `poetry run pytest`. Every test has a docstring with two parts, **Steps** (what the test does) and **Expected result** (what should happen). A test in `tests/conventions/` fails if a test misses them.
 - **Build the installers** with `rss-build` (commands above). The version comes from `version` in `pyproject.toml`, and each build ends with a self-test of the built application.
   - **Windows:** needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`ISCC.exe`) for the installer. The script is `build_installer/installer/islandr.iss`.
   - **Debian package:** for Ubuntu 24.04 and later (`build_installer/docker/Dockerfile.build` is the build environment). It installs the app to `/opt/rss-islandr`, the command `rss-islandr` and a menu entry.
@@ -229,7 +229,7 @@ Two workflows are in `.github/workflows/`:
 
 | Workflow | Runs | What it does |
 |---|---|---|
-| `ci.yml` (Tests) | On every push, and on pull requests to `main` | `pytest` on Ubuntu 24.04 and Windows |
+| `ci.yml` (Tests) | On pull requests to `main` (before the merge), on pushes to `main` and with the **Run workflow** button. Not on pushes to other branches | `pytest` on Ubuntu 24.04 and Windows |
 | `release.yml` (Installers) | On pushes to `main` (and to `makge/publication` for now), and with the **Run workflow** button in the Actions tab | Builds and tests the Ubuntu package (`--deb --docker`, then `--test-deb`) and the Windows installer and portable zip (`--win`, then silent install, self-test and uninstall) |
 
 - **Releases:** a push to `main` also creates the GitHub release `v<version>` (version in `pyproject.toml`) with `islandr-setup.exe`, `islandr-portable.zip`, the `.deb` and `SHA256SUMS.txt`, **if that release does not exist yet**. To publish a new version, change `version` in `pyproject.toml` and merge to `main`. Releases do not expire and are the download page for users: `https://github.com/GMECH7/rss_islandr/releases`.
