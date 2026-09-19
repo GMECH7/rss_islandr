@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import contextlib
 import logging
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,10 @@ import webview
 from rss_islandr.core.datatypes import PolygonDataDict
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
+
+if sys.platform.startswith("linux"):
+    # GTK is tried first by default and logs a (harmless) error when PyGObject is missing. Qt is the backend we install.
+    os.environ.setdefault("PYWEBVIEW_GUI", "qt")
 
 
 class Api:

@@ -903,6 +903,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById('captureScreenBtn').addEventListener('click', async () => {
+  // Screen capture (getDisplayMedia) is not supported by the Qt WebEngine used on Linux/macOS
+  if (navigator.userAgent.includes("QtWebEngine")) {
+    alert("Saving the map is not available in this environment. Please use your operating system's screenshot tool.");
+    return;
+  }
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
     const track = stream.getVideoTracks()[0];
