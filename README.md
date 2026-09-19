@@ -132,39 +132,47 @@ pip install -r requirements.txt
      poetry show --tree # shows dependencies relationships
      ```
 
+### Project layout
+
+| Folder / file | Contents |
+|---|---|
+| `rss_islandr/` | The app: `app.py` (start-up and command line options), `ui/`, `core/`, `assessment/`, `reporting/`, `data/` (weights as JSON), `maps/` (Leaflet map), `templates/` (Excel template), `self_test.py` |
+| `dev_scripts/` | Scripts used while developing. Each one is a Poetry command (see below) |
+| `build_installer/` | Everything that creates the installers: the `rss-build` code, `docker/` (Ubuntu 24.04 build image and script), `installer/islandr.iss` (Inno Setup script of the Windows installer) and the PyInstaller hook |
+| `tests/` | The tests, in one folder per part of the code: `app/`, `assessment/`, `build_installer/`, `core/`, `dev_scripts/`, `ui/` |
+| `main.py`, `islandr.spec` | Entry point of the app and the PyInstaller specification |
+| `pyproject.toml`, `poetry.lock` | Dependencies (Poetry), the commands below and the version of the app |
+
+### Poetry commands
+
+Run all commands from the project folder after `poetry install --with build,dev`.
+
+| Command | What it does |
+|---|---|
+| `poetry run islandr` | Starts the app (the same as `python main.py`). `--self-test` checks the installation instead (see below) |
+| `poetry run pytest` | Runs the tests. Coverage reports are written to `.cov_files/`, and the UI tests need a display |
+| `poetry run clean` | Removes the generated files (`dist/`, `build/`, `.cov_files/`, caches, `rss_islandr.log`, `version_info.txt`). `--dry-run` only shows them. It deletes the built installers in `dist/` as well, but never `.venv/` |
+| `poetry run rss-build --win` | On Windows: creates `dist/islandr-setup.exe` and `dist/islandr-portable.zip` |
+| `poetry run rss-build --deb --docker` | On Linux: creates `dist/rss-islandr_<version>_amd64.deb` in an Ubuntu 24.04 container (needs Docker) |
+| `poetry run rss-build --deb` | The same without Docker, built with the local system |
+| `poetry run rss-build --test-deb` | Installs `dist/*.deb` in clean Ubuntu 24.04 and 26.04 containers and tests it |
+
 ### Running, testing and building
 
-- **Run the application:**
-
-  ```bash
-  python main.py
-  ```
-
-- **Run the tests** (coverage reports are written to `.cov_files/`; the UI tests need a display):
-
-  ```bash
-  pytest
-  ```
-
-- **Build the installers** with `rss-build` (needs `poetry install --with build,dev`; the version is `version` in `pyproject.toml`). Each build ends with a self-test of the built application:
-
-  ```bash
-  poetry run rss-build --win              # On Windows: dist/islandr-setup.exe and dist/islandr-portable.zip
-  poetry run rss-build --deb --docker     # On Linux: dist/rss-islandr_<version>_amd64.deb, built in an Ubuntu 24.04 container (needs Docker)
-  poetry run rss-build --deb              # On Linux without Docker: builds with the local system
-  poetry run rss-build --test-deb         # Installs dist/*.deb in clean Ubuntu 24.04 and 26.04 containers and tests it
-  ```
-
-  - **Windows:** needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`ISCC.exe`) for the installer. The script is `installer/islandr.iss`.
-  - **Debian package:** for Ubuntu 24.04 and later (`docker/Dockerfile.build` is the build environment). It installs the app to `/opt/rss-islandr`, the command `rss-islandr` and a menu entry.
-  - Under the hood `rss-build` runs `generate_version.py` (creates `version_info.txt`) and PyInstaller with `islandr.spec` (one-folder build in `dist/islandr/`).
-
+- **Run the application:** `poetry run islandr` (or `python main.py`).
+- **Run the tests:** `poetry run pytest`.
+- **Build the installers** with `rss-build` (commands above). The version comes from `version` in `pyproject.toml`, and each build ends with a self-test of the built application.
+  - **Windows:** needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`ISCC.exe`) for the installer. The script is `build_installer/installer/islandr.iss`.
+  - **Debian package:** for Ubuntu 24.04 and later (`build_installer/docker/Dockerfile.build` is the build environment). It installs the app to `/opt/rss-islandr`, the command `rss-islandr` and a menu entry.
+  - Under the hood `rss-build` creates `version_info.txt` (Windows file properties) and runs PyInstaller with `islandr.spec` (one-folder build in `dist/islandr/`).
 - **Check an installation** (works for the source version and for the built application; exit code 0 = OK, `--self-test-report FILE` also writes the result to a file):
 
   ```bash
-  poetry run python main.py --self-test
+  poetry run islandr --self-test
   dist/islandr/islandr --self-test
   ```
+
+- **Desktop input method on Linux:** the app switches the X11 input method (ibus) off, because it makes the window take minutes to build. Set `RSS_KEEP_INPUT_METHOD=1` to keep it.
 
 ---
 

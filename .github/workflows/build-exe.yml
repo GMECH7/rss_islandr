@@ -28,7 +28,7 @@ jobs:
           pip install -e .
 
       - name: Generate version info
-        run: python generate_version.py
+        run: python -m build_installer.version
 
       - name: Build EXE using spec file
         run: pyinstaller --clean --noconfirm islandr.spec

@@ -5,7 +5,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
-from build_tools.common import BuildError, format_size
+from build_installer.common import BuildError, format_size
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -38,15 +38,15 @@ def main(argv: list[str] | None = None) -> int:
     console = Console()
     try:
         if args.win:
-            from build_tools.windows import build_windows
+            from build_installer.windows import build_windows
 
             show_results(console, build_windows(console))
         elif args.deb:
-            from build_tools.debian import build_deb, build_deb_in_docker
+            from build_installer.debian import build_deb, build_deb_in_docker
 
             show_results(console, [build_deb_in_docker(console) if args.docker else build_deb(console)])
         elif args.test_deb:
-            from build_tools.debian import build_version, deb_path, test_deb
+            from build_installer.debian import build_version, deb_path, test_deb
 
             test_deb(console, deb_path(build_version()))
     except BuildError as e:

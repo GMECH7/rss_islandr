@@ -7,8 +7,8 @@ from pathlib import Path
 from PIL import Image
 from rich.console import Console
 
-from build_tools.common import APP_DIR, DIST_DIR, BuildError, build_app, run
-from build_tools.version import ROOT_DIR, read_pyproject
+from build_installer.common import APP_DIR, DIST_DIR, BuildError, build_app, run
+from build_installer.version import ROOT_DIR, read_pyproject
 
 PACKAGE_NAME = "rss-islandr"
 INSTALL_DIR = f"/opt/{PACKAGE_NAME}"
@@ -130,7 +130,7 @@ def build_deb_in_docker(console: Console) -> Path:
     """Build the package in the Ubuntu 24.04 image (same environment as in GitHub Actions)."""
     version = build_version()  # Read once: the container builds from a copy of the current files
     console.rule("Building the Docker image (Ubuntu 24.04)")
-    run(console, ["docker", "build", "-t", BUILD_IMAGE_TAG, "-f", "docker/Dockerfile.build", "docker"])
+    run(console, ["docker", "build", "-t", BUILD_IMAGE_TAG, "-f", "build_installer/docker/Dockerfile.build", "build_installer/docker"])
 
     console.rule("Building the package in the container")
     DIST_DIR.mkdir(exist_ok=True)
@@ -143,14 +143,14 @@ def build_deb_in_docker(console: Console) -> Path:
             "--user", f"{user}:{group}",
             "-v", f"{ROOT_DIR}:/src",
             BUILD_IMAGE_TAG,
-            "bash", "/src/docker/build-deb.sh",
+            "bash", "/src/build_installer/docker/build-deb.sh",
         ],
     )  # fmt: skip
     return deb_path(version)
 
 
 def build_version() -> str:
-    from build_tools.version import read_version
+    from build_installer.version import read_version
 
     return read_version()
 

@@ -5,14 +5,14 @@ from pathlib import Path
 
 from rich.console import Console
 
-from build_tools.common import APP_DIR, APP_NAME, DIST_DIR, BuildError, build_app, run
-from build_tools.version import ROOT_DIR
+from build_installer.common import APP_DIR, APP_NAME, DIST_DIR, BuildError, build_app, run
+from build_installer.version import ROOT_DIR
 
 #: File names without version, so that the link `.../releases/latest/download/<name>` always works
 SETUP_NAME = "islandr-setup"
 PORTABLE_NAME = "islandr-portable"
 
-INNO_SCRIPT = ROOT_DIR / "installer" / "islandr.iss"
+INNO_SCRIPT = ROOT_DIR / "build_installer" / "installer" / "islandr.iss"
 INNO_DEFAULT_PATHS = [
     Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Inno Setup 6" / "ISCC.exe",
     Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "Inno Setup 6" / "ISCC.exe",

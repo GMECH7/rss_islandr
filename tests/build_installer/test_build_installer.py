@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-from build_tools import cli, debian, version, windows
+from build_installer import cli, debian, version, windows
 
 
 def test_version_is_read_from_pyproject():
@@ -55,6 +55,7 @@ def test_inno_script_uses_a_stable_app_id_and_no_admin_rights():
     assert "PrivilegesRequired=lowest" in script
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="the package is built on Linux")
 def test_deb_package_tree(monkeypatch, tmp_path):
     app_dir = tmp_path / "app"
     (app_dir / "_internal").mkdir(parents=True)

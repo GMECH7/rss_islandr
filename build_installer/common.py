@@ -7,7 +7,7 @@ from pathlib import Path
 
 from rich.console import Console
 
-from build_tools.version import ROOT_DIR, read_version, write_version_info
+from build_installer.version import ROOT_DIR, read_version, write_version_info
 
 DIST_DIR = ROOT_DIR / "dist"
 APP_DIR = DIST_DIR / "islandr"  # Output of PyInstaller (one-folder build)

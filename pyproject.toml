@@ -1,14 +1,20 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.22.1"
+version = "1.22.2"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-packages = [{ include = "rss_islandr" }, { include = "build_tools" }]
+packages = [
+    { include = "rss_islandr" },
+    { include = "dev_scripts" },
+    { include = "build_installer" },
+]
 
 [tool.poetry.scripts]
-rss-build = "build_tools.cli:main"
+islandr = "dev_scripts.run:main"
+clean = "dev_scripts.clean:main"
+rss-build = "build_installer.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
@@ -49,9 +55,10 @@ addopts = """
 data_file = ".cov_files/.coverage" # Redirect .coverage file here
 source = ["rss_islandr"] # Only measure coverage here
 omit = [
-    "tests/*",             # Ignore test files
-    "main.py",             # Ignore main entry point
-    "generate_version.py", # Ignore version generation script
+    "tests/*",           # Ignore test files
+    "main.py",           # Ignore main entry point
+    "build_installer/*", # Ignore the installer build scripts
+    "dev_scripts/*",     # Ignore the development scripts
     "*/__init__.py",
 ]
 

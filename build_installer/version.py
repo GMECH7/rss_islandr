@@ -52,3 +52,9 @@ VSVersionInfo(
     output_file = ROOT_DIR / "version_info.txt"
     output_file.write_text(version_info, encoding="utf-8")
     return output_file
+
+
+if __name__ == "__main__":
+    app_version = read_version()
+    write_version_info(app_version)
+    print(f"Generated version_info.txt for version: {app_version}")

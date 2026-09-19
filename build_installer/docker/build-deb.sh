@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs inside the build container (see docker/Dockerfile.build): builds the .deb from a clean copy of /src
+# Runs inside the build container (see build_installer/docker/Dockerfile.build): builds the .deb from a clean copy of /src
 # and copies it to /src/dist.
 set -euo pipefail
 
