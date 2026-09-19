@@ -34,3 +34,13 @@ def app(root):
     main.create_ui()
     root.update_idletasks()
     return main
+
+
+@pytest.fixture
+def restore_inputs(app):
+    """Give all inputs of the app their original values after the test (the app is shared by the UI tests)."""
+    saved = {key: variable.tk_var.get() for key, variable in app.ui_inp_vars.items()}
+    yield
+    for key, value in saved.items():
+        if app.ui_inp_vars[key].tk_var.get() != value:  # Setting a value recalculates the meters
+            app.ui_inp_vars[key].tk_var.set(value)

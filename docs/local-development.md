@@ -86,7 +86,7 @@ The dependencies are in groups:
 | Group | Contents | Needed for |
 |---|---|---|
 | main (always installed) | `ttkbootstrap`, `pywebview`, `reportlab`, `openpyxl`; on Linux `qtpy` and PyQt6 (Qt WebEngine), on Windows `pythonnet` | Running the application |
-| `dev` | `pytest`, `pytest-cov`, `rich` | Tests and the development scripts |
+| `dev` | `pytest`, `pytest-cov`, `pypdf`, `rich` | Tests and the development scripts |
 | `build` | `pyinstaller` | Building the installers |
 
 `poetry install` alone installs only the main group. The project installs itself in editable mode, so changes in the source code apply immediately.
@@ -130,7 +130,7 @@ The `rss-build` commands are described in [Installers](installers.md).
 
 ## 7. Tests
 
-The tests are in the folder `tests/`, one subfolder for each part of the code: `app/`, `assessment/`, `build_installer/`, `conventions/`, `core/`, `dev_scripts/` and `ui/`.
+The tests are in the folder `tests/`, one subfolder for each part of the code: `app/`, `assessment/`, `build_installer/`, `conventions/`, `core/`, `data_readers/`, `dev_scripts/` and `ui/`.
 
 ```bash
 poetry run pytest                              # all tests
