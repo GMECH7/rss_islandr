@@ -5,6 +5,10 @@ description = "Risk Screening System developed for CERTH under the ISLANDR proje
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
 license = "MIT"
+packages = [{ include = "rss_islandr" }, { include = "build_tools" }]
+
+[tool.poetry.scripts]
+rss-build = "build_tools.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"

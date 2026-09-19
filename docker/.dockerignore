@@ -1,0 +1,6 @@
+.venv
+dist
+build
+.git
+__pycache__
+.cov_files

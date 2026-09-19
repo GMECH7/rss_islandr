@@ -146,14 +146,18 @@ pip install -r requirements.txt
   pytest
   ```
 
-- **Build the standalone application** (one-folder build in `dist/islandr/`; needs the `build` dependency group, i.e. `poetry install --with build`):
+- **Build the installers** with `rss-build` (needs `poetry install --with build,dev`; the version is `version` in `pyproject.toml`). Each build ends with a self-test of the built application:
 
   ```bash
-  poetry run python generate_version.py
-  poetry run pyinstaller --clean --noconfirm islandr.spec
+  poetry run rss-build --win              # On Windows: dist/islandr-setup.exe and dist/islandr-portable.zip
+  poetry run rss-build --deb --docker     # On Linux: dist/rss-islandr_<version>_amd64.deb, built in an Ubuntu 24.04 container (needs Docker)
+  poetry run rss-build --deb              # On Linux without Docker: builds with the local system
+  poetry run rss-build --test-deb         # Installs dist/*.deb in clean Ubuntu 24.04 and 26.04 containers and tests it
   ```
 
-  `generate_version.py` creates `version_info.txt` (Windows file properties) from `version` in `pyproject.toml`.
+  - **Windows:** needs [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`ISCC.exe`) for the installer. The script is `installer/islandr.iss`.
+  - **Debian package:** for Ubuntu 24.04 and later (`docker/Dockerfile.build` is the build environment). It installs the app to `/opt/rss-islandr`, the command `rss-islandr` and a menu entry.
+  - Under the hood `rss-build` runs `generate_version.py` (creates `version_info.txt`) and PyInstaller with `islandr.spec` (one-folder build in `dist/islandr/`).
 
 - **Check an installation** (works for the source version and for the built application; exit code 0 = OK, `--self-test-report FILE` also writes the result to a file):
 
