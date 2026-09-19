@@ -128,6 +128,7 @@ def build_deb(console: Console) -> Path:
 
 def build_deb_in_docker(console: Console) -> Path:
     """Build the package in the Ubuntu 24.04 image (same environment as in GitHub Actions)."""
+    version = build_version()  # Read once: the container builds from a copy of the current files
     console.rule("Building the Docker image (Ubuntu 24.04)")
     run(console, ["docker", "build", "-t", BUILD_IMAGE_TAG, "-f", "docker/Dockerfile.build", "docker"])
 
@@ -145,7 +146,7 @@ def build_deb_in_docker(console: Console) -> Path:
             "bash", "/src/docker/build-deb.sh",
         ],
     )  # fmt: skip
-    return deb_path(build_version())
+    return deb_path(version)
 
 
 def build_version() -> str:

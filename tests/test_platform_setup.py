@@ -15,13 +15,24 @@ def test_input_method_is_disabled_on_linux(monkeypatch):
     assert os.environ["XMODIFIERS"] == "@im=none"
 
 
-def test_setting_of_the_user_is_kept(monkeypatch):
+def test_value_set_by_the_desktop_is_replaced(monkeypatch):
+    # Ubuntu sets XMODIFIERS=@im=ibus in every session
     monkeypatch.setattr(sys, "platform", "linux")
-    monkeypatch.setenv("XMODIFIERS", "@im=fcitx")
+    monkeypatch.setenv("XMODIFIERS", "@im=ibus")
 
     platform_setup.disable_input_method()
 
-    assert os.environ["XMODIFIERS"] == "@im=fcitx"
+    assert os.environ["XMODIFIERS"] == "@im=none"
+
+
+def test_input_method_can_be_kept(monkeypatch):
+    monkeypatch.setattr(sys, "platform", "linux")
+    monkeypatch.setenv("XMODIFIERS", "@im=ibus")
+    monkeypatch.setenv(platform_setup.KEEP_INPUT_METHOD_VARIABLE, "1")
+
+    platform_setup.disable_input_method()
+
+    assert os.environ["XMODIFIERS"] == "@im=ibus"
 
 
 def test_nothing_changes_on_windows(monkeypatch):
