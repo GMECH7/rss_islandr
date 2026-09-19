@@ -174,6 +174,19 @@ Run all commands from the project folder after `poetry install --with build,dev`
 
 - **Desktop input method on Linux:** the app switches the X11 input method (ibus) off, because it makes the window take minutes to build. Set `RSS_KEEP_INPUT_METHOD=1` to keep it.
 
+### GitHub Actions and releases
+
+Two workflows are in `.github/workflows/`:
+
+| Workflow | Runs | What it does |
+|---|---|---|
+| `ci.yml` (Tests) | On every push, and on pull requests to `main` | `pytest` on Ubuntu 24.04 and Windows |
+| `release.yml` (Installers) | On pushes to `main` (and to `makge/publication` for now), and with the **Run workflow** button in the Actions tab | Builds and tests the Ubuntu package (`--deb --docker`, then `--test-deb`) and the Windows installer and portable zip (`--win`, then silent install, self-test and uninstall) |
+
+- **Releases:** a push to `main` also creates the GitHub release `v<version>` (version in `pyproject.toml`) with `islandr-setup.exe`, `islandr-portable.zip`, the `.deb` and `SHA256SUMS.txt`, **if that release does not exist yet**. To publish a new version, change `version` in `pyproject.toml` and merge to `main`. Releases do not expire and are the download page for users: `https://github.com/GMECH7/rss_islandr/releases`.
+- **Other runs** (other branches, the button) build and test only. The files are on the run page in the Actions tab, under *Artifacts*, for 14 days. The run page also shows a table with file sizes and SHA-256 checksums.
+- **Reproducibility:** pinned runner images (`ubuntu-24.04`, `windows-2022`), Python 3.12, Poetry 2.4.1 with `poetry.lock`, Inno Setup 6.7.1, and the Ubuntu 24.04 build container.
+
 ---
 
 # 🗺️ Maps Viewer - Geology, Mines & Hydrogeology

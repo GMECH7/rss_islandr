@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.22.2"
+version = "1.23.0"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"

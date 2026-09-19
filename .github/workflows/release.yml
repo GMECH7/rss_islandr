@@ -1,0 +1,190 @@
+name: Installers
+
+# Builds and tests the Windows installer and the Ubuntu package.
+# - Push to main: also creates the GitHub release v<version> if it does not exist yet (version in pyproject.toml).
+# - Other triggers (the branch below, the "Run workflow" button): build and test only, the files are kept
+#   for 14 days as artifacts of the run.
+on:
+  push:
+    branches:
+      - main
+      - makge/publication # Temporary: to try the installers before this workflow is on main
+  workflow_dispatch:
+
+concurrency:
+  group: installers-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  POETRY_VERSION: "2.4.1"
+  INNO_SETUP_VERSION: "6.7.1"
+
+jobs:
+  version:
+    name: Version and release check
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      release_exists: ${{ steps.release.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the version from pyproject.toml
+        id: version
+        run: |
+          VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['tool']['poetry']['version'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Check if the release exists
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG exists already"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Release $TAG does not exist yet"
+          fi
+
+  build-deb:
+    name: Ubuntu package
+    needs: version
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry and the dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --with build,dev
+
+      - name: Build the package in the Ubuntu 24.04 container
+        run: poetry run rss-build --deb --docker
+
+      - name: Test the package in clean Ubuntu 24.04 and 26.04 containers
+        run: poetry run rss-build --test-deb
+
+      - name: Summary
+        run: |
+          {
+            echo "### Ubuntu package (version ${{ needs.version.outputs.version }})"
+            echo "| File | Size | SHA-256 |"
+            echo "|---|---|---|"
+            for file in dist/*.deb; do
+              echo "| $(basename "$file") | $(du -h "$file" | cut -f1) | \`$(sha256sum "$file" | cut -d' ' -f1)\` |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-package
+          path: dist/*.deb
+          retention-days: 14
+          if-no-files-found: error
+
+  build-windows:
+    name: Windows installer
+    needs: version
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry and the dependencies
+        run: |
+          pip install poetry==${{ env.POETRY_VERSION }}
+          poetry install --with build,dev
+
+      - name: Install Inno Setup
+        run: choco install innosetup --version=${{ env.INNO_SETUP_VERSION }} -y --no-progress
+
+      - name: Build the installer and the portable zip
+        run: poetry run rss-build --win
+
+      - name: Test the installer (silent install, self-test, uninstall)
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "islandr-installed"
+          $report = Join-Path $env:RUNNER_TEMP "installed_self_test.txt"
+          Start-Process -FilePath "dist\islandr-setup.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/DIR=$dir" -Wait
+          if (-not (Test-Path "$dir\islandr.exe")) { throw "The installer did not install islandr.exe" }
+          $process = Start-Process -FilePath "$dir\islandr.exe" -ArgumentList "--self-test", "--self-test-report", $report -Wait -PassThru
+          if (Test-Path $report) { Get-Content $report }
+          if ($process.ExitCode -ne 0) { throw "The self-test of the installed app failed" }
+          Start-Process -FilePath "$dir\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -Wait
+          Start-Sleep -Seconds 3
+          if (Test-Path "$dir\islandr.exe") { throw "The uninstaller left islandr.exe behind" }
+
+      - name: Test the portable zip (unzip, self-test)
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "islandr-portable"
+          $report = Join-Path $env:RUNNER_TEMP "portable_self_test.txt"
+          Expand-Archive -Path "dist\islandr-portable.zip" -DestinationPath $dir
+          $process = Start-Process -FilePath "$dir\islandr\islandr.exe" -ArgumentList "--self-test", "--self-test-report", $report -Wait -PassThru
+          if (Test-Path $report) { Get-Content $report }
+          if ($process.ExitCode -ne 0) { throw "The self-test of the portable app failed" }
+
+      - name: Summary
+        shell: pwsh
+        run: |
+          $lines = @("### Windows installer (version ${{ needs.version.outputs.version }})", "| File | Size | SHA-256 |", "|---|---|---|")
+          foreach ($file in Get-ChildItem dist -File) {
+            $hash = (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLower()
+            $lines += "| $($file.Name) | $([math]::Round($file.Length / 1MB)) MB | ``$hash`` |"
+          }
+          $lines -join "`n" | Add-Content -Path $env:GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: |
+            dist/islandr-setup.exe
+            dist/islandr-portable.zip
+          retention-days: 14
+          if-no-files-found: error
+
+  release:
+    name: Publish the release
+    needs: [version, build-deb, build-windows]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.version.outputs.release_exists == 'false'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write # Creates the tag and the release
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-files
+          merge-multiple: true
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.version.outputs.tag }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          cd release-files
+          sha256sum -- * > SHA256SUMS.txt
+          ls -la
+          gh release create "$TAG" ./* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "RSS-ISLANDR $VERSION" \
+            --generate-notes
