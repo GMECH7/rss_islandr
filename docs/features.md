@@ -204,11 +204,12 @@ The map viewer is an interactive [Leaflet](https://leafletjs.com/) map that disp
 
 ### Functions
 
-- Displaying OpenStreetMap as the base map and switching the WMS layers on and off, with a legend for the layers.
-- Drawing polygons around the site. The area (km²) and the number of nodes of each polygon are calculated.
-- Selecting a point and reading its coordinates in a chosen coordinate reference system (CRS). The coordinates and the CRS are transferred to the Site info page when the map is closed.
+- Displaying OpenStreetMap as the base map and switching the WMS layers on and off in the layer panel, which groups the layers by geology, mineral resources, hydrogeology, soil and hydrology. Every layer has a legend that can be minimised. The panel can be hidden with the button at the top left.
+- Drawing polygons with the buttons **Draw Source**, **Draw Pathway** and **Draw Receptor** (three colours, one type each). A name is requested when a polygon is finished. The area (km²) and the number of nodes of each polygon are calculated. The key Escape cancels a drawing, **Clear All Drawings** removes all polygons, and the edit tools at the bottom left change the nodes of a polygon.
+- Clicking a polygon shows its name, type, area, number of nodes and the coordinates of its nodes in the selected CRS. The **Rename** button changes its name.
+- Setting a marker: press Ctrl and click on the map (a second Ctrl-click removes it), or type the latitude and longitude and press **Update Marker**. Decimal degrees and degrees, minutes, seconds (for example 40°26'46"N) are accepted. The coordinates are shown in the coordinate reference system (CRS) that is selected in the list.
+- The coordinates, the CRS and the polygons are transferred to the application when the map is closed. The polygons are stored with the scenario and are written to the reports.
 - Saving the map as an image (see the notes below).
-- The polygons are stored with the scenario and are written to the reports.
 
 ### Behaviour by platform
 
@@ -311,6 +312,8 @@ The layers are configured in `rss_islandr/maps/js/config.js`.
 |---|---|---|
 | European River Network (EU-Hydro), generated using the Copernicus Land Monitoring Service information of the European Union | `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer` | `0,1,2,3,4,5` |
 
+Two geological layers (IGME1500 and IQUAME 2500) are configured in `config.js` but have no check box in the layer panel of the map page yet, so they cannot be switched on at present.
+
 An overview of the BGR web services is available at <https://services.bgr.de/uebersicht/kurzlinks>.
 
 ### Adding a map layer
@@ -340,7 +343,7 @@ The document contains `<Layer>` entries. Use the `<Name>` value as the layer nam
 
 ### Scenario file (JSON)
 
-File > Export scenario saves all inputs, the calculated values and the polygons to a `.json` file. File > Import scenario reads such a file back. The keys are the identifiers of the input fields, for example `drop_on-on_IN_1_00` for the toxicity of the on-site to on-site scenario. All keys must be present when a file is imported, otherwise an error message is shown.
+File > Export scenario saves all inputs, the calculated values and the polygons (with their type: source, pathway or receptor) to a `.json` file. File > Import scenario reads such a file back. The keys are the identifiers of the input fields, for example `drop_on-on_IN_1_00` for the toxicity of the on-site to on-site scenario. All keys must be present when a file is imported, otherwise an error message is shown.
 
 ### PDF report
 

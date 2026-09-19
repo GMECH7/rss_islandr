@@ -59,6 +59,7 @@ def test_self_test_fails_when_a_check_fails(monkeypatch, tmp_path):
     - The exit code is 1. The report contains the failed check with its error, the check that passes still ran (OK)
       and the last line is 'Self-test FAILED'.
     """
+
     def broken_check():
         raise RuntimeError("boom")
 

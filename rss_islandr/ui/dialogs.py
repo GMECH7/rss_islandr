@@ -55,7 +55,9 @@ class CenteredMessageDialog(MessageDialog):
 
 
 def _show(message: str, title: str, buttons: list[str], icon: str | None, parent) -> str | None:
-    dialog = CenteredMessageDialog(message=message, title=title, parent=parent, buttons=buttons, icon=icon, localize=True)
+    dialog = CenteredMessageDialog(
+        message=message, title=title, parent=parent, buttons=buttons, icon=icon, localize=True
+    )
     dialog.show()
     return dialog.result
 

@@ -141,7 +141,6 @@ class SiteInfoUI(GeneralUITemplate):
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
         self.ui_inp_vars.update({"drop_0_01": ui_var_site_status})
 
-
     def __ui_inputs_nested_dropdown(self):
         """
         Definition of nested dropdown widget inputs.

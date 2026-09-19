@@ -197,6 +197,8 @@ Get-Content "$env:TEMP\self_test.txt"
 
 Exit code 0 and the last line "Self-test passed" mean that everything is in order. When a check fails, its line begins with `FAIL` and shows the error.
 
+The version of an installed application is shown in the **Version** menu of the navigation bar (next to Documents).
+
 ## 6. Troubleshooting
 
 | Problem | Explanation |
