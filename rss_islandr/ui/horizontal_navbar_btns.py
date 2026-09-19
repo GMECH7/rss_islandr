@@ -1,4 +1,4 @@
-from tkinter import Menu
+from tkinter import Menu, messagebox
 
 import ttkbootstrap as tb
 from core.config_parser import settings
@@ -9,6 +9,7 @@ from io_btns import ExportExcelReportBtn, ExportPDFReportBtn, ExportScenarioBtn,
 
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.logger_config import logger_decorator
+from rss_islandr.core.version import get_version
 
 
 class HorizontalNavbarBtns:
@@ -87,6 +88,24 @@ class HorizontalNavbarBtns:
         menu.add_command(label="Export PDF report", command=write_to_pdf.on_btn_click)
         menu.add_command(label="Export scenario", command=write_to_json.on_btn_click)
         menu.add_command(label="Import scenario", command=read_from_json.on_btn_click)
+        menu_btn["menu"] = menu
+
+    @logger_decorator
+    def version_menu_button(self, frame: tb.Frame) -> None:
+        """
+        Version menu, next to the Documents menu. Its entry shows the version of the application and opens a
+        window with the details.
+        """
+        version = get_version()
+
+        menu_btn = tb.Menubutton(frame, text="Version", style="Custom.Menubutton.TMenubutton")
+        menu_btn.grid(row=0, column=2, sticky="w")
+
+        menu = Menu(menu_btn, tearoff=0)
+        menu.add_command(
+            label=f"Version {version}",
+            command=lambda: messagebox.showinfo("About RSS-ISLANDR", f"RSS-ISLANDR\nVersion {version}"),
+        )
         menu_btn["menu"] = menu
 
     @logger_decorator

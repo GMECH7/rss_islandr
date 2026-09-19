@@ -51,6 +51,7 @@ The top bar contains:
 
 - **File:** Export Excel report, Export PDF report, Export scenario, Import scenario.
 - **Documents:** the conceptual site model (CSM) image.
+- **Version:** a menu next to Documents. Its entry shows the version of the application (for example "Version 1.23.0") and opens a window with the details.
 - **Switch to Light Mode / Dark Mode:** changes the colour theme.
 
 The three scenario pages have identical inputs and are independent of each other. Each page has three groups of tabs: the source (hazard), the five pathways and the five receptors. A colour-coded meter next to each tab shows the score.

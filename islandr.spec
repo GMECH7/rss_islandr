@@ -6,6 +6,7 @@ import os
 import sys
 
 import webview
+from PyInstaller.utils.hooks import copy_metadata
 
 IS_WINDOWS = sys.platform == "win32"
 
@@ -18,6 +19,9 @@ datas = [
     (os.path.join("rss_islandr", "static"), "static"),
     (os.path.join("rss_islandr", "maps"), "maps"),
 ]
+# The package metadata gives the installed application its version (rss_islandr.core.version)
+datas += copy_metadata("rss_islandr")
+
 if os.path.isdir(webview_lib_path):
     datas.append((webview_lib_path, os.path.join("webview", "lib")))
 

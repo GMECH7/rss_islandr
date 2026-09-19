@@ -29,6 +29,7 @@ class HorizontalNavbar:
         frame_distances(nav_bar_frame, 1, 24)
         self.__horizontal_navbar.file_menu_btn(nav_bar_frame, **kwargs)
         self.__horizontal_navbar.docs_menu_button(nav_bar_frame)
+        self.__horizontal_navbar.version_menu_button(nav_bar_frame)
         self.__horizontal_navbar.toggle_skin_btn(nav_bar_frame)
 
         return nav_bar_frame
