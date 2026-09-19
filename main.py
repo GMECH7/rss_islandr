@@ -1,3 +1,4 @@
+import argparse
 import locale
 import logging
 import sys
@@ -15,7 +16,10 @@ from rss_islandr.core.logger_config import setup_logger
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui import MainAppUI
 
-locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
+try:
+    locale.setlocale(locale.LC_ALL, "en_US.UTF-8")
+except locale.Error:  # The locale is not installed (e.g. minimal Linux systems/containers)
+    pass
 
 setup_logger(logging.INFO)
 
@@ -29,6 +33,14 @@ def set_window_icon(root: tb.Window) -> None:
             root.iconphoto(True, tk.PhotoImage(file=ISLANDR_LOGO))
     except tk.TclError:
         logging.warning("Could not set the window icon.")
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog="islandr", description="Risk Screening System (RSS) - ISLANDR")
+    parser.add_argument("--self-test", action="store_true", help="check the installation and exit (0 = OK)")
+    parser.add_argument("--self-test-report", metavar="FILE", help="also write the result of --self-test to FILE")
+    parser.add_argument("--map-process", action="store_true", help=argparse.SUPPRESS)  # used internally (Linux/macOS)
+    return parser.parse_args(argv)
 
 
 def main():
@@ -45,4 +57,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    if args.map_process:
+        from rss_islandr.ui.map_ui import _run_map_process
+
+        _run_map_process()
+    elif args.self_test:
+        from rss_islandr.self_test import run_self_test
+
+        sys.exit(run_self_test(args.self_test_report))
+    else:
+        main()

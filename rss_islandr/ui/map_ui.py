@@ -286,7 +286,7 @@ class MapUI:
             project_dir = Path(__file__).resolve().parents[2]
             try:
                 completed = subprocess.run(
-                    [sys.executable, "-c", MAP_PROCESS_CODE],
+                    self.__map_process_command(),
                     input=json.dumps(payload),
                     text=True,
                     cwd=project_dir,
@@ -299,6 +299,12 @@ class MapUI:
                 return
 
             self.__read_map_state(result_file)
+
+    @staticmethod
+    def __map_process_command() -> list[str]:
+        if getattr(sys, "frozen", False):  # Packaged app: sys.executable is the app itself
+            return [sys.executable, "--map-process"]
+        return [sys.executable, "-c", MAP_PROCESS_CODE]
 
     def __read_map_state(self, result_file: Path) -> None:
         """Take over the polygons and coordinates saved by the map process."""

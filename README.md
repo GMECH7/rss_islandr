@@ -33,8 +33,7 @@ This is an adaptation of the NZ Ministry for the Environment method and not an i
 
 ## Versions
 
-- `version` in `pyproject.toml` is the development version of the package.
-- `release_version` under `[tool.islandr]` in `pyproject.toml` is the version delivered to the client. It is used for the metadata of the built executable.
+- The only version of the app is `version` in `pyproject.toml` (format `X.Y.Z`). It is updated by hand and is also used for the metadata of the built executable.
 
 ---
 
@@ -147,14 +146,21 @@ pip install -r requirements.txt
   pytest
   ```
 
-- **Build the Windows executable** (`dist/islandr.exe`):
+- **Build the standalone application** (one-folder build in `dist/islandr/`; needs the `build` dependency group, i.e. `poetry install --with build`):
 
   ```bash
-  python generate_version.py
-  pyinstaller --clean --noconfirm islandr.spec
+  poetry run python generate_version.py
+  poetry run pyinstaller --clean --noconfirm islandr.spec
   ```
 
-  The same steps are executed by the `Build EXE` GitHub Actions workflow on pushes to `main`.
+  `generate_version.py` creates `version_info.txt` (Windows file properties) from `version` in `pyproject.toml`.
+
+- **Check an installation** (works for the source version and for the built application; exit code 0 = OK, `--self-test-report FILE` also writes the result to a file):
+
+  ```bash
+  poetry run python main.py --self-test
+  dist/islandr/islandr --self-test
+  ```
 
 ---
 
