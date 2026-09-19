@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import contextlib
+import json
 import logging
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from tkinter import messagebox
 
@@ -109,6 +111,73 @@ class Api:
         return self.map_ui.lat, self.map_ui.lng, self.map_ui.crs
 
 
+class _ChildMapState:
+    """
+    State of the map when it runs in its own process (Linux/macOS).
+
+    It offers the attributes that `Api` uses on `MapUI` and saves them to a JSON file on every change,
+    so that the main app gets the work done in the map even if the map process crashes.
+    """
+
+    class _PolygonsText:
+        def __init__(self, owner: "_ChildMapState"):
+            self.__owner = owner
+
+        def set(self, _value: str) -> None:
+            self.__owner.flush()
+
+    def __init__(self, payload: dict):
+        self.__result_file = payload["result_file"]
+        self.__polygons = payload["polygons"]
+        self.__coordinates = None
+        self.lat = payload["lat"]
+        self.lng = payload["lng"]
+        self.crs = payload["crs"]
+        self.map_polygons_tb = self._PolygonsText(self)
+
+    @property
+    def polygons(self) -> list:
+        return self.__polygons
+
+    @polygons.setter
+    def polygons(self, value: list) -> None:
+        self.__polygons = value
+        self.flush()
+
+    @property
+    def coordinates(self):
+        return self.__coordinates
+
+    @coordinates.setter
+    def coordinates(self, value) -> None:
+        self.__coordinates = value
+        self.flush()
+
+    def flush(self) -> None:
+        tmp_file = f"{self.__result_file}.tmp"
+        with open(tmp_file, "w", encoding="utf-8") as file_out:
+            json.dump({"polygons": self.__polygons, "coordinates": self.__coordinates}, file_out)
+        os.replace(tmp_file, self.__result_file)
+
+
+def _run_map_process() -> None:
+    """Entry point of the map process: read the initial state from stdin, show the map, save changes to a file."""
+    payload = json.load(sys.stdin)
+    state = _ChildMapState(payload)
+    state.flush()
+    webview.create_window(
+        "Maps Viewer",
+        payload["map_html"],
+        width=1600,
+        height=900,
+        background_color=payload["background_color"],
+        js_api=Api(state),
+    )
+    webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
+    webview.settings["ALLOW_DOWNLOADS"] = True
+    webview.start(debug=False)
+
+
 class MapUI:
     def __init__(self, map_html: Path, style: tb.Style, ui_inp_vars, map_polygons_tb: tb.StringVar):
         self.__style = style
@@ -187,7 +256,63 @@ class MapUI:
 
     @logger_decorator
     def run_webview(self):
-        """Run the webview window (to be called in a separate process)."""
+        """
+        Show the map and block until the map window is closed.
+
+        On Windows the map runs in this process. Elsewhere it runs in its own process, because the Qt/Cocoa
+        web engines cannot be started twice in the same process and a crash of the engine would close the app.
+        """
+        if sys.platform == "win32":
+            self.__run_webview_in_process()
+        else:
+            self.__run_webview_in_subprocess()
+
+    def __run_webview_in_subprocess(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            result_file = Path(tmp_dir) / "map_state.json"
+            payload = {
+                "map_html": str(self.map_html),
+                "background_color": self.__style.colors.bg,  # type: ignore
+                "polygons": self.polygons,
+                "lat": self.lat,
+                "lng": self.lng,
+                "crs": self.crs,
+                "result_file": str(result_file),
+            }
+            project_dir = Path(__file__).resolve().parents[2]
+            try:
+                completed = subprocess.run(
+                    [sys.executable, "-m", "rss_islandr.ui.map_ui"],
+                    input=json.dumps(payload),
+                    text=True,
+                    cwd=project_dir,
+                )
+                if completed.returncode != 0:
+                    logging.error(f"Map process ended with return code {completed.returncode}")
+            except Exception as e:
+                logging.error(f"Could not start the map process: {e}")
+                messagebox.showerror("Map Error", f"Could not load the map component.\n\nError: {e}")
+                return
+
+            self.__read_map_state(result_file)
+
+    def __read_map_state(self, result_file: Path) -> None:
+        """Take over the polygons and coordinates saved by the map process."""
+        try:
+            with open(result_file, "r", encoding="utf-8") as file_inp:
+                state = json.load(file_inp)
+        except (OSError, ValueError) as e:
+            logging.error(f"Could not read the state of the map process: {e}")
+            return
+
+        self.polygons = state["polygons"]
+        self.map_polygons_tb.set(f"{self.polygons}" if self.polygons else "")
+        coordinates = state["coordinates"]
+        if coordinates is not None:
+            self.coordinates = tuple(coordinates)
+
+    def __run_webview_in_process(self) -> None:
+        """Run the webview window in this process (blocks until it is closed)."""
         api_instance = Api(self)  # Create API instance linked to MapUI
         try:
             webview.create_window(
@@ -207,3 +332,7 @@ class MapUI:
         except Exception as e:
             msg = f"Could not load the map component. Please contact support.\n\nError: {e}"
             messagebox.showerror("Map Error", msg)
+
+
+if __name__ == "__main__":
+    _run_map_process()
