@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      # - makge/publication # Temporary: to try the tests on this branch, remove the "#"
   pull_request:
     branches: [main]
   workflow_dispatch:
