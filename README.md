@@ -25,10 +25,10 @@ This is an adaptation of the NZ Ministry for the Environment method and not an i
 
 ## Requirements
 
-- **Operating system:** Windows 10/11. The standalone executable is built for Windows only. Running from source on macOS/Linux is untested.
+- **Operating system:** Windows 10/11 (the standalone executable is built for Windows only). From source it also runs on Linux (tested on Ubuntu with the Qt web engine, installed automatically). macOS is untested.
 - **Python:** 3.12 to 3.14 (`>=3.12,<3.15`), only when running from source.
-- **Microsoft Edge WebView2 runtime:** needed by the map viewer (preinstalled on current Windows 10/11).
-- **Microsoft Excel:** needed only for the Excel report export.
+- **Microsoft Edge WebView2 runtime (Windows):** needed by the map viewer (preinstalled on current Windows 10/11).
+- **Excel reports:** written with `openpyxl`, so Microsoft Excel is **not** required (any spreadsheet program can open the `.xlsx`).
 - **Internet connection:** needed only for the Map Viewer (OpenStreetMap tiles, WMS layers and two CDN resources). Everything else works offline.
 
 ## Versions

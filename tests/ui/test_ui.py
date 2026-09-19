@@ -1,28 +1,19 @@
 import sys
 
 import pytest
-import ttkbootstrap as tb
 
-from rss_islandr.core.config_parser import settings
-from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui.main_app_ui import MainAppUI
 
 
 @pytest.fixture(scope="module")
-def app():
-    # SETUP: Perform the same setup as main(), but without mainloop()
-    ui_settings = read_skin_details(settings, "dark")
-    theme = ui_settings.ui_ttkbootstrap_theme  # always start with the dark theme
-    root = tb.Window(themename=theme)
+def app(root):
+    # SETUP: Perform the same setup as main(), but without mainloop() (the window comes from conftest.py)
     main = MainAppUI(root)
     main.create_ui()
     root.update_idletasks()
 
     # YIELD: Hand over the created app object to the test function
     yield main
-
-    # TEARDOWN: This code runs after the test is finished
-    root.destroy()
 
 
 def test_ui_initialization(app):

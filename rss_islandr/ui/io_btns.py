@@ -1,24 +1,27 @@
+import contextlib
 import json
 import logging
+import math
 import os
-import shutil
+import re
 import tkinter as tk
 from abc import ABC, abstractmethod
+from datetime import datetime
 from tkinter import filedialog, messagebox
 
 import ttkbootstrap as tb
-import xlwings as xw
+from openpyxl import Workbook, load_workbook
+from openpyxl.drawing.image import Image as XlImage
 from PIL import Image, ImageTk
 
 from rss_islandr.core.config_parser import (
     STATIC_DIR,
     XLSX_TEMPLATE_FILE,
-    XLSX_TEMPLATE_FILE_COPY,
 )
 from rss_islandr.core.datatypes import UICalcVariable, UIInpVariable
 from rss_islandr.core.helpers import extract_dicts_from_string
-from rss_islandr.reporting import PDFReport
 from rss_islandr.core.logger_config import logger_decorator
+from rss_islandr.reporting import PDFReport
 
 
 class IOBtns(ABC):
@@ -93,87 +96,94 @@ class IOBtns(ABC):
 class ExportExcelReportBtn(IOBtns):
     """Implementation of button for exporting to excel file"""
 
+    #: Sheet positions in the template (see `report_template.xlsx`)
+    MAPS_SHEET_POS = 3
+    COORDINATES_SHEET_POS = 4
+
     def __init__(self, ui_inp_vars: dict[str, UIInpVariable], ui_calc_vars: dict[str, UICalcVariable], **kwargs):
         super().__init__(ui_inp_vars, ui_calc_vars)
         map_polygons_tb = kwargs.get("map_polygons_tb", tb.StringVar(value=""))
         self._polygons_data = map_polygons_tb
 
+    @staticmethod
+    def __to_cell_value(value):
+        """
+        Convert a UI text value to the type it should have in the sheet.
+
+        Numbers and ISO dates (as given by the date widgets) are stored as numbers/dates and not as text,
+        so that the cell formats of the template (e.g. percentage for the risk) are applied.
+        """
+        if not isinstance(value, str):
+            return value
+        value = value.strip()
+        if value == "":
+            return None
+        if re.fullmatch(r"-?\d+", value):
+            return int(value)
+        if re.fullmatch(r"-?\d+\.\d+(e-?\d+)?", value):
+            return float(value)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            with contextlib.suppress(ValueError):
+                return datetime.strptime(value, "%Y-%m-%d")
+        return value
+
     def __save_maps_as_imgs(
         self,
-        workbook: xw.Book,
+        workbook: Workbook,
         selected_image_files: list[str],
-        excel_starting_cell: str = "A1",
         image_width: int = 1000,
     ) -> None:
         """
-        Implementation of method to insert map images into the Excel workbook.
+        Insert map images into the maps sheet of the Excel workbook, one below the other.
 
         Parameters
         ----------
-        workbook : xw.Book
+        workbook : Workbook
             The Excel workbook to insert images into
         selected_image_files : list[str]
             List of selected image file paths
-        excel_starting_cell : str, optional
-            Starting cell position for images (default: "A1")
         image_width : int, optional
             Fixed width for all images in points (default: 1000)
         """
-        sheet = workbook.sheets[3]
+        sheet = workbook.worksheets[self.MAPS_SHEET_POS]
+        points_to_pixels = 96 / 72
+        row_height_pixels = 20  # Default row height of 15 points
+        gap_pixels = 20 * points_to_pixels
 
-        left_position = sheet.range(excel_starting_cell).left
-        top_position = sheet.range(excel_starting_cell).top
-
-        for i, image_file in enumerate(selected_image_files):
-            full_path = os.path.abspath(str(image_file))
-
-            with Image.open(full_path) as img:
-                orig_width, orig_height = img.size
-                aspect_ratio = orig_height / orig_width
-                image_height_calc = image_width * aspect_ratio
-
-            pic = sheet.pictures.add(
-                full_path,
-                left=left_position,
-                top=top_position,
-                width=image_width,
-                height=image_height_calc,
-            )
-
-            # Name the picture (optional)
-            pic.name = f"MapImage_{i + 1}"
-            # Update top position for next image
-            top_position += image_height_calc + 20
-        sheet.range("A:A").column_width = image_width / 7
-
-        # Autofit columns/rows if needed
-        sheet.autofit()
+        width_pixels = image_width * points_to_pixels
+        next_row = 1
+        for image_file in selected_image_files:
+            image = XlImage(os.path.abspath(str(image_file)))
+            aspect_ratio = image.height / image.width
+            image.width = width_pixels
+            image.height = width_pixels * aspect_ratio
+            sheet.add_image(image, f"A{next_row}")
+            next_row += math.ceil((image.height + gap_pixels) / row_height_pixels)
+        sheet.column_dimensions["A"].width = image_width / 7
         logging.debug(f"Successfully inserted {len(selected_image_files)} images")
 
-        return None
-
-    def __save_polygons_data(self, workbook: xw.Book):
+    def __save_polygons_data(self, workbook: Workbook):
         """
-        Save polygons data to the Excel workbook.
+        Save polygons data to the coordinates sheet of the Excel workbook.
 
         Parameters
         ----------
-        workbook : xw.Book
+        workbook : Workbook
             The Excel workbook to save polygons data into.
         """
-        sheet = workbook.sheets[4]
+        sheet = workbook.worksheets[self.COORDINATES_SHEET_POS]
         map_polygons_tb = extract_dicts_from_string(self._polygons_data.get())
         logging.debug(f"Polygons data to save: {map_polygons_tb}")
         row_idx = 1
-        for i in range(len(map_polygons_tb)):
+        for polygon in map_polygons_tb:
             row_idx += 1
-            coords = map_polygons_tb[i].get("coordinates", [])
-            sheet.range(f"E{row_idx}").value = map_polygons_tb[i].get("area_km2", "")
+            coords = polygon.get("coordinates", [])
+            sheet[f"E{row_idx}"] = polygon.get("area_km2", "")
             for j, coord in enumerate(coords):
-                sheet.range(f"A{row_idx}").value = map_polygons_tb[i].get("name", "")
-                sheet.range(f"B{row_idx}").value = j + 1
-                sheet.range(f"C{row_idx}").value = coord[0]
-                sheet.range(f"D{row_idx}").value = coord[1]
+                sheet[f"A{row_idx}"] = polygon.get("name", "")
+                sheet[f"B{row_idx}"] = j + 1
+                sheet[f"C{row_idx}"] = coord[0]
+                sheet[f"D{row_idx}"] = coord[1]
                 row_idx += 1
 
     @logger_decorator
@@ -189,33 +199,20 @@ class ExportExcelReportBtn(IOBtns):
         if not file_path:  # User canceled the dialog
             return
 
-        shutil.copy(XLSX_TEMPLATE_FILE, XLSX_TEMPLATE_FILE_COPY)
         try:
-            app = xw.App(visible=False)
-            try:
-                workbook = xw.Book(XLSX_TEMPLATE_FILE_COPY)
-            except FileNotFoundError:
-                workbook = xw.Book()
+            workbook = load_workbook(XLSX_TEMPLATE_FILE)
 
-            for sheet_name_key in self.xlsx_sheet_pos_vals:
-                if sheet_name_key == "on-on":
-                    sheet = workbook.sheets[0]
-                elif sheet_name_key == "on-off":
-                    sheet = workbook.sheets[1]
-                elif sheet_name_key == "off-on":
-                    sheet = workbook.sheets[2]
-
+            scenario_sheets = {"on-on": 0, "on-off": 1, "off-on": 2}
+            for sheet_name_key, sheet_pos in scenario_sheets.items():
+                sheet = workbook.worksheets[sheet_pos]
                 for position, value in self.xlsx_sheet_pos_vals[sheet_name_key]:
-                    logging.debug(f"Writing {value} to {sheet} {position}")
+                    logging.debug(f"Writing {value} to {sheet.title} {position}")
                     if position is not None:
-                        sheet.range(position).value = value
+                        sheet[position] = self.__to_cell_value(value)
 
             self.__save_maps_as_imgs(workbook, selected_image_files)
             self.__save_polygons_data(workbook)
-            workbook.save(XLSX_TEMPLATE_FILE_COPY)
-            workbook.close()
-            app.quit()
-            shutil.copy(XLSX_TEMPLATE_FILE_COPY, file_path)
+            workbook.save(file_path)
             messagebox.showinfo("Success", "Values written to Excel successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")

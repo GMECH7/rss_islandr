@@ -30,7 +30,6 @@ RECEPTOR_FACTORS_JSON_DIR = DATA_DIR / "receptor_factors.json"
 RISK_FACTORS_JSON_DIR = DATA_DIR / "risk_factors.json"
 DROPDOWN_LISTS_JSON_DIR = DATA_DIR / "dropdown_lists.json"
 XLSX_TEMPLATE_FILE = TEMPLATES_DIR / "report_template.xlsx"
-XLSX_TEMPLATE_FILE_COPY = TEMPLATES_DIR / "report_template__COPY.xlsx"
 with open(SETTINGS_JSON_DIR, "r", encoding="utf-8") as file_settings:
     settings = json.load(file_settings)
 
