@@ -21,6 +21,7 @@ pytest = "^8.4.2"
 pytest-cov = "^7.0.0"
 rich = "^14.0.0"      # Console output of the build scripts
 pypdf = "^6.19.0"
+ruff = "^0.16.8"
 
 [tool.poetry.group.build.dependencies]
 pyinstaller = "^6.13.0"
@@ -40,6 +41,12 @@ qtpy = { version = "^2.4", markers = "sys_platform != 'win32'" } # Qt backend of
 reportlab = "^4.4.1"
 openpyxl = "^3.1.5"
 
+[tool.ruff]
+line-length = 120
+exclude = ["**/__pycache__"]
+
+[tool.ruff.lint]
+# select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 pythonpath = ["rss_islandr", "tests"]

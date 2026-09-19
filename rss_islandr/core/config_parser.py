@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import json
 import sys
 from pathlib import Path
 
 # Define the base directory
-if getattr(sys, "frozen", False):  # noqa: SIM108
+if getattr(sys, "frozen", False):
     # Running in a PyInstaller bundle
     PROJECT_DIR = Path(sys._MEIPASS)  # type: ignore[attr-defined]
 else:

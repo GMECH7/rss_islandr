@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import ttkbootstrap as tb
 
 from rss_islandr.core.logger_config import logger_decorator

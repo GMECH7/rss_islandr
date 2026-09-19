@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
@@ -18,7 +17,7 @@ class NumberedCanvas(canvas.Canvas):
 
         self._page_number = 0
 
-    def showPage(self):  # noqa: N802
+    def showPage(self):
         """
         Override showPage to increment page number and draw it.
         """

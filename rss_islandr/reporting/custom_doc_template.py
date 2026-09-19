@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus.doctemplate import SimpleDocTemplate
 from reportlab.platypus.tableofcontents import TableOfContents
@@ -36,7 +35,7 @@ class CustomDocTemplate(SimpleDocTemplate):
         self.section_count = 0
         self.subsection_count = 0
 
-    def afterFlowable(self, flowable):  # noqa: N802
+    def afterFlowable(self, flowable):
         """
         NOTE: This method OVERRIDES the afterFlowable method of SimpleDocTemplate.
 

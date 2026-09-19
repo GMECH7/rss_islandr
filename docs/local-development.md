@@ -86,7 +86,7 @@ The dependencies are in groups:
 | Group | Contents | Needed for |
 |---|---|---|
 | main (always installed) | `ttkbootstrap`, `pywebview`, `reportlab`, `openpyxl`; on Linux `qtpy` and PyQt6 (Qt WebEngine), on Windows `pythonnet` | Running the application |
-| `dev` | `pytest`, `pytest-cov`, `pypdf`, `rich` | Tests and the development scripts |
+| `dev` | `pytest`, `pytest-cov`, `pypdf`, `ruff`, `rich` | Tests, code checks and the development scripts |
 | `build` | `pyinstaller` | Building the installers |
 
 `poetry install` alone installs only the main group. The project installs itself in editable mode, so changes in the source code apply immediately.
@@ -121,6 +121,9 @@ Run all commands from the project folder.
 | `poetry run islandr` | Starts the application from the source code (the same as `python main.py`) |
 | `poetry run islandr --self-test` | Checks the installation and exits: data files, risk calculation, Excel template, web engine and main window. Exit code 0 means success. `--self-test-report FILE` also writes the result to a file |
 | `poetry run pytest` | Runs the tests. Coverage reports are written to `.cov_files/` |
+| `poetry run ruff check .` | Checks the code with Ruff (lint) |
+| `poetry run ruff check --fix .` | Checks the code and corrects the problems that can be corrected automatically |
+| `poetry run ruff format .` | Formats the code. `poetry run ruff format --check .` only lists the files that would change |
 | `poetry run clean` | Removes the generated files: `dist/`, `build/`, `.cov_files/`, caches, `rss_islandr.log` and `version_info.txt`. `--dry-run` only lists them. The built installers in `dist/` are removed as well; `.venv/` is never removed |
 | `poetry run rss-build --win` | Windows: builds the installer and the portable zip |
 | `poetry run rss-build --deb [--docker]` | Ubuntu: builds the package (`--docker` builds it in an Ubuntu 24.04 container) |

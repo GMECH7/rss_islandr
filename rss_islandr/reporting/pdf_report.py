@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 
 import datetime
-from typing import Optional
 
 import ttkbootstrap as tb
 from reportlab.lib import colors
@@ -303,7 +301,7 @@ class PDFReport:
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
         map_polygons_tb: tb.StringVar,
-        images_list: Optional[list[str]] = None,
+        images_list: list[str] | None = None,
         report_title: str = "Contamination Analysis Report",
     ) -> None:
         """

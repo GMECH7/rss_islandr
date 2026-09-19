@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 import ttkbootstrap as tb
 from general_ui import GeneralUITemplate
@@ -109,7 +108,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
 
         return parent_excel_col, parent_excel_row
 
-    def __get_pdf_table_name(self, data_fetcher, risk_factor_key) -> Union[str, None]:
+    def __get_pdf_table_name(self, data_fetcher, risk_factor_key) -> str | None:
         try:
             pdf_table_name = data_fetcher.getter(risk_factor_key)["pdf_table_name"]
         except Exception:
@@ -121,7 +120,7 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         """ """
         excel_cell = f"{parent_excel_col}{parent_excel_row + i}"
         # TODO I have altered the dynamic calculation. I must see how to do that in the future
-        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"  # noqa: ERA001
+        # excel_cell_risk = f"{parent_excel_col}{parent_excel_row + i + 1}"
         excel_cell_risk = f"{parent_excel_col}9" if parent_excel_row == 7 else f"{parent_excel_col}17"
 
         return excel_cell, excel_cell_risk
@@ -359,10 +358,10 @@ class AssessmentNoteBookUI(GeneralUITemplate):
         color_ttk = risk_color_assignment(risk)
 
         if risk == 0.0:
-            risk_formatted = "{:.0f}".format(risk)
+            risk_formatted = f"{risk:.0f}"
             boot_style = "default"
         else:
-            risk_formatted = "{:.1f}".format(100 * risk)
+            risk_formatted = f"{100 * risk:.1f}"
             boot_style = color_ttk
         self.meter_frames[f"{frame_tag}_risk"].configure(amountused=risk_formatted, bootstyle=boot_style)
 

@@ -7,8 +7,8 @@ built executables and installers without clicking through the app.
 """
 
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from rss_islandr.core import config_parser as cfg
 

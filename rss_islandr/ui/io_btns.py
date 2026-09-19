@@ -85,12 +85,10 @@ class IOBtns(ABC):
     @abstractmethod
     def on_btn_click(self, *args):
         """ """
-        pass
 
     @abstractmethod
     def btn(self, *args):
         """ """
-        pass
 
 
 class ExportExcelReportBtn(IOBtns):
@@ -259,7 +257,6 @@ class ExportPDFReportBtn(IOBtns):
     @logger_decorator
     def btn(self, frame: tb.Frame):
         """ """
-        pass
 
 
 class ExportScenarioBtn(IOBtns):

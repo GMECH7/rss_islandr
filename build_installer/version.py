@@ -1,6 +1,7 @@
 import re
-import tomllib
 from pathlib import Path
+
+import tomllib
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
