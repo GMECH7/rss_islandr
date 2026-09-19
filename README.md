@@ -37,6 +37,55 @@ This is an adaptation of the NZ Ministry for the Environment method and not an i
 
 ---
 
+## Installing a release
+
+The installers are on the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Each release contains the files and `SHA256SUMS.txt` (the checksums of all of them). The installers are not code-signed, so Windows may show "Windows protected your PC": choose *More info* and then *Run anyway*.
+
+### Ubuntu 24.04 or later
+
+```bash
+# Download a specific version (here 1.22.1) and the checksums
+VERSION=1.22.1
+wget https://github.com/GMECH7/rss_islandr/releases/download/v$VERSION/rss-islandr_${VERSION}_amd64.deb
+wget https://github.com/GMECH7/rss_islandr/releases/download/v$VERSION/SHA256SUMS.txt
+
+# Check the download (prints "OK" for the .deb)
+sha256sum -c SHA256SUMS.txt --ignore-missing
+
+# Install it (installs the version of the file, also when another version is installed)
+sudo apt install ./rss-islandr_${VERSION}_amd64.deb
+# Installing an older version than the installed one needs:
+sudo apt install --allow-downgrades ./rss-islandr_${VERSION}_amd64.deb
+
+# Start it (or use the menu entry "RSS-ISLANDR")
+rss-islandr
+
+# Which version is installed
+dpkg -l rss-islandr
+
+# Uninstall (purge also removes configuration files, the app has none)
+sudo apt remove rss-islandr
+sudo apt purge rss-islandr
+```
+
+If you only have the checksum from the run page (a downloaded artifact is a zip that contains the `.deb`): `sha256sum rss-islandr_<version>_amd64.deb` and compare the value.
+
+### Windows 10/11
+
+```powershell
+# Check the download: compare the value with the line of the file in SHA256SUMS.txt
+Get-FileHash .\islandr-setup.exe -Algorithm SHA256
+certutil -hashfile islandr-setup.exe SHA256      # alternative
+
+# Install with the installer (or double-click it). Silent installation:
+.\islandr-setup.exe /VERYSILENT /NORESTART
+
+# Uninstall: Settings > Apps > RSS-ISLANDR, or silently:
+& "$env:LOCALAPPDATA\Programs\RSS-ISLANDR\unins000.exe" /VERYSILENT
+```
+
+The installer installs for the current user without administrator rights (the default folder is `%LOCALAPPDATA%\Programs\RSS-ISLANDR`). Installing a different version over the installed one upgrades it. **Portable version:** unzip `islandr-portable.zip` and run `islandr\islandr.exe`. To remove it, delete the folder.
+
 ## Codebase
 
 ### Downloading the repository
