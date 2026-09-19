@@ -13,6 +13,7 @@ from rss_islandr.core.config_parser import (
     settings,
 )
 from rss_islandr.core.logger_config import setup_logger
+from rss_islandr.core.platform_setup import disable_input_method
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui import MainAppUI
 
@@ -35,6 +36,15 @@ def set_window_icon(root: tb.Window) -> None:
         logging.warning("Could not set the window icon.")
 
 
+def show_loading(root: tb.Window) -> tb.Frame:
+    """Show a message while the main window is being built (it can take a few seconds on slow systems)."""
+    frame = tb.Frame(root)
+    frame.place(relx=0, rely=0, relwidth=1, relheight=1)
+    tb.Label(frame, text=f"Loading {app_title}...", font=("calibri", 18)).place(relx=0.5, rely=0.5, anchor="center")
+    root.update()
+    return frame
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="islandr", description="Risk Screening System (RSS) - ISLANDR")
     parser.add_argument("--self-test", action="store_true", help="check the installation and exit (0 = OK)")
@@ -44,14 +54,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main():
+    disable_input_method()  # Must happen before the first Tk window is created
     ui_settings = read_skin_details(settings, "dark")
     theme = ui_settings.ui_ttkbootstrap_theme  # always start with the dark theme
     root = tb.Window(themename=theme)
     root.minsize(800, 800)
     root.title(app_title)
     set_window_icon(root)
+    loading_frame = show_loading(root)
     main = MainAppUI(root)
     main.create_ui()
+    loading_frame.destroy()
     root.protocol("WM_DELETE_WINDOW", main.on_closing)
     root.mainloop()
 

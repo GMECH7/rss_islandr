@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.21.5"
+version = "1.22.0"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
@@ -13,7 +13,7 @@ rss-build = "build_tools.cli:main"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
 pytest-cov = "^7.0.0"
-rich = "^14.0.0" # Console output of the build scripts
+rich = "^14.0.0"      # Console output of the build scripts
 
 [tool.poetry.group.build.dependencies]
 pyinstaller = "^6.13.0"
@@ -22,8 +22,12 @@ pyinstaller = "^6.13.0"
 python = ">=3.12,<3.15"
 ttkbootstrap = "^1.12.0"
 pywebview = [
-    { version = "^5.4", extras = ["winforms"], markers = "sys_platform == 'win32'" },
-    { version = "^5.4", extras = ["qt"], markers = "sys_platform != 'win32'" },
+    { version = "^5.4", extras = [
+        "winforms",
+    ], markers = "sys_platform == 'win32'" },
+    { version = "^5.4", extras = [
+        "qt",
+    ], markers = "sys_platform != 'win32'" },
 ]
 qtpy = { version = "^2.4", markers = "sys_platform != 'win32'" } # Qt backend of pywebview (Linux/macOS)
 reportlab = "^4.4.1"

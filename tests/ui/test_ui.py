@@ -5,17 +5,6 @@ import pytest
 from rss_islandr.ui.main_app_ui import MainAppUI
 
 
-@pytest.fixture(scope="module")
-def app(root):
-    # SETUP: Perform the same setup as main(), but without mainloop() (the window comes from conftest.py)
-    main = MainAppUI(root)
-    main.create_ui()
-    root.update_idletasks()
-
-    # YIELD: Hand over the created app object to the test function
-    yield main
-
-
 def test_ui_initialization(app):
     assert isinstance(app, MainAppUI)
     assert hasattr(app, "create_ui")

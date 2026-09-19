@@ -57,8 +57,11 @@ def check_web_engine() -> None:
 def check_main_window() -> None:
     import ttkbootstrap as tb
 
+    from rss_islandr.core.platform_setup import disable_input_method
     from rss_islandr.core.skin_reader import read_skin_details
     from rss_islandr.ui import MainAppUI
+
+    disable_input_method()
 
     ui_settings = read_skin_details(cfg.settings, "dark")
     root = tb.Window(themename=ui_settings.ui_ttkbootstrap_theme)

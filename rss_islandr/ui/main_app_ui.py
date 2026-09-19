@@ -1,7 +1,5 @@
 import logging
 import sys
-import threading
-import time
 from tkinter import messagebox
 
 import ttkbootstrap as tb
@@ -59,7 +57,6 @@ class MainAppUI:
         self.__init__populate_frame_infos_dict()
         self.__init__handle_geometry()
 
-        self.map_open = True
         self.map_ui = MapUI(MAP_DIR, tb_style, self.ui_inp_vars, self.map_polygons_tb)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
@@ -281,28 +278,24 @@ class MainAppUI:
             pass
 
     def __toggle_map(self):
+        # Blocks until the map window is closed, so the results of the map can be taken over right afterwards
         self.map_ui.run_webview()
         self.btn_map.config(text="Maps Viewer")
-        #: Start a thread to check for coordinate updates in the webview app.
-        threading.Thread(target=self.__monitor_map_changes, daemon=True).start()
+        self.__take_over_map_results()
 
-    def __monitor_map_changes(self):
-        """Continuously checks for new coordinates from MapUI when the map is open."""
-        logging.debug(f"{self.__monitor_map_changes.__name__} called!")
-        while self.map_open:
-            coords = self.map_ui.get_coordinates()
-            if coords is not None:
-                lat, lng, crs = coords
-                self.__update_coordinates(lat, lng, crs)
+    def __take_over_map_results(self) -> None:
+        """Take over the coordinates and polygons that were set in the map."""
+        coords = self.map_ui.get_coordinates()
+        if coords is not None:
+            lat, lng, crs = coords
+            self.__update_coordinates(lat, lng, crs)
 
-            if self.map_polygons_tb.get() == "":
-                map_polygons_as_str = self.map_ui.get_polygons_data()
-            else:
-                map_polygons_as_str = self.map_polygons_tb.get()
+        if self.map_polygons_tb.get() == "":
+            map_polygons_as_str = self.map_ui.get_polygons_data()
+        else:
+            map_polygons_as_str = self.map_polygons_tb.get()
 
-            self.__update_polygons_data(map_polygons_as_str)
-
-            time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
+        self.__update_polygons_data(map_polygons_as_str)
 
     def __update_coordinates(self, lat, lng, crs) -> None:
         """Callback function to update the coordinates"""
