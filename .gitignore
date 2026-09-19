@@ -19,6 +19,7 @@ _try_maps
 commands.txt
 # Distribution / packaging
 .Python
+docs_publication/
 build/
 develop-eggs/
 dist/

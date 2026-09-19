@@ -17,13 +17,32 @@ This framework is commonly referred to as the **Source-Pathway-Receptor (SPR)** 
 - **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
 - **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
 
+### Scoring in this implementation
+
+Every input is a dropdown selection mapped to a weight between 0 and 1 (defined in `rss_islandr/data/risk_factors.json` and `receptor_factors.json`). For each receptor the score is `hazard × pathway × receptor`, where the hazard is toxicity × extent and the pathway is the product of its own parameters. The result is shown as a percentage (green < 10 %, yellow 10–30 %, red > 30 %). "Value Not Known" has weight 0 and is the default, so any parameter left unanswered gives a score of 0 %.
+
+This is an adaptation of the NZ Ministry for the Environment method and not an identical copy: the air and sediment pathways, the per-receptor pathway selection and the 10 % / 30 % thresholds are specific to this tool, and no overall worst-case site ranking is computed. The tool is intended for **screening** (desk study and prioritisation), not for detailed quantitative risk assessment.
+
+## Requirements
+
+- **Operating system:** Windows 10/11. The standalone executable is built for Windows only. Running from source on macOS/Linux is untested.
+- **Python:** 3.12 to 3.14 (`>=3.12,<3.15`), only when running from source.
+- **Microsoft Edge WebView2 runtime:** needed by the map viewer (preinstalled on current Windows 10/11).
+- **Microsoft Excel:** needed only for the Excel report export.
+- **Internet connection:** needed only for the Map Viewer (OpenStreetMap tiles, WMS layers and two CDN resources). Everything else works offline.
+
+## Versions
+
+- `version` in `pyproject.toml` is the development version of the package.
+- `release_version` under `[tool.islandr]` in `pyproject.toml` is the version delivered to the client. It is used for the metadata of the built executable.
+
 ---
 
 ## Codebase
 
 ### Downloading the repository
 
-This is a private project in GitHub she maintaner hs to previously give access to the user wishing to download the repository locally. After getting access the following command has to be used:
+This is a public project on GitHub and can be downloaded by anyone. Use the following command:
 
 ```bash
 git clone https://github.com/GMECH7/rss_islandr.git
@@ -60,11 +79,11 @@ b. **Activate the virtual environment**:
 - Otherwise, activate the environment manually:
   - On **Windows**:
     ```bash
-    islandr_venv\Scripts\activate
+    .venv\Scripts\activate
     ```
   - On **macOS/Linux**:
     ```bash
-    source islandr_venv/bin/activate
+    source .venv/bin/activate
     ```
 
 c. **Install dependencies using pip (depends on `requirements.txt`)**
@@ -114,6 +133,29 @@ pip install -r requirements.txt
      poetry show --tree # shows dependencies relationships
      ```
 
+### Running, testing and building
+
+- **Run the application:**
+
+  ```bash
+  python main.py
+  ```
+
+- **Run the tests** (coverage reports are written to `.cov_files/`; the UI tests need a display):
+
+  ```bash
+  pytest
+  ```
+
+- **Build the Windows executable** (`dist/islandr.exe`):
+
+  ```bash
+  python generate_version.py
+  pyinstaller --clean --noconfirm islandr.spec
+  ```
+
+  The same steps are executed by the `Build EXE` GitHub Actions workflow on pushes to `main`.
+
 ---
 
 # 🗺️ Maps Viewer - Geology, Mines & Hydrogeology
@@ -134,6 +176,16 @@ The map viewer option of this app is built using [Leaflet.js](https://leafletjs.
   - **Service URL:** `https://services.bgr.de/wms/geologie/igme5000/`
   - **Layer Names:** `3,5,6,8,10,11,13,14,15,16,17,18,19,20,22,23,24,27,29,31,33,37,39,41,43,44,46,47,48,51,53,55,57`
 
+- ##### 3. BGR: International Geological Map of Europe and the Mediterranean Regions 1:1,500,000 (IGME1500)
+
+  - **Service URL:** `https://services.bgr.de/wms/geologie/igk1500/`
+  - **Layer Names:** `0,1,2`
+
+- ##### 4. BGR: International Quaternary Map of Europe 1:2,500,000 (IQUAME 2500)
+
+  - **Service URL:** `https://services.bgr.de/wms/geologie/iqe2500/`
+  - **Layer Names:** `0,1`
+
 #### Minerals resources maps
 
 - ##### 1. Mines of Europe
@@ -141,7 +193,7 @@ The map viewer option of this app is built using [Leaflet.js](https://leafletjs.
   - **Service URL:** `https://data.geus.dk/egdi/wms/`
   - **Layer Name:** `egdi_mines`
 
-#### Hydrogeοlogical maps
+#### Hydrogeological maps
 
 - ##### 1. BGR & UNESCO (eds.) (2019): International Hydrogeological Map of Europe 1:1,500,000 (IHME1500)
 
@@ -158,6 +210,16 @@ The map viewer option of this app is built using [Leaflet.js](https://leafletjs.
   - **Service URL:** `https://services.bgr.de/wms/grundwasser/norm/`
   - **Layer Names:** `1,2,3,4,6,7`
 
+- ##### 4. BGR: River and Groundwater Basins of the World (WHYMAP RGWB)
+
+  - **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_rgwb/`
+  - **Layer Names:** `0,1,3,4,5`
+
+- ##### 5. BGR: World Karst Aquifer Map (WHYMAP WOKAM)
+
+  - **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_wokam/`
+  - **Layer Names:** `0,1,2,3,4,5,6`
+
 #### Soil maps
 
 - ##### 1. BGR: Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (WMS)
@@ -172,9 +234,9 @@ The map viewer option of this app is built using [Leaflet.js](https://leafletjs.
   - **Service URL:** `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer`
   - **Layer Names:** `0,1,2,3,4,5`
 
-### 4. Links
+#### Links
 
-https://services.bgr.de/uebersicht/kurzlinks
+Overview of the BGR web services: <https://services.bgr.de/uebersicht/kurzlinks>
 
 ## ➕ How to Add New Map Layers
 
@@ -277,3 +339,15 @@ graph LR
     style map_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
     style main_app_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
 ```
+
+---
+
+## Acknowledgements
+
+Funded by the European Union, Grant agreement n°1001112889 (ISLANDR project).
+
+Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
+
+## License
+
+This project is released under the [MIT License](LICENSE). Copyright (c) 2025 CERTH.
