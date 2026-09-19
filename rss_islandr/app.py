@@ -19,6 +19,8 @@ from rss_islandr.core.platform_setup import disable_input_method
 from rss_islandr.core.skin_reader import read_skin_details
 from rss_islandr.ui import MainAppUI
 
+logger = logging.getLogger(__name__)
+
 
 def set_window_icon(root: tb.Window) -> None:
     """Set the window icon. Tk on Windows takes a .ico file; on Linux/macOS it needs an image (PNG)."""
@@ -28,7 +30,7 @@ def set_window_icon(root: tb.Window) -> None:
         else:
             root.iconphoto(True, tk.PhotoImage(file=ISLANDR_LOGO))
     except tk.TclError:
-        logging.warning("Could not set the window icon.")
+        logger.warning("Could not set the window icon.")
 
 
 def show_loading(root: tb.Window) -> tb.Frame:

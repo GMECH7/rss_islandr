@@ -27,6 +27,8 @@ from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 from rss_islandr.ui.site_to_site_assessment_ui import SiteToSiteAssessmentUI
 
+logger = logging.getLogger(__name__)
+
 
 class MainAppUI:
     """Implementation of main UI"""
@@ -303,12 +305,12 @@ class MainAppUI:
         self.ui_inp_vars["map_0_01"].tk_var.set(lat)
         self.ui_inp_vars["map_0_02"].tk_var.set(lng)
 
-        logging.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
+        logger.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
 
     def __update_polygons_data(self, map_polygons_as_str: str) -> None:
         """Callback function to update polygons data"""
         self.map_polygons_tb.set(map_polygons_as_str)
-        logging.debug(f"Updated polygons: {map_polygons_as_str}")
+        logger.debug(f"Updated polygons: {map_polygons_as_str}")
 
     def __create_vertical_navbar_buttons(self) -> None:
         """

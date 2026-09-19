@@ -73,9 +73,10 @@ def logger_decorator(func):
     """A decorator to log function entry and exit points."""
 
     def wrapper(*args, **kwargs):
-        logging.debug(f"{PURPLE}Start : {func.__module__}.{func.__name__} {RESET_COLOR}")
+        logger = logging.getLogger(func.__module__)
+        logger.debug(f"{PURPLE}Start : {func.__module__}.{func.__name__} {RESET_COLOR}")
         result = func(*args, **kwargs)
-        logging.debug(f"{GREEN}Finish: {func.__module__}.{func.__name__}{RESET_COLOR}")
+        logger.debug(f"{GREEN}Finish: {func.__module__}.{func.__name__}{RESET_COLOR}")
         return result
 
     return wrapper

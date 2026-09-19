@@ -15,6 +15,8 @@ from rss_islandr.core.datatypes import PolygonDataDict
 from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
 
+logger = logging.getLogger(__name__)
+
 if sys.platform.startswith("linux"):
     # GTK is tried first by default and logs a (harmless) error when PyGObject is missing. Qt is the backend we install.
     os.environ.setdefault("PYWEBVIEW_GUI", "qt")
@@ -32,18 +34,18 @@ class Api:
     def py_api_coord_receiver(self, lat: float, lng: float, crs: str):
         """Receive coordinates from JavaScript"""
         self.map_ui.coordinates = (lat, lng, crs)  # Store received coordinates
-        logging.debug(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
+        logger.debug(f"Received coordinates: Latitude={lat}, Longitude={lng}, CRS={crs}")
 
     @logger_decorator
     def py_api_polygons_receiver(self, polygon_data: PolygonDataDict):
         """
         Receive polygon data from JavaScript.
         """
-        logging.debug(f"Received polygon data: {polygon_data}")
+        logger.debug(f"Received polygon data: {polygon_data}")
 
         # Ensure unique_id exists
         if "unique_id" not in polygon_data:
-            logging.error("Received polygon without unique_id!")
+            logger.error("Received polygon without unique_id!")
             return False
 
         # Check if this polygon already exists
@@ -59,11 +61,11 @@ class Api:
         if existing_index is not None:
             # Update existing polygon
             self.map_ui.polygons[existing_index] = polygon
-            logging.debug(f"Updated existing polygon: {polygon}")
+            logger.debug(f"Updated existing polygon: {polygon}")
         else:
             # Add new polygon
             self.map_ui.polygons.append(polygon)
-            logging.debug(f"Added new polygon: {polygon}")
+            logger.debug(f"Added new polygon: {polygon}")
 
         self.map_ui.map_polygons_tb.set(f"{self.map_ui.polygons}")
         return True
@@ -71,7 +73,7 @@ class Api:
     @logger_decorator
     def py_api_clear_polygons(self):
         """Clear all stored polygons"""
-        logging.debug("Clearing all polygons from storage")
+        logger.debug("Clearing all polygons from storage")
         self.map_ui.polygons = []  # Empty the list
         self.map_ui.map_polygons_tb.set("")  # Clear the StringVar
         return True
@@ -79,7 +81,7 @@ class Api:
     @logger_decorator
     def py_api_delete_polygons(self, polygon_data: PolygonDataDict):
         """Delete a polygon from storage based on its unique_id and type"""
-        logging.debug(f"Deleting polygon: {polygon_data}")
+        logger.debug(f"Deleting polygon: {polygon_data}")
 
         # Keep polygons that do not match the given polygon_data
         self.map_ui.polygons = [
@@ -88,19 +90,19 @@ class Api:
             if not (poly["name"] == polygon_data["name"] and poly["type"] == polygon_data["type"])
         ]
 
-        logging.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
+        logger.debug(f"Remaining polygons: {len(self.map_ui.polygons)}")
         return True
 
     @logger_decorator
     def py_api_send_polygons_to_js(self):
         """Return all stored polygons to JavaScript for redrawing"""
-        logging.debug(f"Polygons sent to js: {self.map_ui.polygons}")
+        logger.debug(f"Polygons sent to js: {self.map_ui.polygons}")
         return self.map_ui.polygons
 
     @logger_decorator
     def py_api_send_coordinates_to_js(self) -> tuple[float | None, float | None, str]:
         """Return the latest coordinates to JavaScript"""
-        logging.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
+        logger.debug(f"Coordinates sent to JavaScript: {self.map_ui.lat}, {self.map_ui.lng}")
         if self.map_ui.lat is None or self.map_ui.lat == "":
             self.map_ui.lat = None
         else:
@@ -222,9 +224,9 @@ class MapUI:
         try:
             extracted = extract_dicts_from_string(map_polygons_value)
             self.polygons = extracted
-            logging.debug(f"Updated polygons from import: {self.polygons}")
+            logger.debug(f"Updated polygons from import: {self.polygons}")
         except Exception as e:
-            logging.error(f"Error parsing polygons from StringVar: {e}")
+            logger.error(f"Error parsing polygons from StringVar: {e}")
 
     @logger_decorator
     def show_map(self):
@@ -291,9 +293,9 @@ class MapUI:
                     cwd=project_dir,
                 )
                 if completed.returncode != 0:
-                    logging.error(f"Map process ended with return code {completed.returncode}")
+                    logger.error(f"Map process ended with return code {completed.returncode}")
             except Exception as e:
-                logging.error(f"Could not start the map process: {e}")
+                logger.error(f"Could not start the map process: {e}")
                 messagebox.showerror("Map Error", f"Could not load the map component.\n\nError: {e}")
                 return
 
@@ -311,7 +313,7 @@ class MapUI:
             with open(result_file, "r", encoding="utf-8") as file_inp:
                 state = json.load(file_inp)
         except (OSError, ValueError) as e:
-            logging.error(f"Could not read the state of the map process: {e}")
+            logger.error(f"Could not read the state of the map process: {e}")
             return
 
         self.polygons = state["polygons"]
@@ -333,7 +335,7 @@ class MapUI:
                 js_api=api_instance,  # Attach the JavaScript API
             )
 
-            logging.debug("Webview started. Waiting for coordinates...")
+            logger.debug("Webview started. Waiting for coordinates...")
             # Set the webview settings to avoid opening devtools when debugging is True
             webview.settings["OPEN_DEVTOOLS_IN_DEBUG"] = False
             webview.settings["ALLOW_DOWNLOADS"] = True

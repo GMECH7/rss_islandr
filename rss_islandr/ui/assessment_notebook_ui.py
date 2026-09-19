@@ -11,6 +11,8 @@ from rss_islandr.core.exceptions import ExcelRowColNotFoundError
 from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.data_readers import ReceptorAliases, ReceptorFactorsFetcher, RisksDataFetcher
 
+logger = logging.getLogger(__name__)
+
 Image.CUBIC = Image.BICUBIC  # type: ignore
 
 
@@ -402,19 +404,19 @@ class AssessmentNoteBookUI(GeneralUITemplate):
     def ui(self, parent_frame: tb.Frame, case: str) -> None:
         """ """
         if case == "source":
-            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logger.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__source_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "pathways":
-            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logger.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__pathway_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)
 
         elif case == "receptors":
-            logging.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
+            logger.debug(f"Creating {case} notebook for scenario {self.scenario_id}")
             frame_tags_titles = self.__create_frame_tags_titles(case, self.__receptor_keys)
             notebook = tb.Notebook(parent_frame, style="Custom.TNotebook")
             notebook.pack(fill="both", expand=True)

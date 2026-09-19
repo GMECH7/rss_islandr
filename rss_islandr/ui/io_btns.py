@@ -23,6 +23,8 @@ from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.reporting import PDFReport
 
+logger = logging.getLogger(__name__)
+
 
 class IOBtns(ABC):
     """
@@ -52,7 +54,7 @@ class IOBtns(ABC):
                 self.xlsx_sheet_pos_vals["off-on"].append((position, value))
             self.saved_scenario[key] = value
         except Exception as ex:
-            logging.debug(f"Error accessing {key}: {ex}")
+            logger.debug(f"Error accessing {key}: {ex}")
 
     def access_vars(self):
         """Access all input and calculated UI-variables"""
@@ -158,7 +160,7 @@ class ExportExcelReportBtn(IOBtns):
             sheet.add_image(image, f"A{next_row}")
             next_row += math.ceil((image.height + gap_pixels) / row_height_pixels)
         sheet.column_dimensions["A"].width = image_width / 7
-        logging.debug(f"Successfully inserted {len(selected_image_files)} images")
+        logger.debug(f"Successfully inserted {len(selected_image_files)} images")
 
     def __save_polygons_data(self, workbook: Workbook):
         """
@@ -171,7 +173,7 @@ class ExportExcelReportBtn(IOBtns):
         """
         sheet = workbook.worksheets[self.COORDINATES_SHEET_POS]
         map_polygons_tb = extract_dicts_from_string(self._polygons_data.get())
-        logging.debug(f"Polygons data to save: {map_polygons_tb}")
+        logger.debug(f"Polygons data to save: {map_polygons_tb}")
         row_idx = 1
         for polygon in map_polygons_tb:
             row_idx += 1
@@ -204,7 +206,7 @@ class ExportExcelReportBtn(IOBtns):
             for sheet_name_key, sheet_pos in scenario_sheets.items():
                 sheet = workbook.worksheets[sheet_pos]
                 for position, value in self.xlsx_sheet_pos_vals[sheet_name_key]:
-                    logging.debug(f"Writing {value} to {sheet.title} {position}")
+                    logger.debug(f"Writing {value} to {sheet.title} {position}")
                     if position is not None:
                         sheet[position] = self.__to_cell_value(value)
 
