@@ -20,6 +20,10 @@ if sys.platform.startswith("linux"):
     # GTK is tried first by default and logs a (harmless) error when PyGObject is missing. Qt is the backend we install.
     os.environ.setdefault("PYWEBVIEW_GUI", "qt")
 
+#: Code run by the map process. `-c` is used instead of `-m` because the package imports this module,
+#: and `-m` would execute it a second time (RuntimeWarning).
+MAP_PROCESS_CODE = "from rss_islandr.ui.map_ui import _run_map_process; _run_map_process()"
+
 
 class Api:
     def __init__(self, map_ui_instance):
@@ -282,7 +286,7 @@ class MapUI:
             project_dir = Path(__file__).resolve().parents[2]
             try:
                 completed = subprocess.run(
-                    [sys.executable, "-m", "rss_islandr.ui.map_ui"],
+                    [sys.executable, "-c", MAP_PROCESS_CODE],
                     input=json.dumps(payload),
                     text=True,
                     cwd=project_dir,
@@ -332,7 +336,3 @@ class MapUI:
         except Exception as e:
             msg = f"Could not load the map component. Please contact support.\n\nError: {e}"
             messagebox.showerror("Map Error", msg)
-
-
-if __name__ == "__main__":
-    _run_map_process()
