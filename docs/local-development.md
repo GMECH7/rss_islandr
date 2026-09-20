@@ -192,15 +192,15 @@ Two workflows are in `.github/workflows/`.
 
 A merge into `main` publishes a release, so `main` can only change through a pull request: the changes are made on a separate branch and merged after a review and passing tests. The branch is protected by two rulesets.
 
-**Ruleset 1: pull requests**
+**Ruleset "pull requests (admin may merge without approval)"**
 
 1. Changes to `main` require a pull request. Nobody can push directly to `main`, administrators included.
 2. A pull request needs at least one approval. The repository administrator can merge their own pull requests without an approval (bypass for pull requests only).
+3. Force pushes to the branch and its deletion are blocked.
 
-**Ruleset 2: checks and history (no bypass)**
+**Ruleset "pytest-checks (tests must pass, no bypass)"**
 
-3. The two jobs of the Tests workflow, `pytest (ubuntu-24.04)` and `pytest (windows-2022)`, **MUST PASS** before merging, for everyone including the administrator. The names of the required checks match the job names in `ci.yml`.
-4. Force pushes to the branch and its deletion are blocked.
+4. The two jobs of the Tests workflow, `pytest (ubuntu-24.04)` and `pytest (windows-2022)`, **MUST PASS** before merging, for everyone including the administrator. The names of the required checks match the job names in `ci.yml`.
 
 The rulesets are configured in the repository settings under *Settings → Rules → Rulesets*.
 
@@ -233,7 +233,7 @@ The merge of a pull request triggers the Installers workflow as described below 
 
 The runner images are fixed (`ubuntu-24.04`, `windows-2022`) as well as Python 3.12, Poetry 2.4.1 (with `poetry.lock`) and Inno Setup 6.7.1. The Ubuntu package is built in the same Ubuntu 24.04 container image that is used locally.
 
-If the release job fails with a permission error, check that the repository setting *Settings, Actions, General, Workflow permissions* allows the workflow to write.
+The release job sets the permission `contents: write` itself. If it fails with a permission error, check the repository setting *Settings → Actions → General → Workflow permissions* and select **Read and write permissions**.
 
 ### 10.6 Reporting problems
 
