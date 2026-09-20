@@ -54,7 +54,7 @@ The top bar contains:
 
 - **File:** Export Excel report, Export PDF report, Export scenario, Import scenario.
 - **Documents:** the conceptual site model (CSM) image.
-- **Version:** a menu next to Documents. Its entry shows the version of the application (for example "Version 1.23.0") and opens a window with the details.
+- **Version:** a menu next to Documents. Its entry shows the version of the application (for example "Version 2.0.0") and opens a window with the details.
 - **Switch to Light Mode / Dark Mode:** changes the colour theme.
 
 The three scenario pages have identical inputs and are independent of each other. Each page has three groups of tabs: the source (hazard), the five pathways and the five receptors. A colour-coded meter next to each tab shows the score.
@@ -313,7 +313,7 @@ The layers are configured in `rss_islandr/maps/js/config.js`.
 |---|---|---|
 | European River Network (EU-Hydro), generated using the Copernicus Land Monitoring Service information of the European Union | `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer` | `0,1,2,3,4,5` |
 
-Two geological layers (IGME1500 and IQUAME 2500) are configured in `config.js` but have no check box in the layer panel of the map page yet, so they cannot be switched on at present.
+Two geological layers (IGME1500 and IQUAME 2500) are configured in `config.js` but have no check box in the layer panel of the map page, so they cannot be switched on.
 
 An overview of the BGR web services is available at <https://services.bgr.de/uebersicht/kurzlinks>.
 
