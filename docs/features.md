@@ -14,7 +14,18 @@ This document describes what the application does: the risk screening method, th
     - [4.4 Scope of the calculation](#44-scope-of-the-calculation)
 5. [Site information](#5-site-information)
 6. [Map viewer](#6-map-viewer)
+    - [6.1 Functions](#61-functions)
+    - [6.2 Behaviour by platform](#62-behaviour-by-platform)
+    - [6.3 Coordinate reference systems](#63-coordinate-reference-systems)
+    - [6.4 Data flow](#64-data-flow)
+    - [6.5 Map services](#65-map-services)
+    - [6.6 Adding a map layer](#66-adding-a-map-layer)
+    - [6.7 Finding the layers of a WMS service](#67-finding-the-layers-of-a-wms-service)
 7. [Files and reports](#7-files-and-reports)
+    - [7.1 Scenario file (JSON)](#71-scenario-file-json)
+    - [7.2 PDF report](#72-pdf-report)
+    - [7.3 Excel report](#73-excel-report)
+    - [7.4 Configuration files](#74-configuration-files)
 8. [Limitations](#8-limitations)
 
 ## 1. Method: source, pathway, receptor
@@ -179,29 +190,29 @@ Three kinds of meters are shown on a scenario page: **Hazard potential** (the so
 | Site name | Free text |
 | Site area [km²] | Free text. The area of a polygon drawn on the map is stored with the polygon data |
 | Assessment date | Date picker (format YYYY-MM-DD) |
-| Operation start date, Operation end date | Date pickers. For the site status Active or Proposed only the start date is shown. For Legacy the start and the end date are shown |
+| Operation start date, Operation end date | Date pickers. For the site status Active or Proposed only the start date is shown. For Legacy the start and the end date are shown. As long as no site status is selected, only the start date field is shown, without a label |
 | Activity/industry | List |
 | Site status | List |
 | Soil type, Soil type (specific) | Lists. The second list depends on the first |
 | Land use, Land use (specific) | Lists. The second list depends on the first |
-| CRS, Latitude, Longitude | Filled from the map viewer |
+| CRS type, Latitude & Longitude | Read-only fields, filled from the map viewer |
 
-The lists are stored in `rss_islandr/data/dropdown_lists.json`. These fields do not influence the score.
+The lists are stored in `rss_islandr/data/dropdown_lists.json`. Soil type and Land use start with their first option, and the site status starts empty. These fields do not influence the score.
 
 ## 6. Map viewer
 
 The map viewer is an interactive [Leaflet](https://leafletjs.com/) map that displays geospatial layers from Web Map Services (WMS). It is used to consult geological, hydrogeological, soil and mining data during the desk study, to draw the boundary of the site and to obtain its coordinates.
 
-### Functions
+### 6.1 Functions
 
-- Displaying OpenStreetMap as the base map and switching the WMS layers on and off in the layer panel, which groups the layers by geology, mineral resources, hydrogeology, soil and hydrology. Every layer has a legend that can be minimised. The panel can be hidden with the button at the top left.
+- Displaying OpenStreetMap as the base map and switching the WMS layers on and off in the layer panel, which groups the layers by geology, mineral resources, hydrogeology, soil and hydrology. Every layer except the river network has a legend that can be minimised. The panel can be hidden with the button at the top left.
 - Drawing polygons with the buttons **Draw Source**, **Draw Pathway** and **Draw Receptor** (three colours, one type each). A name is requested when a polygon is finished. The area (km²) and the number of nodes of each polygon are calculated. The key Escape cancels a drawing, **Clear All Drawings** removes all polygons, and the edit tools at the bottom left change the nodes of a polygon.
 - Clicking a polygon shows its name, type, area, number of nodes and the coordinates of its nodes in the selected CRS. The **Rename** button changes its name.
-- Setting a marker: press Ctrl and click on the map (a second Ctrl-click removes it), or type the latitude and longitude and press **Update Marker**. Decimal degrees and degrees, minutes, seconds (for example 40°26'46"N) are accepted. The coordinates are shown in the coordinate reference system (CRS) that is selected in the list.
+- Setting a marker: press Ctrl and click on the map (a second Ctrl-click removes it), or type the latitude and longitude and press **Update Marker**. In the CRS EPSG:4326, decimal degrees and degrees, minutes, seconds (for example 40°26'46"N) are accepted. In every other CRS the fields are X and Y and only numbers are accepted. The coordinates are shown in the coordinate reference system (CRS) that is selected in the list.
 - The coordinates, the CRS and the polygons are transferred to the application when the map is closed. The polygons are stored with the scenario and are written to the reports.
 - Saving the map as an image (see the notes below).
 
-### Behaviour by platform
+### 6.2 Behaviour by platform
 
 | | Windows | Ubuntu |
 |---|---|---|
@@ -211,7 +222,7 @@ The map viewer is an interactive [Leaflet](https://leafletjs.com/) map that disp
 
 While the map window is open, the main window waits. The polygons and coordinates are taken over when the map window is closed. The map needs an internet connection (OpenStreetMap tiles, the WMS services and two libraries loaded from a CDN). All other functions of the application work offline.
 
-### Coordinate reference systems
+### 6.3 Coordinate reference systems
 
 | CRS | Area |
 |---|---|
@@ -225,7 +236,7 @@ While the map window is open, the main window waits. The polygons and coordinate
 | EPSG:2180 | Poland, ETRS89 / Poland CS92 |
 | EPSG:25832, EPSG:25833 | Germany, ETRS89 / UTM zones 32N and 33N |
 
-### Data flow
+### 6.4 Data flow
 
 ```mermaid
 graph LR
@@ -261,7 +272,7 @@ graph LR
 
 The Python methods that the map page can call are `py_api_coord_receiver`, `py_api_polygons_receiver`, `py_api_clear_polygons`, `py_api_delete_polygons`, `py_api_send_polygons_to_js` and `py_api_send_coordinates_to_js`.
 
-### Map services
+### 6.5 Map services
 
 The layers are configured in `rss_islandr/maps/js/config.js`.
 
@@ -306,13 +317,13 @@ Two geological layers (IGME1500 and IQUAME 2500) are configured in `config.js` b
 
 An overview of the BGR web services is available at <https://services.bgr.de/uebersicht/kurzlinks>.
 
-### Adding a map layer
+### 6.6 Adding a map layer
 
 1. Find the service URL and the layer names (see below).
 2. Open `rss_islandr/maps/js/config.js` and add a WMS layer to the layer list, following the structure of the existing entries (name, `url`, `params.layers`, `format`, `transparent`, `version`, `attribution`).
 3. If the layer has a legend, add a legend file in `rss_islandr/maps/legends/` and set its `legendId`.
 
-### Finding the layers of a WMS service
+### 6.7 Finding the layers of a WMS service
 
 Every WMS service provides a `GetCapabilities` document that lists its layers. Append `?service=WMS&request=GetCapabilities` to the service URL and open it in a browser. Examples:
 
@@ -331,19 +342,19 @@ The document contains `<Layer>` entries. Use the `<Name>` value as the layer nam
 
 ## 7. Files and reports
 
-### Scenario file (JSON)
+### 7.1 Scenario file (JSON)
 
-File > Export scenario saves all inputs, the calculated values and the polygons (with their type: source, pathway or receptor) to a `.json` file. File > Import scenario reads such a file back. The keys are the identifiers of the input fields, for example `drop_on-on_IN_1_00` for the toxicity of the on-site to on-site scenario. All keys must be present when a file is imported, otherwise an error message is shown.
+File > Export scenario saves all inputs, the calculated values and the polygons (with their type: source, pathway or receptor) to a `.json` file. File > Import scenario reads such a file back. The keys are the identifiers of the input fields, for example `drop_on-on_IN_1_00` for the toxicity of the on-site to on-site scenario. All keys of the input fields must be present when a file is imported, otherwise an error message is shown.
 
-### PDF report
+### 7.2 PDF report
 
 File > Export PDF report creates a report with a title page and a linked table of contents. It contains tables with the site information and, for each scenario, the selected source, pathway and receptor options with the calculated risk in percent. Map images that the user selects (PNG or JPEG) and the table of the polygons (name, coordinates of the nodes, area) are appended.
 
-### Excel report
+### 7.3 Excel report
 
-File > Export Excel report writes the same information to `rss_islandr/templates/report_template.xlsx`: one sheet for each scenario, one sheet with the map images and one sheet with the polygon coordinates. Microsoft Excel is not required. Numbers and dates are stored as numbers and dates, so the formats of the template apply.
+File > Export Excel report writes the same information to a new Excel file. The file is created from the template `rss_islandr/templates/report_template.xlsx` and saved where the user chooses. It has one sheet for each scenario, one sheet with the map images and one sheet with the polygon coordinates. Microsoft Excel is not required. Numbers and dates are stored as numbers and dates, so the formats of the template apply.
 
-### Configuration files
+### 7.4 Configuration files
 
 | File | Contents |
 |---|---|
