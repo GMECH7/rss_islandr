@@ -130,8 +130,6 @@ The [Releases page](https://github.com/GMECH7/rss_islandr/releases) lists all ve
 > [!NOTE]
 > The installers are not code-signed. Windows may show the message "Windows protected your PC": select *More info* and then *Run anyway*.
 
-After the download and the checksum check, install the file as described in section 4.
-
 Download the files from the [Releases page](https://github.com/GMECH7/rss_islandr/releases) by selecting them, and download `SHA256SUMS.txt` as well. 
 
 To check that a file is intact, compare its SHA-256 checksum with the line of the file in `SHA256SUMS.txt`.
@@ -150,6 +148,8 @@ sha256sum -c SHA256SUMS.txt --ignore-missing
 Get-FileHash .\islandr-setup.exe -Algorithm SHA256
 certutil -hashfile islandr-setup.exe SHA256        # alternative
 ```
+
+After the download and the checksum check, install the file as described in section 4.
 
 ## 4. Installing and uninstalling
 

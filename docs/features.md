@@ -2,25 +2,22 @@
 
 This document describes what the application does: the risk screening method, the pages of the application, the map viewer and the files it reads and writes.
 
-Contents
+## Table of Contents
 
-1. [Purpose and scope](#1-purpose-and-scope)
-2. [Method: source, pathway, receptor](#2-method-source-pathway-receptor)
-3. [Pages of the application](#3-pages-of-the-application)
-4. [Input parameters and weights](#4-input-parameters-and-weights)
-5. [Scoring and results](#5-scoring-and-results)
-6. [Site information](#6-site-information)
-7. [Map viewer](#7-map-viewer)
-8. [Files and reports](#8-files-and-reports)
-9. [Limitations](#9-limitations)
+1. [Method: source, pathway, receptor](#1-method-source-pathway-receptor)
+2. [Pages of the application](#2-pages-of-the-application)
+3. [Input parameters and weights](#3-input-parameters-and-weights)
+4. [Scoring and results](#4-scoring-and-results)
+    - [4.1 Equation](#41-equation)
+    - [4.2 Meters and colours](#42-meters-and-colours)
+    - [4.3 Worked example](#43-worked-example)
+    - [4.4 Scope of the calculation](#44-scope-of-the-calculation)
+5. [Site information](#5-site-information)
+6. [Map viewer](#6-map-viewer)
+7. [Files and reports](#7-files-and-reports)
+8. [Limitations](#8-limitations)
 
-## 1. Purpose and scope
-
-RSS-ISLANDR is a desktop application for the screening of contaminated land. It is a Python implementation of the Risk Screening System (RSS) of the New Zealand Ministry for the Environment (Contaminated Land Management Guidelines No. 3), developed for CERTH under the ISLANDR project.
-
-The application supports a desk study: an operator estimates the parameters of a site from maps, databases and experience, and obtains a relative risk score. The intended uses are due diligence before a site visit and the prioritisation of several sites. It is a screening tool. It does not replace a site investigation or a quantitative risk assessment.
-
-## 2. Method: source, pathway, receptor
+## 1. Method: source, pathway, receptor
 
 The risk of a site is described by three components that are multiplied:
 
@@ -30,18 +27,13 @@ The risk of a site is described by three components that are multiplied:
 
 Because the components are multiplied, a low value in any of them gives a low risk. For example, a large source does not present a risk if there is no viable pathway to a receptor.
 
-References:
-
-- New Zealand Ministry for the Environment, [Contaminated Land Management Guidelines No. 3 - Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
-- The Source-Pathway-Receptor (SPR) model is a general framework of environmental risk assessment.
-
-## 3. Pages of the application
+## 2. Pages of the application
 
 | Page | Purpose |
 |---|---|
 | Home Page | Start page with the project logo and the funding statement |
-| Maps Viewer | Opens the map window (see [section 7](#7-map-viewer)) |
-| Site info | General information about the site (see [section 6](#6-site-information)) |
+| Maps Viewer | Opens the map window (see [section 6](#6-map-viewer)) |
+| Site info | General information about the site (see [section 5](#5-site-information)) |
 | On-site to on-site | Assessment of contamination that starts and affects the site itself |
 | On-site to off-site | Assessment of contamination that starts on the site and affects the surroundings |
 | Off-site to on-site | Assessment of contamination that starts outside and affects the site |
@@ -56,7 +48,7 @@ The top bar contains:
 
 The three scenario pages have identical inputs and are independent of each other. Each page has three groups of tabs: the source (hazard), the five pathways and the five receptors. A colour-coded meter next to each tab shows the score.
 
-## 4. Input parameters and weights
+## 3. Input parameters and weights
 
 All scoring inputs are selections from a list. No number is typed. Each option has a weight between 0 and 1. The weights are stored in `rss_islandr/data/risk_factors.json` (source and pathways) and `rss_islandr/data/receptor_factors.json` (receptors), so the criteria can be reviewed and changed without changing the program code.
 
@@ -126,9 +118,9 @@ Every source and pathway parameter starts with the option **Value Not Known**, w
 
 For a receptor, the user selects the pathway that leads to it (only the pathways listed above are offered) and one class of the receptor.
 
-## 5. Scoring and results
+## 4. Scoring and results
 
-### Equation
+### 4.1 Equation
 
 For one scenario, a receptor *r* and the pathway *p* that is selected for it:
 
@@ -148,7 +140,7 @@ where
 
 All values are dimensionless and between 0 and 1. The percentage shown in the application is $100 \times$ the value. If any weight is 0, the result is 0.
 
-### Meters and colours
+### 4.2 Meters and colours
 
 | Value | Colour | Meaning |
 |---|---|---|
@@ -161,7 +153,7 @@ A value of exactly 10 % is shown green and exactly 30 % is shown yellow. The lim
 
 Three kinds of meters are shown on a scenario page: **Hazard potential** (the source), **Pathway risk** (one per pathway) and **Risk** (one per receptor).
 
-### Worked example
+### 4.3 Worked example
 
 | Step | Selection | Weight |
 |---|---|---|
@@ -173,16 +165,14 @@ Three kinds of meters are shown on a scenario page: **Hazard potential** (the so
 | Soil receptor: pathway, class | Soil, Residential | 0.5 |
 | Risk $R$ | $0.7 \times 0.64 \times 0.5$ | 0.224 (22.4 %, yellow) |
 
-### Relation to the New Zealand method
-
-The application follows the multiplicative structure of the New Zealand RSS but is not an identical copy:
+### 4.4 Scope of the calculation
 
 - The hazard is toxicity multiplied by extent. Mobility is a parameter of each pathway.
-- The air and sediment pathways and the selection of the pathway for each receptor are additions.
-- The colour limits are 10 % and 30 %.
+- Five pathways are assessed: soil, groundwater, surface water, air and sediment. For each receptor, the user selects the pathway that leads to it.
+- The colour limits of the meters are 10 % and 30 %.
 - No overall site ranking (for example the worst case of all pathways) is calculated. The receptor meters of each scenario are read individually.
 
-## 6. Site information
+## 5. Site information
 
 | Field | Notes |
 |---|---|
@@ -198,7 +188,7 @@ The application follows the multiplicative structure of the New Zealand RSS but 
 
 The lists are stored in `rss_islandr/data/dropdown_lists.json`. These fields do not influence the score.
 
-## 7. Map viewer
+## 6. Map viewer
 
 The map viewer is an interactive [Leaflet](https://leafletjs.com/) map that displays geospatial layers from Web Map Services (WMS). It is used to consult geological, hydrogeological, soil and mining data during the desk study, to draw the boundary of the site and to obtain its coordinates.
 
@@ -339,7 +329,7 @@ The document contains `<Layer>` entries. Use the `<Name>` value as the layer nam
 </Layer>
 ```
 
-## 8. Files and reports
+## 7. Files and reports
 
 ### Scenario file (JSON)
 
@@ -362,10 +352,11 @@ File > Export Excel report writes the same information to `rss_islandr/templates
 | `rss_islandr/data/settings.json` | Colour limits of the meters, user interface and report settings |
 | `rss_islandr/data/dropdown_lists.json` | Lists of the Site info page |
 
-## 9. Limitations
+## 8. Limitations
 
 - The result is a relative, qualitative ranking. It is not a concentration, a dose or a probability.
 - The result depends on the judgement of the operator and on the quality of the available information.
+- It is a screening tool for a desk study. It does not replace a site investigation or a quantitative risk assessment.
 - Contaminant fate and transport are not modelled. Diffuse contamination at regional scale is outside the scope.
 - The weights are fixed scores. They have not been validated by a documented sensitivity analysis or a comparison with reference sites.
 - Human health, ecology and property are not assessed separately.
