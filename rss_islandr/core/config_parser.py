@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import json
 import sys
 from pathlib import Path
 
 # Define the base directory
-if getattr(sys, "frozen", False):  # noqa: SIM108
+if getattr(sys, "frozen", False):
     # Running in a PyInstaller bundle
     PROJECT_DIR = Path(sys._MEIPASS)  # type: ignore[attr-defined]
 else:
@@ -30,7 +29,6 @@ RECEPTOR_FACTORS_JSON_DIR = DATA_DIR / "receptor_factors.json"
 RISK_FACTORS_JSON_DIR = DATA_DIR / "risk_factors.json"
 DROPDOWN_LISTS_JSON_DIR = DATA_DIR / "dropdown_lists.json"
 XLSX_TEMPLATE_FILE = TEMPLATES_DIR / "report_template.xlsx"
-XLSX_TEMPLATE_FILE_COPY = TEMPLATES_DIR / "report_template__COPY.xlsx"
 with open(SETTINGS_JSON_DIR, "r", encoding="utf-8") as file_settings:
     settings = json.load(file_settings)
 

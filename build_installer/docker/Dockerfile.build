@@ -1,0 +1,20 @@
+# Build environment of the Debian package: Ubuntu 24.04 is the oldest supported system.
+# A program built on an older glibc also runs on newer systems, not the other way around.
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# python3-tk: Tk for the main window. libpython3.12 and binutils: needed by PyInstaller. xvfb: virtual display for the self-test.
+# The lib* packages are needed to load Qt WebEngine when PyInstaller analyses the app.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3.12 python3.12-venv libpython3.12 python3-pip python3-tk binutils dpkg-dev xvfb ca-certificates \
+        libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libcups2t64 libdbus-1-3 libdrm2 libegl1 \
+        libfontconfig1 libgbm1 libgl1 libnspr4 libnss3 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-image0 \
+        libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xkb1 \
+        libxcomposite1 libxdamage1 libxfixes3 libxkbcommon-x11-0 libxkbcommon0 libxrandr2 libxtst6 \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG POETRY_VERSION=2.4.1
+RUN python3.12 -m venv /opt/poetry && /opt/poetry/bin/pip install --no-cache-dir poetry==${POETRY_VERSION}
+ENV PATH="/opt/poetry/bin:${PATH}"

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .assessment_notebook_ui import AssessmentNoteBookUI
 from .btns_change_colour import BtnsChangeColour
 from .custom_themes import CustomThemes
@@ -16,19 +15,19 @@ __all__ = [
     "AssessmentNoteBookUI",
     "BtnsChangeColour",
     "CustomThemes",
+    "ExportExcelReportBtn",
+    "ExportPDFReportBtn",
+    "ExportScenarioBtn",
     "GeneralUITemplate",
-    "frame_distances",
     "HomeUI",
     "HorizontalNavbar",
     "HorizontalNavbarBtns",
-    "ExportExcelReportBtn",
-    "ExportScenarioBtn",
-    "ImportScenarioBtn",
-    "ExportPDFReportBtn",
     "IOBtns",
-    "PopupImage",
+    "ImportScenarioBtn",
     "MainAppUI",
     "MapUI",
+    "PopupImage",
     "SiteInfoUI",
     "SiteToSiteAssessmentUI",
+    "frame_distances",
 ]

@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a problem with RSS-ISLANDR
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Please do not include confidential site data in the report.
+  - type: input
+    id: version
+    attributes:
+      label: Version of the application
+      description: Shown in the **Version** menu of the navigation bar, next to Documents.
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: system
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Ubuntu 26.04
+        - Ubuntu 24.04
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: installation
+    attributes:
+      label: How the application was installed
+      options:
+        - Windows installer (islandr-setup.exe)
+        - Windows portable version (islandr-portable.zip)
+        - Ubuntu package (.deb)
+        - From the source code
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened
+      description: Describe the problem and any message that was shown.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Map viewer
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What you expected to happen instead.
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots and files
+      description: Drag screenshots or files into this field. If the problem depends on the input values, attach the scenario file that the application can save.
+  - type: textarea
+    id: self-test
+    attributes:
+      label: Result of the self-test (optional)
+      description: On Ubuntu run `rss-islandr --self-test` and paste the output.
+      render: text

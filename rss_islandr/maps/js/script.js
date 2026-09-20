@@ -303,8 +303,8 @@ class MapManager {
         // Rebind rename handler (optional but good practice)
         layer.off('popupopen'); // remove old handler if any
         layer.on('popupopen', () => {
-          document.querySelector('.rename-btn')?.addEventListener('click', () => {
-            const newName = prompt("Enter new name:", layer.feature.properties.name);
+          document.querySelector('.rename-btn')?.addEventListener('click', async () => {
+            const newName = await AppDialog.prompt("Enter new name:", layer.feature.properties.name, "Rename polygon");
             if (newName) {
               layer.feature.properties.name = newName;
               layer.setPopupContent(this.createPopupContent(layer));
@@ -382,7 +382,7 @@ class MapManager {
 
   startDrawing(type) {
     if (!L.Draw || !L.Draw.Polygon) {
-      alert('Drawing functionality not available. Please ensure Leaflet.draw plugin is loaded.');
+      AppDialog.alert('Drawing functionality not available. Please ensure Leaflet.draw plugin is loaded.', 'Error');
       return;
     }
     this.isDrawing = true;
@@ -425,10 +425,10 @@ class MapManager {
     return 'polygon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  finalizeDrawing(layer) {
+  async finalizeDrawing(layer) {
     // Prompt user for polygon name
     const defaultName = `${this.currentType.charAt(0).toUpperCase() + this.currentType.slice(1)}`;
-    const polygonName = prompt("Enter polygon name:", defaultName) || defaultName;
+    const polygonName = (await AppDialog.prompt("Enter polygon name:", defaultName, "New polygon")) || defaultName;
 
     // Add type metadata to the layer
     layer.feature = layer.feature || {};
@@ -459,8 +459,8 @@ class MapManager {
 
     // Setup rename handler
     layer.on('popupopen', () => {
-      document.querySelector('.rename-btn')?.addEventListener('click', () => {
-        const newName = prompt("Enter new name:", layer.feature.properties.name);
+      document.querySelector('.rename-btn')?.addEventListener('click', async () => {
+        const newName = await AppDialog.prompt("Enter new name:", layer.feature.properties.name, "Rename polygon");
         if (newName) {
           layer.feature.properties.name = newName;
           layer.setPopupContent(this.createPopupContent(layer));
@@ -645,8 +645,8 @@ class MapManager {
 
       // Re-attach event handler for renaming
       polygon.on('popupopen', () => {
-        document.querySelector('.rename-btn')?.addEventListener('click', () => {
-          const newName = prompt("Enter new name:", polygon.feature.properties.name);
+        document.querySelector('.rename-btn')?.addEventListener('click', async () => {
+          const newName = await AppDialog.prompt("Enter new name:", polygon.feature.properties.name, "Rename polygon");
           if (newName) {
             polygon.feature.properties.name = newName;
             polygon.setPopupContent(this.createPopupContent(polygon));
@@ -765,7 +765,7 @@ class MapManager {
       this.setMarker(lat, lng, true);
 
     } catch (error) {
-      alert(error.message);
+      AppDialog.alert(error.message, 'Invalid coordinates');
     }
   }
 
@@ -903,6 +903,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById('captureScreenBtn').addEventListener('click', async () => {
+  // Screen capture (getDisplayMedia) is not supported by the Qt WebEngine used on Linux/macOS
+  if (navigator.userAgent.includes("QtWebEngine")) {
+    await AppDialog.alert("Saving the map is not available in this environment. Please use your operating system's screenshot tool.", "Save the map");
+    return;
+  }
   try {
     const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
     const track = stream.getVideoTracks()[0];

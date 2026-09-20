@@ -1,27 +1,53 @@
 [tool.poetry]
 name = "rss_islandr"
-version = "1.21.5"
+version = "2.0.0"
 description = "Risk Screening System developed for CERTH under the ISLANDR project"
 authors = ["Georgios Makris <giorgos.p.makris@gmail.com>"]
 readme = "README.md"
+license = "MIT"
+packages = [
+    { include = "rss_islandr" },
+    { include = "dev_scripts" },
+    { include = "build_installer" },
+]
 
-# Custom tool section for release version
+[tool.poetry.scripts]
+islandr = "dev_scripts.run:main"
+clean = "dev_scripts.clean:main"
+rss-build = "build_installer.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.2"
 pytest-cov = "^7.0.0"
+rich = "^14.0.0"      # Console output of the build scripts
+pypdf = "^6.19.0"
+ruff = "^0.16.8"
 
-[tool.islandr]
-release_version = "1.8.5" # Release version for clients
+[tool.poetry.group.build.dependencies]
+pyinstaller = "^6.13.0"
 
 [tool.poetry.dependencies]
-python = ">=3.12,<3.14"
+python = ">=3.12,<3.15"
 ttkbootstrap = "^1.12.0"
-xlwings = "^0.33.12"
-pywebview = { version = "^5.4", extras = ["winforms"] }
-pyinstaller = "^6.13.0"
+pywebview = [
+    { version = "^5.4", extras = [
+        "winforms",
+    ], markers = "sys_platform == 'win32'" },
+    { version = "^5.4", extras = [
+        "qt",
+    ], markers = "sys_platform != 'win32'" },
+]
+qtpy = { version = "^2.4", markers = "sys_platform != 'win32'" } # Qt backend of pywebview (Linux/macOS)
 reportlab = "^4.4.1"
+openpyxl = "^3.1.5"
 
+[tool.ruff]
+line-length = 120
+exclude = ["**/__pycache__"]
+
+[tool.ruff.lint]
+# select = ["E", "F", "I"]
+ignore = ["D419"] # Empty docstrings
 
 [tool.pytest.ini_options]
 pythonpath = ["rss_islandr", "tests"]
@@ -38,9 +64,10 @@ addopts = """
 data_file = ".cov_files/.coverage" # Redirect .coverage file here
 source = ["rss_islandr"] # Only measure coverage here
 omit = [
-    "tests/*",             # Ignore test files
-    "main.py",             # Ignore main entry point
-    "generate_version.py", # Ignore version generation script
+    "tests/*",           # Ignore test files
+    "main.py",           # Ignore main entry point
+    "build_installer/*", # Ignore the installer build scripts
+    "dev_scripts/*",     # Ignore the development scripts
     "*/__init__.py",
 ]
 

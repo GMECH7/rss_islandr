@@ -1,12 +1,8 @@
 import logging
 import sys
-import threading
-import time
-from tkinter import messagebox
 
 import ttkbootstrap as tb
 from PIL import Image, ImageTk
-from ttkbootstrap.dialogs import Messagebox
 
 from rss_islandr.core.config_parser import (
     ISLANDR_LOGO,
@@ -20,6 +16,7 @@ from rss_islandr.core.config_parser import (
 )
 from rss_islandr.core.datatypes import FramePlacing, UIInpVariable
 from rss_islandr.core.skin_reader import read_skin_details
+from rss_islandr.ui import dialogs
 from rss_islandr.ui.btns_change_colour import BtnsChangeColour
 from rss_islandr.ui.custom_themes import CustomThemes
 from rss_islandr.ui.general_ui import frame_distances
@@ -28,6 +25,8 @@ from rss_islandr.ui.horizontal_navbar import HorizontalNavbar
 from rss_islandr.ui.map_ui import MapUI
 from rss_islandr.ui.site_info_ui import SiteInfoUI
 from rss_islandr.ui.site_to_site_assessment_ui import SiteToSiteAssessmentUI
+
+logger = logging.getLogger(__name__)
 
 
 class MainAppUI:
@@ -59,7 +58,6 @@ class MainAppUI:
         self.__init__populate_frame_infos_dict()
         self.__init__handle_geometry()
 
-        self.map_open = True
         self.map_ui = MapUI(MAP_DIR, tb_style, self.ui_inp_vars, self.map_polygons_tb)
 
         self.__islandr_logo_img = Image.open(ISLANDR_LOGO)
@@ -265,8 +263,7 @@ class MainAppUI:
 
     def __restore_all(self) -> None:
         """ """
-        result = Messagebox.yesno("Are you sure you want to restore defaults?", "Confirmation")
-        if result == "Yes":
+        if dialogs.ask_yes_no("Confirmation", "Are you sure you want to restore defaults?"):
             self.ui_inp_vars.get("map_0_01").tk_var.set(None)  # Reset latitude
             self.ui_inp_vars.get("map_0_02").tk_var.set(None)  # Reset longitude
             self.ui_inp_vars.get("map_0_00").tk_var.set(None)  # Reset longitude
@@ -276,33 +273,29 @@ class MainAppUI:
             for tk_var_tag in self.ui_inp_vars:
                 val_default = self.ui_inp_vars[tk_var_tag].val_default
                 self.ui_inp_vars[tk_var_tag].tk_var.set(val_default)
-            messagebox.showinfo("Success", "Values restored!")
+            dialogs.show_info("Success", "Values restored!")
         else:
             pass
 
     def __toggle_map(self):
+        # Blocks until the map window is closed, so the results of the map can be taken over right afterwards
         self.map_ui.run_webview()
         self.btn_map.config(text="Maps Viewer")
-        #: Start a thread to check for coordinate updates in the webview app.
-        threading.Thread(target=self.__monitor_map_changes, daemon=True).start()
+        self.__take_over_map_results()
 
-    def __monitor_map_changes(self):
-        """Continuously checks for new coordinates from MapUI when the map is open."""
-        logging.debug(f"{self.__monitor_map_changes.__name__} called!")
-        while self.map_open:
-            coords = self.map_ui.get_coordinates()
-            if coords is not None:
-                lat, lng, crs = coords
-                self.__update_coordinates(lat, lng, crs)
+    def __take_over_map_results(self) -> None:
+        """Take over the coordinates and polygons that were set in the map."""
+        coords = self.map_ui.get_coordinates()
+        if coords is not None:
+            lat, lng, crs = coords
+            self.__update_coordinates(lat, lng, crs)
 
-            if self.map_polygons_tb.get() == "":
-                map_polygons_as_str = self.map_ui.get_polygons_data()
-            else:
-                map_polygons_as_str = self.map_polygons_tb.get()
+        if self.map_polygons_tb.get() == "":
+            map_polygons_as_str = self.map_ui.get_polygons_data()
+        else:
+            map_polygons_as_str = self.map_polygons_tb.get()
 
-            self.__update_polygons_data(map_polygons_as_str)
-
-            time.sleep(0.5)  # Polling interval (s) If commented out the main page cannot close
+        self.__update_polygons_data(map_polygons_as_str)
 
     def __update_coordinates(self, lat, lng, crs) -> None:
         """Callback function to update the coordinates"""
@@ -310,12 +303,12 @@ class MainAppUI:
         self.ui_inp_vars["map_0_01"].tk_var.set(lat)
         self.ui_inp_vars["map_0_02"].tk_var.set(lng)
 
-        logging.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
+        logger.info(f"Updated Coordinates: {lat}, {lng}, {crs}")
 
     def __update_polygons_data(self, map_polygons_as_str: str) -> None:
         """Callback function to update polygons data"""
         self.map_polygons_tb.set(map_polygons_as_str)
-        logging.debug(f"Updated polygons: {map_polygons_as_str}")
+        logger.debug(f"Updated polygons: {map_polygons_as_str}")
 
     def __create_vertical_navbar_buttons(self) -> None:
         """

@@ -141,8 +141,6 @@ class SiteInfoUI(GeneralUITemplate):
         self.ui_inp_vars.update({"drop_0_00": ui_var_activity})
         self.ui_inp_vars.update({"drop_0_01": ui_var_site_status})
 
-        return None
-
     def __ui_inputs_nested_dropdown(self):
         """
         Definition of nested dropdown widget inputs.
@@ -254,14 +252,14 @@ class SiteInfoUI(GeneralUITemplate):
         if selected_option == "Active" or selected_option == "Proposed":
             # Show only the start date widget
             self.__start_end_oper_label.config(text="Operation start date")
-            self.__start_end_oper_label.grid(row=8, column=0, sticky="ew")
-            self.__start_date_entry.grid(row=8, column=1, sticky="ew")
+            self.__start_end_oper_label.grid(row=9, column=0, sticky="ew")
+            self.__start_date_entry.grid(row=9, column=1, sticky="ew")
             self.__end_date_entry.grid_remove()
         elif selected_option == "Legacy":
             self.__start_end_oper_label.config(text="Operation start & end dates")
-            self.__start_end_oper_label.grid(row=8, column=0, sticky="ew")
-            self.__start_date_entry.grid(row=8, column=1, sticky="ew")
-            self.__end_date_entry.grid(row=8, column=2, sticky="ew")
+            self.__start_end_oper_label.grid(row=9, column=0, sticky="ew")
+            self.__start_date_entry.grid(row=9, column=1, sticky="ew")
+            self.__end_date_entry.grid(row=9, column=2, sticky="ew")
         else:
             self.__start_end_oper_label.config(text="")
             self.__end_date_entry.grid_remove()

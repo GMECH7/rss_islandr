@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 import datetime
-from typing import Optional
+import logging
 
 import ttkbootstrap as tb
 from reportlab.lib import colors
@@ -24,6 +22,8 @@ from rss_islandr.core.helpers import extract_dicts_from_string
 from rss_islandr.core.logger_config import logger_decorator
 from rss_islandr.reporting.custom_doc_template import CustomDocTemplate
 from rss_islandr.reporting.numbered_canvas import NumberedCanvas
+
+logger = logging.getLogger(__name__)
 
 
 class PDFReport:
@@ -213,7 +213,7 @@ class PDFReport:
                 self.story.append(img)
                 self.story.append(Spacer(1, 0.2 * inch))
             except Exception:
-                logging.debug(f"Error : Image {img_path} was not included in the PDF report")
+                logger.debug(f"Error : Image {img_path} was not included in the PDF report")
 
         self.story.append(PageBreak())
 
@@ -293,7 +293,7 @@ class PDFReport:
                 self.story.append(Spacer(1, 0.3 * inch))
 
         except Exception as e:
-            logging.error(f"Error processing polygon data: {e}")
+            logger.error(f"Error processing polygon data: {e}")
             self.story.append(Paragraph("Error displaying polygon data", self._styles["Normal"]))
 
     # Update the __call__ method to use the new polygon method
@@ -303,7 +303,7 @@ class PDFReport:
         ui_inp_vars: dict[str, UIInpVariable],
         ui_calc_vars: dict[str, UICalcVariable],
         map_polygons_tb: tb.StringVar,
-        images_list: Optional[list[str]] = None,
+        images_list: list[str] | None = None,
         report_title: str = "Contamination Analysis Report",
     ) -> None:
         """

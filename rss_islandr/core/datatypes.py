@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, TypedDict, Union
+from typing import TypedDict, Union
 
 import ttkbootstrap as tb
 
@@ -46,18 +46,18 @@ class UIInpVariable:
     tk_var: TkValues
     rel_pos: int
     text_val: str
-    val_default: Optional[str] = ""
-    text_descr: Optional[str] = None
-    drop_options: Optional[List[str]] = None
-    excel_cell: Optional[str] = None
-    pdf_table_name: Optional[str] = ""
+    val_default: str | None = ""
+    text_descr: str | None = None
+    drop_options: list[str] | None = None
+    excel_cell: str | None = None
+    pdf_table_name: str | None = ""
     state: str = field(default="enabled")
 
 
 @dataclass
 class UICalcVariable:
     tk_var: tb.StringVar
-    excel_cell: Optional[str] = None
+    excel_cell: str | None = None
 
 
 @dataclass
@@ -66,8 +66,8 @@ class FramePlacing:
     x_r: float
     y_u: float
     y_d: float
-    n_row: Optional[int] = None
-    n_col: Optional[int] = None
+    n_row: int | None = None
+    n_col: int | None = None
 
 
 @dataclass

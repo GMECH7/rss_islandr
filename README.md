@@ -1,279 +1,61 @@
-# Risk Screening System (RSS)
+# Risk Screening System (RSS) - ISLANDR
 
-## Overview
+RSS-ISLANDR is a desktop application for the screening of contaminated land. It was conceived as a Python-based implementation of the Risk Screening System (RSS) of the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/), developed for [CERTH](https://www.certh.gr/) under the [ISLANDR](https://islandr-project.eu/) project.
 
-This is a Python-based implementation of the **Risk Screening System (RSS)**, originally developed by the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
+The system evaluates environmental risk with the Source-Pathway-Receptor (SPR) model. The risk is the product of three components:
 
-The Risk Screening System (RSS) evaluates environmental risks using a risk equation composed of three key components:
+1. **Source (hazard):** the origin of the potential contamination.
+2. **Pathway:** the route through which the hazard reaches the receptor (soil, groundwater, surface water, air, sediment).
+3. **Receptor:** the entity that may be affected, for example a water resource or an ecosystem.
 
-1. **Hazard (Source)**: The origin of the potential contamination.
-2. **Exposure Pathway**: The route through which the hazard reaches the receptor.
-3. **Receptor**: The entity (e.g., human, ecosystem) that may be affected by the hazard.
+## Documentation
 
-This framework is commonly referred to as the **Source-Pathway-Receptor (SPR)** model.
+The documentation is split into three parts:
 
-## References
+1. [Local development](docs/local-development.md): For developers. Setting up the environment, the project layout, the available commands, testing, and the automated GitHub workflows.
+2. [Installers](docs/installers.md): For end users and maintainers. How to download, install and uninstall the application on Ubuntu and Windows, and how the installers are built.
+3. [Features](docs/features.md): For users and reviewers. An overview of the methodology and of the features of the application. The user interface, the map viewer, and the reports and files it produces.
 
-- **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 – Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/)
-- **Source-Pathway-Receptor (SPR) Model**: A foundational framework for environmental risk assessment.
+## Quick start
 
----
+End users can download the installer for Windows 10/11 or Ubuntu 24.04 from the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Download, checksum and installation commands are in [Installers](docs/installers.md#3-downloading-a-release-from-github).
 
-## Codebase
-
-### Downloading the repository
-
-This is a private project in GitHub she maintaner hs to previously give access to the user wishing to download the repository locally. After getting access the following command has to be used:
+Developers and contributors to this project should use the following commands:
 
 ```bash
 git clone https://github.com/GMECH7/rss_islandr.git
 ```
-
-### Setup virtual environment & install dependencies
-
-Navigate to the project directory:
-
-```shell
-cd <local-project-directory>
+```bash
+cd rss_islandr
 ```
-
-#### 1. Using poetry
-
-If `poetry` is installed the following command can be used to setup the virtual environment and install all dependencies.
-
-```shell
+```bash
 poetry install
 ```
-
-#### 2. Using pip
-
-In case that `poetry` is not installed, the following steps have to be followed:
-a. **Create virtual environment**
-
-```shell
-python -m venv .venv
-```
-
-b. **Activate the virtual environment**:
-
-- If you are using **Visual Studio Code (VSC)**, the virtual environment should activate automatically due to the presence of the `.vscode/settings.json` file.
-- Otherwise, activate the environment manually:
-  - On **Windows**:
-    ```bash
-    islandr_venv\Scripts\activate
-    ```
-  - On **macOS/Linux**:
-    ```bash
-    source islandr_venv/bin/activate
-    ```
-
-c. **Install dependencies using pip (depends on `requirements.txt`)**
-
 ```bash
-pip install -r requirements.txt
+poetry run islandr
 ```
 
-#### Advantages & disadvantages of poetry over pip
+The prerequisites (Python, Poetry and, on Ubuntu, system libraries) are listed in [Local development](docs/local-development.md#1-prerequisites).
 
-### ✅ Advantages
+## Requirements
 
-- **Reproducible environments**:  
-  `poetry.lock` guarantees exact dependency versions used in development
-- **Dependency resolution**: Handles complex dependency graphs better than pip
-- **All-in-one tool**: Manages virtualenvs, packaging, and publishing
+| | |
+|---|---|
+| Operating system | Windows 10/11 or Ubuntu 24.04 and later (when using the installers). macOS is untested |
+| Python | 3.12 to 3.14, only when running from the source code |
+| Internet connection | Needed only for the map viewer. All other functions work offline |
 
-### ⚠️ Disadvantages
+## References
 
-- **Environment conflicts**: Potential confusion with Anaconda/manual virtualenvs
-- **Learning curve**: Different workflow from standard pip/virtualenv
+- **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 - Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
+- **Source-Pathway-Receptor (SPR) model**: A foundational framework for environmental risk assessment.
 
-#### Useful notes
+## Acknowledgements
 
-1. **Regarding Windows & VSC integration:**
+Funded by the European Union, Grant agreement n°1001112889 (ISLANDR project).
 
-   - Use `Windows powershell` (not `Anaconda powershell`) to open VSC.
-   - If VSC is opened through `Anaconda powershell` there may be difficulties in activating the virtual environment.
+Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
 
-2. **Checking local environments:**
+## License
 
-   - Make sure that poetry "sees" the rss_islandr environment. For that make use of the `poetry env info` command.
-
-3. **More on poetry & pip**:
-
-   - The package itself will not be shown after executing `poetry show` since this command visualizes only the dependencies of the `pyproject.toml` file. Instead the `poetry version` command should return the installed version of the package. Also the validation of the installation can be done by typing `pip list` command, which should return all packages installed in the virtual environment.
-
-   - The installation of package through `poetry`is being made in editable mode.
-
-   - If a new package is needed then the following commands are to be used:
-     ```bash
-     poetry add <package name> --dry-run # checks installation for conflicts
-     poetry add <package name> # Adds the new dependency to .toml while installing in venv
-     poetry remove <package name>
-     or
-     pip uninstall <package name>
-     poetry show --tree # shows dependencies relationships
-     ```
-
----
-
-# 🗺️ Maps Viewer - Geology, Mines & Hydrogeology
-
-The map viewer option of this app is built using [Leaflet.js](https://leafletjs.com/) and displays various geospatial layers using WMS (Web Map Service).
-
-## 🌐 Map Services Used
-
-#### Geological maps
-
-- ##### 1. Geological Survey of Slovenia (GeoZS)
-
-  - **Service URL:** `https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms`
-  - **Layer Name:** `gsmlp:GeologicUnitView_Lithology`
-
-- ##### 2. BGR: 1:5 Million International Geological Map of Europe and Adjacent Areas (IGME5000)
-
-  - **Service URL:** `https://services.bgr.de/wms/geologie/igme5000/`
-  - **Layer Names:** `3,5,6,8,10,11,13,14,15,16,17,18,19,20,22,23,24,27,29,31,33,37,39,41,43,44,46,47,48,51,53,55,57`
-
-#### Minerals resources maps
-
-- ##### 1. Mines of Europe
-
-  - **Service URL:** `https://data.geus.dk/egdi/wms/`
-  - **Layer Name:** `egdi_mines`
-
-#### Hydrogeοlogical maps
-
-- ##### 1. BGR & UNESCO (eds.) (2019): International Hydrogeological Map of Europe 1:1,500,000 (IHME1500)
-
-  - **Service URL:** `https://services.bgr.de/wms/grundwasser/ihme1500/`
-  - **Layer Names:** `0,1,2`
-
-- ##### 2. BGR: Groundwater Resources of the World (WHYMAP GWR) (WMS)
-
-  - **Service URL:** `https://services.bgr.de/wms/grundwasser/whymap_gwr/`
-  - **Layer Names:** `0`
-
-- ##### 3. BGR: Natural Radionuclides in Groundwater
-
-  - **Service URL:** `https://services.bgr.de/wms/grundwasser/norm/`
-  - **Layer Names:** `1,2,3,4,6,7`
-
-#### Soil maps
-
-- ##### 1. BGR: Soil Regions of the European Union and Adjacent Countries 1:5,000,000 (WMS)
-
-  - **Service URL:** `https://services.bgr.de/wms/boden/eusr5000/`
-  - **Layer Names:** `1,3,5`
-
-#### Hydrological maps
-
-- ##### 1. European River Network Generated using European Union's Copernicus Land Monitoring Service information
-
-  - **Service URL:** `https://image.discomap.eea.europa.eu/arcgis/services/EUHydro/EUHydro_RiverNetworkDatabase/MapServer/WMSServer`
-  - **Layer Names:** `0,1,2,3,4,5`
-
-### 4. Links
-
-https://services.bgr.de/uebersicht/kurzlinks
-
-## ➕ How to Add New Map Layers
-
-To add additional WMS layers:
-
-1. Open the `script.js` file.
-
-2. Add a new WMS layer in the `const WMS_LAYERS` following the implemented structure.
-
-## 🔍 How to Find Available Map Layers (WMS)
-
-Follow these steps to discover what layers are available in any WMS service:
-
-### 1. 🧭 Get the GetCapabilities URL
-
-Every WMS service provides a `GetCapabilities` endpoint that returns an XML file describing all available layers.
-
-**Format:**
-`your-wms-server-url` `?service=WMS&request=GetCapabilities`
-
-**Examples:**
-
-- [Geological Survey of Slovenia (GeoZS)](https://geoserver.geo-zs.si/egdi-surface-geology/gsmlp/wms?service=WMS&request=GetCapabilities)
-- [Mintell4EU Project](https://data.geus.dk/egdi/wms/?service=WMS&request=GetCapabilities)
-- [Hydrogeology WMS](https://services.bgr.de/wms/grundwasser/ihme1500/?service=WMS&request=GetCapabilities)
-
-### 2. 🔎 Open the URL in Your Browser
-
-Opening the URL shows an **XML document** with many `<Layer>` entries. Look for:
-
-```xml
-<Layer>
-  <Name>your_layer_name</Name>
-  <Title>Human-readable title</Title>
-</Layer>
-```
-
-```html
-- Use the <Name> value in your WMS layer config
-- <Title> helps identify what the layer represents
-```
-
----
-
-## Flowcharts
-
-Below flowcharts showcasing the logic behind key software components are provided.
-
-### Design and update polygons on map
-
-```mermaid
-%%{init: {'themeVariables': {'fontFamily': 'monospace'}}}%%
-graph LR
-    %% Define CSS classes
-    classDef javascript fill:#f7df1e,color:black,stroke:#d4b106
-    classDef python fill:#3776ab,color:white,stroke:#2a5f8a
-    classDef python_method fill:#4CAF50,color:white,stroke:#2a5f8a
-    classDef variable fill:#9C27B0,color:white,stroke:#6A1B9A
-
-    subgraph js ["script.js"]
-        JS["MapManager"]:::javascript
-        JS -->|defines| sendDrawing["sendDrawing()"]:::javascript
-    end
-
-    subgraph map_ui ["map_ui.py"]
-        Py["Api"]:::python
-        MapUI["MapUI"]:::python
-        py_api_coord_receiver["py_api_coord_receiver()"]:::python_method
-        py_api_clear_polygons["py_api_clear_polygons()"]:::python_method
-        py_api_delete_polygons["py_api_delete_polygons()"]:::python_method
-        py_api_send_polygons_to_js["py_api_send_polygons_to_js()"]:::python_method
-        py_api_send_coordinates_to_js["py_api_send_coordinates_to_js()"]:::python_method
-        py_api_polygons_receiver["py_api_polygons_receiver()"]:::python_method
-
-        %% Relationships
-        Py -->|defines| py_api_coord_receiver
-        Py -->|defines| py_api_clear_polygons
-        Py -->|defines| py_api_delete_polygons
-        Py -->|defines| py_api_send_polygons_to_js
-        Py -->|defines| py_api_send_coordinates_to_js
-        sendDrawing -->|links| py_api_polygons_receiver
-        Py -->|defines| py_api_polygons_receiver
-        Py -->|updates| MapUI
-        MapUI -->|instantiates| Py
-        MapUI -->|defines| run_webview["run_webview()"]:::python_method
-        MapUI -->|defines| get_polygons_data["get_polygons_data()"]:::python_method
-    end
-
-    subgraph main_app_ui ["main_app_ui.py"]
-        MainAppUI["MainAppUI"]:::python
-        MainAppUI -->|defines| __toggle_map["__toggle_map()"]:::python_method
-        __toggle_map -->|calls| run_webview
-        MainAppUI -->|defines| __monitor_map_changes["__monitor_map_changes()"]:::python_method
-        __monitor_map_changes -->|calls| get_polygons_data
-        MainAppUI -->|contains| tb.StringVar["map_polygons_tb<br>(tb.StringVar)"]:::variable
-        __monitor_map_changes -.->|updates| tb.StringVar
-    end
-
-    %% Style the subgraphs
-    style map_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
-    style main_app_ui fill:#b4d8f5ff,stroke:#2a5f8a,color:white
-```
+This project is released under the [MIT License](LICENSE). Copyright (c) 2025 CERTH.

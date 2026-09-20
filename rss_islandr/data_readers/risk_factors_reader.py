@@ -1,5 +1,4 @@
 import json
-from typing import Optional
 
 from rss_islandr.core.logger_config import logger_decorator
 
@@ -25,7 +24,7 @@ class RisksDataFetcher:
         return severity
 
     @logger_decorator
-    def getter(self, main_key: str, mechanism_key: Optional[str] = None, severity_key: Optional[str] = None):
+    def getter(self, main_key: str, mechanism_key: str | None = None, severity_key: str | None = None):
         if mechanism_key is None and severity_key is not None:
             raise Exception
 
@@ -51,7 +50,7 @@ class ReceptorFactorsFetcher:
         return self.__data[pathway_key]["parameter"][parameter_key]
 
     @logger_decorator
-    def getter(self, pathway_key: str, parameter_key: Optional[str] = None):
+    def getter(self, pathway_key: str, parameter_key: str | None = None):
         if parameter_key is not None:
             return self.__get_parameter(pathway_key, parameter_key)
         else:
