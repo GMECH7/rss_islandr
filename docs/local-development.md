@@ -188,18 +188,21 @@ Two workflows are in `.github/workflows/`.
 | Tests | `ci.yml` | Pull requests to `main` (before the merge), merges into `main`, and the **Run workflow** button | `pytest` on Ubuntu 24.04 and on Windows 2022 |
 | [Installers](#102-jobs-of-the-installers-workflow) | `release.yml` | Merges into `main` and the **Run workflow** button | Version and release check, Ubuntu package, Windows installer and publication of the release |
 
-Both files contain a commented-out trigger for the branch `makge/publication`. Removing the `#` runs the workflow on pushes to that branch, which is useful to try changes to a workflow before it is on `main`.
-
 ### 10.1 Protecting `main`
 
-A merge into `main` publishes a release, so `main` can only change through a pull request: the changes are made on a separate branch and merged after a review and passing tests. The branch is protected by the following rules:
+A merge into `main` publishes a release, so `main` can only change through a pull request: the changes are made on a separate branch and merged after a review and passing tests. The branch is protected by two rulesets.
 
-1. A pull request is required before merging, with at least one approval.
-2. The two jobs of the Tests workflow, `pytest (ubuntu-24.04)` and `pytest (windows-2022)`, **MUST PASS** before merging. The names of the required checks match the job names in `ci.yml`.
-3. Force pushes to the branch and its deletion are blocked.
-4. The rules apply to administrators as well, so nobody can push directly to `main`.
+**Ruleset 1: pull requests**
 
-The rules are configured in the repository settings under *Settings → Rules → Rulesets*.
+1. Changes to `main` require a pull request. Nobody can push directly to `main`, administrators included.
+2. A pull request needs at least one approval. The repository administrator can merge their own pull requests without an approval (bypass for pull requests only).
+
+**Ruleset 2: checks and history (no bypass)**
+
+3. The two jobs of the Tests workflow, `pytest (ubuntu-24.04)` and `pytest (windows-2022)`, **MUST PASS** before merging, for everyone including the administrator. The names of the required checks match the job names in `ci.yml`.
+4. Force pushes to the branch and its deletion are blocked.
+
+The rulesets are configured in the repository settings under *Settings → Rules → Rulesets*.
 
 The merge of a pull request triggers the Installers workflow as described below (GitHub reports the merge as a push event to `main`). The publishing job creates a tag and a release with `gh release create` and does not push commits, so the rules do not block it.
 
