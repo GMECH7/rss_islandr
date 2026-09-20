@@ -1,6 +1,6 @@
 # Risk Screening System (RSS) - ISLANDR
 
-RSS-ISLANDR is a desktop application for the screening of contaminated land. It is a Python implementation of the Risk Screening System (RSS) of the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/), developed for CERTH under the ISLANDR project.
+RSS-ISLANDR is a desktop application for the screening of contaminated land. It was conceived as a Python-based implementation of the Risk Screening System (RSS) of the [New Zealand Ministry for the Environment](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/), developed for [CERTH](https://www.certh.gr/) under the [ISLANDR](https://islandr-project.eu/) project.
 
 The system evaluates environmental risk with the Source-Pathway-Receptor (SPR) model. The risk is the product of three components:
 
@@ -8,26 +8,30 @@ The system evaluates environmental risk with the Source-Pathway-Receptor (SPR) m
 2. **Pathway:** the route through which the hazard reaches the receptor (soil, groundwater, surface water, air, sediment).
 3. **Receptor:** the entity that may be affected, for example a water resource or an ecosystem.
 
-The application is a screening tool for desk studies and the prioritisation of sites. It does not replace a site investigation or a quantitative risk assessment.
-
 ## Documentation
 
-| Document | Contents |
-|---|---|
-| [Features](docs/features.md) | The method and the equation, the pages and parameters of the application, the map viewer and its map services, the reports and files, and the limitations |
-| [Local development](docs/local-development.md) | Installing Poetry and the dependencies, the project layout, the commands, the tests, the version, the GitHub workflows and how a release is created |
-| [Installers](docs/installers.md) | Building the Ubuntu and Windows installers locally, installing and uninstalling them, and downloading a release from GitHub with the checksum check |
+The project's documentation is split in the following parts:
+
+1. [Local development](docs/local-development.md) : Instructions for allowing local development, how to install locally Poetry and the dependencies, the project layout, the commands, the tests, the GitHub workflows and how a release is created.
+2. [Installers](docs/installers.md) : Building the Ubuntu and Windows installers locally, installing and uninstalling them, and downloading a release from GitHub with the checksum check. 
+3. [Features](docs/features.md) : The method and the equation, the pages and parameters of the application, the map viewer and its map services, the reports and files, and the limitations.
 
 ## Quick start
 
-**Users:** download the installer for Windows 10/11 or Ubuntu 24.04 and later from the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Installation and checksum commands are in [Installers](docs/installers.md#4-downloading-a-release-from-github).
+End users can download the installer for Windows 10/11 or Ubuntu 24.04 from the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Installation and checksum commands are in [Installers](docs/installers.md#4-downloading-a-release-from-github).
 
-**Developers:**
+Developers and contributors to this project should use the following commands:
 
 ```bash
 git clone https://github.com/GMECH7/rss_islandr.git
+```
+```bash
 cd rss_islandr
+```
+```bash
 poetry install --with dev,build
+```
+```bash
 poetry run islandr
 ```
 
@@ -37,15 +41,14 @@ The prerequisites (Python, Poetry and, on Ubuntu, system libraries) are listed i
 
 | | |
 |---|---|
-| Operating system | Windows 10/11 or Ubuntu 24.04 and later (the installers). macOS is untested |
+| Operating system | Windows 10/11 or Ubuntu 24.04 and later (when using the installers). macOS is untested |
 | Python | 3.12 to 3.14, only when running from the source code |
 | Internet connection | Needed only for the map viewer. All other functions work offline |
-| Microsoft Excel | Not required. The Excel reports are written directly |
 
 ## References
 
-- New Zealand Ministry for the Environment, [Contaminated Land Management Guidelines No. 3 - Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
-- The Source-Pathway-Receptor (SPR) model, a general framework for environmental risk assessment.
+- **New Zealand Ministry for the Environment**: [Contaminated Land Management Guidelines No. 3 - Risk Screening System](https://environment.govt.nz/publications/contaminated-land-management-guidelines-no-3-risk-screening-system/).
+- **Source-Pathway-Receptor (SPR) model**: A foundational framework for environmental risk assessment.
 
 ## Acknowledgements
 
