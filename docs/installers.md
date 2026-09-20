@@ -45,7 +45,7 @@ sudo usermod -aG docker $USER      # then log out and in again
 poetry run rss-build --deb --docker
 ```
 
-Build with the local system instead (no Docker; the result then depends on the installed Ubuntu version and libraries):
+Build with the local system instead. This does not use Docker, so the result depends on the installed Ubuntu version and libraries:
 
 ```bash
 poetry run rss-build --deb
@@ -146,7 +146,7 @@ VERSION=1.22.1
 wget https://github.com/GMECH7/rss_islandr/releases/download/v$VERSION/rss-islandr_${VERSION}_amd64.deb
 wget https://github.com/GMECH7/rss_islandr/releases/download/v$VERSION/SHA256SUMS.txt
 
-# Check the download; the line for the .deb must end with OK
+# Check the download. The line for the .deb must end with OK
 sha256sum -c SHA256SUMS.txt --ignore-missing
 
 # Install
@@ -190,7 +190,7 @@ rss-islandr --self-test
 ```
 
 ```powershell
-# Windows (installed application; the application has no console, so the result is written to a file)
+# Windows (installed application). The application has no console, so the result is written to a file
 & "$env:LOCALAPPDATA\Programs\RSS-ISLANDR\islandr.exe" --self-test --self-test-report "$env:TEMP\self_test.txt"
 Get-Content "$env:TEMP\self_test.txt"
 ```
@@ -206,5 +206,5 @@ The version of an installed application is shown in the **Version** menu of the 
 | The Ubuntu window stays blank or takes minutes to appear | Caused by the input method (ibus). The application switches it off. Make sure the variable `RSS_KEEP_INPUT_METHOD` is not set |
 | `apt` reports a missing dependency | The system is older than Ubuntu 24.04, or the package lists are outdated: run `sudo apt update` |
 | The map window shows no map | The map needs an internet connection. The layers come from external services |
-| "Save the map" does nothing on Ubuntu | The button is not available with the Qt WebEngine; use the screenshot tool of the operating system |
+| "Save the map" does nothing on Ubuntu | The button is not available with the Qt WebEngine. Use the screenshot tool of the operating system |
 | Windows shows "Windows protected your PC" | The installer is not code-signed: select *More info* and *Run anyway* |

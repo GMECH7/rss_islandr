@@ -66,63 +66,63 @@ Every source and pathway parameter starts with the option **Value Not Known**, w
 
 | Parameter | Options (weight) |
 |---|---|
-| Toxicity | Value Not Known (0); Bio-accumulative and toxic materials (1); Toxic metals (1); Industrial waste (1); Institutional waste (1); Pathological waste and animal carcasses (1); Radioactive waste (1); Liquid waste not covered above (0.6); Food processing wastes (0.6); Non-hazardous incinerator residues (0.6); Municipal solid wastes (0.6); Organic and vegetable wastes (0.6); Mining residues (0.6); Other (0.2) |
-| Extent | Value Not Known (0); Large (1); Medium (0.7); Small (0.4) |
+| Toxicity | Value Not Known (0), Bio-accumulative and toxic materials (1), Toxic metals (1), Industrial waste (1), Institutional waste (1), Pathological waste and animal carcasses (1), Radioactive waste (1), Liquid waste not covered above (0.6), Food processing wastes (0.6), Non-hazardous incinerator residues (0.6), Municipal solid wastes (0.6), Organic and vegetable wastes (0.6), Mining residues (0.6), Other (0.2) |
+| Extent | Value Not Known (0), Large (1), Medium (0.7), Small (0.4) |
 
 **Soil** (`SL`)
 
 | Parameter | Options (weight) |
 |---|---|
-| Mobility | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Containment | Value Not Known (0); None (1); Medium (0.7); Full (0.2) |
-| Surface cover | Value Not Known (0); No limit to access (1); Limited access (0.8); No access (0.3); Paved (0.3) |
-| Soil permeability | Value Not Known (0); High (1); Medium (0.8); Low (0.3) |
-| Depth to hazard | Value Not Known (0); <1m (1); 2m (0.8); >=3m (0.5) |
+| Mobility | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Containment | Value Not Known (0), None (1), Medium (0.7), Full (0.2) |
+| Surface cover | Value Not Known (0), No limit to access (1), Limited access (0.8), No access (0.3), Paved (0.3) |
+| Soil permeability | Value Not Known (0), High (1), Medium (0.8), Low (0.3) |
+| Depth to hazard | Value Not Known (0), <1m (1), 2m (0.8), >=3m (0.5) |
 
 **Groundwater** (`GW`)
 
 | Parameter | Options (weight) |
 |---|---|
-| Mobility | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Containment | Value Not Known (0); None (1); Medium (0.7); Full (0.2) |
-| Permeability layer | Value Not Known (0); Unconfined (1); 5m (0.8); >15m (0.3) |
-| Aquifer/distance to user | Value Not Known (0); Silt/clay aquifer: 20m (1); Silt/clay aquifer: 50m (0.6); Silt/clay aquifer: 100m (0.3); Fine sand/silty gravel: <50m (1); Fine sand/silty gravel: 100m (0.6); Fine sand/silty gravel: 300m (0.3); Coarse sand/sandy gravel: <350m (1); Coarse sand/sandy gravel: 500m (0.6); Coarse sand/sandy gravel: 1,000m (0.3); Gravel aquifer: <800m (1); Gravel aquifer: 1,000m (0.6); Gravel aquifer: 2,000m (0.3); Fractured rock: <300m (1); Fractured rock: 800m (0.6); Fractured rock: 1,500m (0.3) |
+| Mobility | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Containment | Value Not Known (0), None (1), Medium (0.7), Full (0.2) |
+| Permeability layer | Value Not Known (0), Unconfined (1), 5m (0.8), >15m (0.3) |
+| Aquifer/distance to user | Value Not Known (0), Silt/clay aquifer: 20m (1), Silt/clay aquifer: 50m (0.6), Silt/clay aquifer: 100m (0.3), Fine sand/silty gravel: <50m (1), Fine sand/silty gravel: 100m (0.6), Fine sand/silty gravel: 300m (0.3), Coarse sand/sandy gravel: <350m (1), Coarse sand/sandy gravel: 500m (0.6), Coarse sand/sandy gravel: 1,000m (0.3), Gravel aquifer: <800m (1), Gravel aquifer: 1,000m (0.6), Gravel aquifer: 2,000m (0.3), Fractured rock: <300m (1), Fractured rock: 800m (0.6), Fractured rock: 1,500m (0.3) |
 
 **Surface water** (`SW`)
 
 | Parameter | Options (weight) |
 |---|---|
-| Mobility | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Containment | Value Not Known (0); None (1); Medium (0.7); Full (0.2) |
-| Flood potential | Value Not Known (0); High (1); Medium (0.6); Low (0.2) |
+| Mobility | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Containment | Value Not Known (0), None (1), Medium (0.7), Full (0.2) |
+| Flood potential | Value Not Known (0), High (1), Medium (0.6), Low (0.2) |
 
 **Air** (`AR`)
 
 | Parameter | Options (weight) |
 |---|---|
-| Mobility | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Emission type | Value Not Known (0); Area source (1); Point source (0.6); Mobile source (0.3) |
-| Distance to population | Value Not Known (0); <1km (1); 1km-5km (0.7); >5km (0.2) |
-| Particle size | Value Not Known (0); PM10 (1); PM2.5 (0.6) |
+| Mobility | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Emission type | Value Not Known (0), Area source (1), Point source (0.6), Mobile source (0.3) |
+| Distance to population | Value Not Known (0), <1km (1), 1km-5km (0.7), >5km (0.2) |
+| Particle size | Value Not Known (0), PM10 (1), PM2.5 (0.6) |
 
 **Sediment** (`SD`)
 
 | Parameter | Options (weight) |
 |---|---|
-| Mobility | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Contamination level | Value Not Known (0); High (1); Medium (0.7); Low (0.3) |
-| Water interaction | Value Not Known (0); Frequent (1); Occasional (0.7); Rare (0.2) |
-| Sediment type | Value Not Known (0); Gravel (1); Sand (0.6); Silt (0.2); Clay (0.2) |
+| Mobility | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Contamination level | Value Not Known (0), High (1), Medium (0.7), Low (0.3) |
+| Water interaction | Value Not Known (0), Frequent (1), Occasional (0.7), Rare (0.2) |
+| Sediment type | Value Not Known (0), Gravel (1), Sand (0.6), Silt (0.2), Clay (0.2) |
 
 **Receptors**
 
 | Receptor | Pathways that can lead to it | Classes (weight) |
 |---|---|---|
-| Soil | Soil, Groundwater, Surface water, Air | Industrial (0.5); Commercial (0.5); Agricultural (0.5); Residential (0.5) |
-| Groundwater | Soil, Groundwater, Surface water, Sediment | Significant waterway (1); Domestic/potable (1); Irrigation (0.5); Stockwater (0.5); Not used (0.2) |
-| Surface water | Soil, Groundwater, Surface water, Air, Sediment | Significant waterway (1); Domestic/potable (1); Contact recreation (1); Irrigation (0.5); Stockwater (0.5); Industrial (0.5) |
-| Air | Soil, Surface water, Air | Residential indoor air (1); Confined air (workplace, industrial) (0.5); Atmosphere (0.2) |
-| Sediment | Surface water, Sediment | River and stream (1); Lake and ponds (1); Estuarine (1); Marine (1); Wetland (1); Harbor and port (0.2) |
+| Soil | Soil, Groundwater, Surface water, Air | Industrial (0.5), Commercial (0.5), Agricultural (0.5), Residential (0.5) |
+| Groundwater | Soil, Groundwater, Surface water, Sediment | Significant waterway (1), Domestic/potable (1), Irrigation (0.5), Stockwater (0.5), Not used (0.2) |
+| Surface water | Soil, Groundwater, Surface water, Air, Sediment | Significant waterway (1), Domestic/potable (1), Contact recreation (1), Irrigation (0.5), Stockwater (0.5), Industrial (0.5) |
+| Air | Soil, Surface water, Air | Residential indoor air (1), Confined air (workplace, industrial) (0.5), Atmosphere (0.2) |
+| Sediment | Surface water, Sediment | River and stream (1), Lake and ponds (1), Estuarine (1), Marine (1), Wetland (1), Harbor and port (0.2) |
 
 For a receptor, the user selects the pathway that leads to it (only the pathways listed above are offered) and one class of the receptor.
 
@@ -187,13 +187,13 @@ The application follows the multiplicative structure of the New Zealand RSS but 
 | Field | Notes |
 |---|---|
 | Site name | Free text |
-| Site area [km²] | Free text; the area of a polygon drawn on the map is stored with the polygon data |
+| Site area [km²] | Free text. The area of a polygon drawn on the map is stored with the polygon data |
 | Assessment date | Date picker (format YYYY-MM-DD) |
-| Operation start date, Operation end date | Date pickers. For the site status Active or Proposed only the start date is shown; for Legacy the start and the end date are shown |
+| Operation start date, Operation end date | Date pickers. For the site status Active or Proposed only the start date is shown. For Legacy the start and the end date are shown |
 | Activity/industry | List |
 | Site status | List |
-| Soil type, Soil type (specific) | Lists; the second list depends on the first |
-| Land use, Land use (specific) | Lists; the second list depends on the first |
+| Soil type, Soil type (specific) | Lists. The second list depends on the first |
+| Land use, Land use (specific) | Lists. The second list depends on the first |
 | CRS, Latitude, Longitude | Filled from the map viewer |
 
 The lists are stored in `rss_islandr/data/dropdown_lists.json`. These fields do not influence the score.
@@ -217,7 +217,7 @@ The map viewer is an interactive [Leaflet](https://leafletjs.com/) map that disp
 |---|---|---|
 | Web engine | Microsoft Edge WebView2 (part of Windows 10/11) | Qt WebEngine (installed with the application) |
 | Map window | Opens in the application process | Opens in its own process, so a failure of the web engine cannot close the application |
-| "Save the map" button | Uses the screen capture of the web engine | Shows a message; use the screenshot tool of the operating system |
+| "Save the map" button | Uses the screen capture of the web engine | Shows a message. Use the screenshot tool of the operating system |
 
 While the map window is open, the main window waits. The polygons and coordinates are taken over when the map window is closed. The map needs an internet connection (OpenStreetMap tiles, the WMS services and two libraries loaded from a CDN). All other functions of the application work offline.
 
