@@ -18,7 +18,7 @@ The documentation is split into three parts:
 
 ## Quick start
 
-End users can download the installer for Windows 10/11 or Ubuntu 24.04 from the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Installation and checksum commands are in [Installers](docs/installers.md#4-downloading-a-release-from-github).
+End users can download the installer for Windows 10/11 or Ubuntu 24.04 from the [Releases page](https://github.com/GMECH7/rss_islandr/releases). Download, checksum and installation commands are in [Installers](docs/installers.md#3-downloading-a-release-from-github).
 
 Developers and contributors to this project should use the following commands:
 

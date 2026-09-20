@@ -212,7 +212,7 @@ The merge of a pull request triggers the Installers workflow as described below 
 1. Create a branch from `main`, for example `git switch -c dev_g1/new_feature`, and change `version` in `pyproject.toml`.
 2. Push the branch and open a pull request to `main`. The tests run on the pull request.
 3. Merge the pull request after the review. The Installers workflow runs and creates the release.
-4. Check the run in the Actions tab of the repository and the new release on the Releases page.
+4. Check the run in the Actions tab of the repository and the new release on the [Releases page](https://github.com/GMECH7/rss_islandr/releases).
 
 > [!IMPORTANT]
 > A merge into `main` with a version that is already released builds and tests the installers but does not publish. A release that has been published is never replaced. To correct a release, delete the release and its tag on GitHub, or publish a new version.
@@ -220,7 +220,7 @@ The merge of a pull request triggers the Installers workflow as described below 
 ### 10.4 Checking a run
 
 - **Actions tab:** every run lists its jobs with the full log. The run page has a summary with the size and SHA-256 checksum of each file.
-- **Artifacts:** the files of a run that did not publish a release are attached to the run page under *Artifacts* (`ubuntu-package`, `windows-installer`) for 14 days. GitHub delivers an artifact as a zip file, and downloading requires a GitHub login.
+- **Artifacts:** the files of a run that did not publish a release are attached to the run page under *Artifacts* (`ubuntu-package`, `windows-installer`) for 14 days. GitHub delivers an artifact as a zip file, and downloading requires a GitHub login. The commands for the checksum check and the installation are in [Installers](installers.md#31-checking-the-download) and [Installers](installers.md#4-installing-and-uninstalling).
 - **Releases page:** [github.com/GMECH7/rss_islandr/releases](https://github.com/GMECH7/rss_islandr/releases) holds the permanent files. GitHub allows each release file to be up to 2 GiB and states no limit for the total size of a release.
 
 ### 10.5 Reproducibility
