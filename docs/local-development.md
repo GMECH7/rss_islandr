@@ -19,6 +19,7 @@ This document describes how to set up the development environment, the commands 
     - [10.3 Publishing a new version](#103-publishing-a-new-version)
     - [10.4 Checking a run](#104-checking-a-run)
     - [10.5 Reproducibility](#105-reproducibility)
+    - [10.6 Reporting problems](#106-reporting-problems)
 11. [Notes](#11-notes)
 
 ## 1. Prerequisites
@@ -83,7 +84,9 @@ poetry version       # version of the application
 
 ```text
 rss_islandr/                      Project root
-├── .github/workflows/            The GitHub workflows
+├── .github/
+│   ├── ISSUE_TEMPLATE/           The form for bug reports on GitHub
+│   └── workflows/                The GitHub workflows
 ├── build_installer/              Everything that creates the installers
 │   ├── docker/                   Ubuntu 24.04 build image and script
 │   ├── installer/islandr.iss     Inno Setup script of the Windows installer
@@ -220,7 +223,7 @@ The merge of a pull request triggers the Installers workflow as described below 
 ### 10.4 Checking a run
 
 - **Actions tab:** every run lists its jobs with the full log. The run page has a summary with the size and SHA-256 checksum of each file.
-- **Artifacts:** the files of a run that did not publish a release are attached to the run page under *Artifacts* (`ubuntu-package`, `windows-installer`) for 14 days. GitHub delivers an artifact as a zip file, and downloading requires a GitHub login. The commands for the checksum check and the installation are in [Installers](installers.md#31-checking-the-download) and [Installers](installers.md#4-installing-and-uninstalling).
+- **Artifacts:** the files of a run that did not publish a release are attached to the run page under *Artifacts* (`ubuntu-package`, `windows-installer`) for 14 days. GitHub delivers an artifact as a zip file, and downloading requires a GitHub login. The commands for the checksum check and the installation are in [Installers](installers.md#3-downloading-a-release-from-github) and [Installers](installers.md#4-installing-and-uninstalling).
 - **Releases page:** [github.com/GMECH7/rss_islandr/releases](https://github.com/GMECH7/rss_islandr/releases) holds the permanent files. GitHub allows each release file to be up to 2 GiB and states no limit for the total size of a release.
 
 ### 10.5 Reproducibility
@@ -228,6 +231,12 @@ The merge of a pull request triggers the Installers workflow as described below 
 The runner images are fixed (`ubuntu-24.04`, `windows-2022`) as well as Python 3.12, Poetry 2.4.1 (with `poetry.lock`) and Inno Setup 6.7.1. The Ubuntu package is built in the same Ubuntu 24.04 container image that is used locally.
 
 If the release job fails with a permission error, check that the repository setting *Settings, Actions, General, Workflow permissions* allows the workflow to write.
+
+### 10.6 Reporting problems
+
+Problems are reported as issues on the [Issues page](https://github.com/GMECH7/rss_islandr/issues) of the repository. The form for a new bug report is defined in `.github/ISSUE_TEMPLATE/bug_report.yml`. It asks for the version of the application (shown in the **Version** menu), the operating system, how the application was installed, what happened, the steps to reproduce, the expected result, screenshots and files (for example the saved scenario file), and optionally the result of the self-test.
+
+GitHub reads the form from `main`. To change the questions, edit the file and merge the change through a pull request.
 
 ## 11. Notes
 

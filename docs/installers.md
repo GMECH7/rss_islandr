@@ -10,14 +10,12 @@ This document describes how the installers are built on a local machine, how the
     - [2.2 Ubuntu package](#22-ubuntu-package)
     - [2.3 Windows installer and portable zip](#23-windows-installer-and-portable-zip)
 3. [Downloading a release from GitHub](#3-downloading-a-release-from-github)
-    - [3.1 Checking the download](#31-checking-the-download)
 4. [Installing and uninstalling](#4-installing-and-uninstalling)
     - [4.1 Ubuntu](#41-ubuntu)
     - [4.2 Windows](#42-windows)
         - [4.2.1 Installer](#421-installer)
         - [4.2.2 Portable version](#422-portable-version)
-5. [Checking an installation](#5-checking-an-installation)
-6. [Troubleshooting](#6-troubleshooting)
+5. [Troubleshooting](#5-troubleshooting)
 
 ## 1. Overview
 
@@ -134,8 +132,6 @@ The [Releases page](https://github.com/GMECH7/rss_islandr/releases) lists all ve
 
 After the download and the checksum check, install the file as described in section 4.
 
-### 3.1 Checking the download
-
 Download the files from the [Releases page](https://github.com/GMECH7/rss_islandr/releases) by selecting them, and download `SHA256SUMS.txt` as well. 
 
 To check that a file is intact, compare its SHA-256 checksum with the line of the file in `SHA256SUMS.txt`.
@@ -209,26 +205,7 @@ The installer installs for the current user without administrator rights. The de
 
 Unzip `islandr-portable.zip` and run `islandr\islandr.exe`. To remove it, delete the folder.
 
-## 5. Checking an installation
-
-The self-test checks the data files, the risk calculation, the Excel template, the web engine of the map viewer and that the main window can be built.
-
-```bash
-# Ubuntu (installed package)
-rss-islandr --self-test
-```
-
-```powershell
-# Windows (installed application). The application has no console, so the result is written to a file
-& "$env:LOCALAPPDATA\Programs\RSS-ISLANDR\islandr.exe" --self-test --self-test-report "$env:TEMP\self_test.txt"
-Get-Content "$env:TEMP\self_test.txt"
-```
-
-Exit code 0 and the last line "Self-test passed" mean that everything is in order. When a check fails, its line begins with `FAIL` and shows the error.
-
-The version of an installed application is shown in the **Version** menu of the navigation bar (next to Documents).
-
-## 6. Troubleshooting
+## 5. Troubleshooting
 
 | Problem | Explanation |
 |---|---|
