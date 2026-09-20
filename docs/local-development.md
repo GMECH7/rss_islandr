@@ -1,8 +1,8 @@
 # Local development
 
-This document describes how to set up the development environment, the commands that are available, the tests, and the GitHub workflows including how a release is created. How to build and install the installers is described in [Installers](installers.md).
+This document describes how to set up the development environment, the commands that are available, the tests, and the GitHub workflows including how a release is created. The procedure on building the Windows and Linux installers, as well as the installation steps for end users is described in [Installers](installers.md).
 
-Contents
+## Table of Contents
 
 1. [Prerequisites](#1-prerequisites)
 2. [Getting the code](#2-getting-the-code)
@@ -24,50 +24,33 @@ Contents
 | Python 3.12, 3.13 or 3.14 | The project declares `>=3.12,<3.15`. Python 3.12 is the version used in the workflows |
 | Poetry 2.4.1 | Dependency and environment management (section 3) |
 | Windows 10/11 or Ubuntu 24.04 or later | The supported systems. macOS is untested |
-| Ubuntu only: Tk and the Qt WebEngine libraries | See the command below |
-| Optional: Docker | To build and test the Ubuntu package (see [Installers](installers.md)) |
-| Optional: Inno Setup 6 | To build the Windows installer (see [Installers](installers.md)) |
+| Ubuntu only: Tk (`python3-tk`) | A system package that Poetry cannot install (see below) |
+| Ubuntu only, for building the installer: Docker | Builds and tests the Ubuntu package (`rss-build --deb`, see [Installers](installers.md)) |
+| Windows only, for building the installer: Inno Setup 6 | Compiles the Windows installer (`rss-build --win`, see [Installers](installers.md)) |
 
-On Ubuntu, install Tk (used by the main window) and the system libraries that the map viewer needs:
+On Ubuntu, Tk (used by the main window) is a separate system package and cannot be installed by Poetry, because `tkinter` links against the system Tcl/Tk libraries. Install it with:
 
 ```bash
-sudo apt install python3-tk libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libcups2t64 libdbus-1-3 \
-  libdrm2 libegl1 libfontconfig1 libgbm1 libgl1 libnspr4 libnss3 libwayland-client0 libwayland-cursor0 \
-  libwayland-egl1 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
-  libxcb-render-util0 libxcb-shape0 libxcb-xinerama0 libxcb-xkb1 libxcomposite1 libxdamage1 libxfixes3 \
-  libxkbcommon-x11-0 libxkbcommon0 libxrandr2 libxtst6
+sudo apt install python3-tk
 ```
 
-On Windows, the map viewer uses the Microsoft Edge WebView2 runtime, which is part of Windows 10/11.
+If the map viewer does not start on a minimal system, install the missing system libraries. The libraries required by the Qt WebEngine are listed under `DEPENDS` in `build_installer/debian.py`.
+
+On Windows, Tk is included in the python.org installer, and the map viewer uses the Microsoft Edge WebView2 runtime, which is part of Windows 10/11.
 
 ## 2. Getting the code
 
-The repository is public:
+The repository is public and can be cloned via the following command:
 
 ```bash
 git clone https://github.com/GMECH7/rss_islandr.git
-cd rss_islandr
 ```
 
 ## 3. Installing Poetry
 
-Poetry creates the virtual environment and installs the dependencies from `poetry.lock`, which guarantees the same versions on every machine. The workflows use Poetry 2.4.1. Installing it with `pipx` keeps it separate from the project environment.
+Poetry creates the virtual environment and installs the dependencies from `poetry.lock`, which guarantees the same versions on every machine. 
 
-Ubuntu:
-
-```bash
-sudo apt install pipx
-pipx ensurepath
-pipx install poetry==2.4.1
-```
-
-Windows (PowerShell):
-
-```powershell
-py -m pip install --user pipx
-py -m pipx ensurepath
-pipx install poetry==2.4.1
-```
+Install it by following the official instructions: [python-poetry.org/docs/#installation](https://python-poetry.org/docs/#installation). The workflows use Poetry 2.4.1, so use that version or a later 2.x release.
 
 Open a new terminal and check the installation:
 
@@ -81,17 +64,9 @@ poetry --version
 poetry install
 ```
 
-The dependencies are in groups:
+The dependencies are declared in `pyproject.toml` in three groups: the application itself, the development tools (tests, code checks and the development scripts) and the tools that build the installers. All groups are always installed. The project installs itself in editable mode, so changes in the source code apply immediately.
 
-| Group | Contents | Needed for |
-|---|---|---|
-| main (always installed) | `ttkbootstrap`, `pywebview`, `reportlab`, `openpyxl`; on Linux `qtpy` and PyQt6 (Qt WebEngine), on Windows `pythonnet` | Running the application |
-| `dev` | `pytest`, `pytest-cov`, `pypdf`, `ruff`, `rich` | Tests, code checks and the development scripts |
-| `build` | `pyinstaller` | Building the installers |
-
-`poetry install` installs all groups. The project installs itself in editable mode, so changes in the source code apply immediately.
-
-The virtual environment is created in the folder `.venv` inside the project (setting in `poetry.toml`). Useful checks:
+The virtual environment is created in the folder `.venv`, inside the project (setting in `poetry.toml`). Useful checks:
 
 ```bash
 poetry env info      # which environment Poetry uses
