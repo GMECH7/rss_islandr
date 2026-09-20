@@ -30,7 +30,7 @@ The same commands run in the GitHub workflow that creates the releases (see [Loc
 Prepare the development environment first (see [Local development](local-development.md)):
 
 ```bash
-poetry install --with dev,build
+poetry install
 ```
 
 ### Ubuntu package

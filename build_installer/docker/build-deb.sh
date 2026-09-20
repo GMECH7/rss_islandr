@@ -13,7 +13,7 @@ tar -C /src --exclude=.venv --exclude=dist --exclude=build --exclude=.git --excl
     --exclude=.cov_files --exclude=.pytest_cache -cf - . | tar -C "$WORK_DIR" -xf -
 cd "$WORK_DIR"
 
-poetry install --with build,dev --no-interaction
+poetry install --no-interaction
 poetry run rss-build --deb
 
 mkdir -p /src/dist

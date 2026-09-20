@@ -70,7 +70,7 @@ jobs:
       - name: Install Poetry and the dependencies
         run: |
           pip install poetry==${{ env.POETRY_VERSION }}
-          poetry install --with build,dev
+          poetry install
 
       - name: Build the package in the Ubuntu 24.04 container
         run: poetry run rss-build --deb --docker
@@ -110,7 +110,7 @@ jobs:
       - name: Install Poetry and the dependencies
         run: |
           pip install poetry==${{ env.POETRY_VERSION }}
-          poetry install --with build,dev
+          poetry install
 
       - name: Install Inno Setup
         run: choco install innosetup --version=${{ env.INNO_SETUP_VERSION }} -y --no-progress

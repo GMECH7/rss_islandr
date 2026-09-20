@@ -10,11 +10,11 @@ The system evaluates environmental risk with the Source-Pathway-Receptor (SPR) m
 
 ## Documentation
 
-The project's documentation is split in the following parts:
+The documentation is split into three parts:
 
-1. [Local development](docs/local-development.md) : Instructions for allowing local development, how to install locally Poetry and the dependencies, the project layout, the commands, the tests, the GitHub workflows and how a release is created.
-2. [Installers](docs/installers.md) : Building the Ubuntu and Windows installers locally, installing and uninstalling them, and downloading a release from GitHub with the checksum check. 
-3. [Features](docs/features.md) : The method and the equation, the pages and parameters of the application, the map viewer and its map services, the reports and files, and the limitations.
+1. [Local development](docs/local-development.md): For developers. Setting up the environment, the project layout, the available commands, testing, and the automated GitHub workflows.
+2. [Installers](docs/installers.md): For end users and maintainers. How to download, install and uninstall the application on Ubuntu and Windows, and how the installers are built.
+3. [Features](docs/features.md): For users and reviewers. An overview of the methodology and of the features of the application. The user interface, the map viewer, and the reports and files it produces.
 
 ## Quick start
 
@@ -29,7 +29,7 @@ git clone https://github.com/GMECH7/rss_islandr.git
 cd rss_islandr
 ```
 ```bash
-poetry install --with dev,build
+poetry install
 ```
 ```bash
 poetry run islandr

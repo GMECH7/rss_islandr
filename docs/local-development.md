@@ -78,7 +78,7 @@ poetry --version
 ## 4. Installing the dependencies
 
 ```bash
-poetry install --with dev,build
+poetry install
 ```
 
 The dependencies are in groups:
@@ -89,7 +89,7 @@ The dependencies are in groups:
 | `dev` | `pytest`, `pytest-cov`, `pypdf`, `ruff`, `rich` | Tests, code checks and the development scripts |
 | `build` | `pyinstaller` | Building the installers |
 
-`poetry install` alone installs only the main group. The project installs itself in editable mode, so changes in the source code apply immediately.
+`poetry install` installs all groups. The project installs itself in editable mode, so changes in the source code apply immediately.
 
 The virtual environment is created in the folder `.venv` inside the project (setting in `poetry.toml`). Useful checks:
 
